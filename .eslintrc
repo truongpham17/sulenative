@@ -1,0 +1,7 @@
+{
+  "extends": "rallycoding",
+  "rules": {
+    "import/no-extraneous-dependencies": "off",
+    "no-shadow": "off"
+  }
+}
