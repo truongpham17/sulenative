@@ -19,6 +19,7 @@ import {
 import MenuIcon from '../../components/MenuIcon';
 import { Style } from '../../components';
 import { iOSColors } from 'react-native-typography';
+import Printer from '../../components/Printer';
 
 class SaleScreen extends React.Component {
   componentDidMount() {
@@ -86,6 +87,7 @@ class SaleScreen extends React.Component {
           visible={this.props.loading || this.props.storeLoading}
           color={iOSColors.tealBlue}
         />
+        <Printer />
       </View>
     );
   }

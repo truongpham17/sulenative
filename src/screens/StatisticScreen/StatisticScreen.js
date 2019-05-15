@@ -28,7 +28,7 @@ class StatictisScreen extends React.Component {
   };
 
   componentDidMount() {
-    const { navigation, loadNewData } = this.props;
+    const { navigation } = this.props;
     this.focusListener = navigation.addListener('didFocus', this.loadNewData);
     // loadNewData();
   }
@@ -70,9 +70,11 @@ class StatictisScreen extends React.Component {
   }
 
   loadNewData = () => {
+    // console.log('hello');
+
     const { getReportDetail } = this.props;
-    const { start, end } = this.state;
-    getReportDetail({ start: start.toJSON(), end: end.toJSON() });
+    const { start, end, modalType } = this.state;
+    getReportDetail({ start: start.toJSON(), end: end.toJSON() }, modalType === 'date');
   };
 
   renderDateModal() {

@@ -88,6 +88,7 @@ class SupplyScreen extends React.Component<PropsType> {
 
   extractStoreData = () => {
     const { stores } = this.props;
+    console.log(stores);
     const data = stores.map((store: Store) => ({
       name: store.name,
       date: `${getDate(store.createdAt)}`,

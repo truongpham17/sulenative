@@ -5742,6 +5742,11 @@ react-monthrange-picker@^1.9.0:
     react "^15.3.2"
     react-dom "^15.3.2"
 
+react-native-bluetooth-escpos-printer@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/react-native-bluetooth-escpos-printer/-/react-native-bluetooth-escpos-printer-0.0.5.tgz#45a31d37c213f95f2cc590cebcb48e0574ce1b45"
+  integrity sha512-a+GTlz8dctb48wkoJ8woE7gV24NCOoA13J95A+RFEKhjONEWf3/dP5pIqrrlO5fsf/2QYDeMfU3P8bIVQoEqig==
+
 react-native-calendars@^1.27.0:
   version "1.121.0"
   resolved "https://registry.yarnpkg.com/react-native-calendars/-/react-native-calendars-1.121.0.tgz#11bf620ed7ac0990bd6fb4bf4c1fc5840e69ffb4"

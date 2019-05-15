@@ -129,7 +129,7 @@ class PriceSelect extends React.Component<PropsType> {
         style={styles.contentStyle}
         refreshing={this.state.refreshing}
         onRefresh={this.onRefresh}
-        keyboardShouldPersistTaps="never"
+        keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
       />
     );

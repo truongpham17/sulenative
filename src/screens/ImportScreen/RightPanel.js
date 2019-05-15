@@ -270,6 +270,7 @@ class RightPanel extends React.Component<PropsType, StateType> {
         onEndReachedThreshold={0.5}
         onEndReached={this.onEndReached}
         extraData={products}
+        keyboardShouldPersistTaps="handled"
       />
     );
   }
