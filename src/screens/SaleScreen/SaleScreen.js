@@ -87,7 +87,7 @@ class SaleScreen extends React.Component {
           visible={this.props.loading || this.props.storeLoading}
           color={iOSColors.tealBlue}
         />
-        <Printer />
+        {/* <Printer /> */}
       </View>
     );
   }

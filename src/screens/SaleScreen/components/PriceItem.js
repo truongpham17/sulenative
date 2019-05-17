@@ -149,18 +149,25 @@ class PriceItem extends React.Component<PropsType> {
 
   renderDetail = value => {
     const { product, isSell } = this.props;
-    if (product.product.quantity === 0 && isSell && product.paybackQuantity === 0) {
-      return (
-        <Text
-          style={[
-            Style.smallTextEmphasize,
-            { color: ACTIVE_COLOR_DEFAULT, flex: 2, textAlign: 'right', paddingEnd: 12 }
-          ]}
-        >
-          Hết hàng
-        </Text>
-      );
-    }
+    try {
+      if (
+        parseInt(product.product.quantity, 10) === 0 &&
+        isSell &&
+        parseInt(product.paybackQuantity, 10) === 0
+      ) {
+        return (
+          <Text
+            style={[
+              Style.smallTextEmphasize,
+              { color: ACTIVE_COLOR_DEFAULT, flex: 2, textAlign: 'right', paddingEnd: 12 }
+            ]}
+          >
+            Hết hàng
+          </Text>
+        );
+      }
+    } catch (ex) {}
+
     return (
       <View style={{ flexDirection: 'row' }}>
         <TextInput

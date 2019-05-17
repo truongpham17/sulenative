@@ -32,14 +32,7 @@ class ImportItem extends React.Component<PropsType> {
 
   onPress = () => {
     const { onSubmit, data, isFocus, index } = this.props;
-    if (
-      !data.quantity ||
-      parseInt(data.quantity, 10) === 0 ||
-      !data.importPrice ||
-      parseInt(data.importPrice, 10) === 0 ||
-      !data.exportPrice ||
-      parseInt(data.importPrice, 10) > parseInt(data.exportPrice, 10)
-    ) {
+    if (!data.quantity || data.quantity === '0' || !data.importPrice || data.importPrice === '0') {
       this.setState({ autoFocus: false });
       AlertIOS.alert('Vui lòng nhập thông tin chính xác', null, [
         {
@@ -47,6 +40,9 @@ class ImportItem extends React.Component<PropsType> {
           onPress: () => this.setState({ autoFocus: true })
         }
       ]);
+      setTimeout(() => {
+        Keyboard.dismiss();
+      }, 100);
       return;
     }
 

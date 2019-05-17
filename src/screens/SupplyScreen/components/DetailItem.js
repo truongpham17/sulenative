@@ -1,6 +1,6 @@
 import React from 'react';
-import { iOSUIKit, iOSColors } from 'react-native-typography';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, AlertIOS } from 'react-native';
+import Swipeout from 'react-native-swipeout';
 import RowTable from '../../../components/RowTable';
 import { Product, ProductBill } from '../../../models';
 import { SubmitButton } from '../../../components/button';
@@ -14,7 +14,8 @@ type PropsType = {
 
 class DetailItem extends React.Component<PropsType> {
   state = {
-    isEditing: false
+    isEditing: false,
+    isChangeExportPrice: false
   };
 
   onConfirmEdit = () => {
@@ -23,7 +24,34 @@ class DetailItem extends React.Component<PropsType> {
     this.setState({ isEditing: true });
   };
 
-  renderTextInput = () => {
+  onConfirmChangeExportPrice = () => {
+    this.setState({
+      isChangeExportPrice: true
+    });
+  };
+
+  onEditExportPrice = () => {
+    const { onChangeExportPrice, productBill } = this.props;
+    AlertIOS.prompt(
+      'Nhập giá bán',
+      null,
+      [
+        {
+          text: 'Huỷ',
+          style: 'cancel'
+        },
+        {
+          text: 'Xong',
+          onPress: value => onChangeExportPrice(value, productBill.product)
+        }
+      ],
+      'plain-text',
+      '',
+      'numeric'
+    );
+  };
+
+  renderPaybackButton = () => {
     const { productBill, onChangeText } = this.props;
     const { isEditing } = this.state;
     if (productBill.product.quantity === 0) {
@@ -43,26 +71,45 @@ class DetailItem extends React.Component<PropsType> {
     );
   };
 
+  renderEditButton = () => (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <SubmitButton
+        title="Sửa giá"
+        onPress={this.onEditExportPrice}
+        buttonStyle={{ backgroundColor: Style.color.blackBlue }}
+      />
+    </View>
+  );
+
   render() {
-    const { index, productBill } = this.props;
-    const { isEditing } = this.state;
+    const { productBill } = this.props;
     const { product } = productBill;
+    const btn = [
+      {
+        component: this.renderEditButton(),
+        backgroundColor: 'transparent'
+      }
+    ];
     return (
-      <RowTable
-        containerStyle={
-          isEditing && productBill.paybackQuantity > 0
-            ? { backgroundColor: Style.color.lightGray }
-            : {}
-        }
-      >
-        <Text style={Style.normalDarkText}>{index}</Text>
-        <Text style={Style.normalDarkText}>{product.total}</Text>
-        <Text style={Style.normalDarkText}>{product.importPrice}</Text>
-        <Text style={Style.normalDarkText}>{product.exportPrice}</Text>
-        <Text style={Style.normalDarkText}>{product.total - product.quantity}</Text>
-        <Text style={Style.normalDarkText}>{product.quantity}</Text>
-        {this.renderTextInput()}
-      </RowTable>
+      <Swipeout right={btn} backgroundColor={Style.color.lightGray}>
+        <RowTable
+          containerStyle={
+            // isEditing && productBill.paybackQuantity > 0
+            //   ? { backgroundColor: Style.color.lightGray }
+            //   : { backgroundColor: Style.color.white }
+            { backgroundColor: Style.color.white }
+          }
+        >
+          {/* <Text style={Style.normalDarkText}>{index}</Text> */}
+          <Text style={Style.normalDarkText}>{product.total}</Text>
+          <Text style={Style.normalDarkText}>{product.importPrice}</Text>
+          <Text style={Style.normalDarkText}>{product.exportPrice}</Text>
+          <Text style={Style.normalDarkText}>{product.total - product.quantity}</Text>
+          <Text style={Style.normalDarkText}>{product.quantity}</Text>
+          {this.renderPaybackButton()}
+          {/* {this.renderEditButton()} */}
+        </RowTable>
+      </Swipeout>
     );
   }
 }

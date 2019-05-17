@@ -43,28 +43,25 @@ export default class LeftPanel extends React.Component<PropsType> {
     const { onClear } = this.props;
     if (onClear) {
       onClear();
-      console.log('hello');
     }
   };
 
   onChangeText = search => {
-    const { onSubmitSearch } = this.props;
-    if (search.length === 5) {
-      if (onSubmitSearch) {
-        onSubmitSearch(search);
-      }
-    }
-    if (search.length <= 5) {
-      this.setState({ search });
-    }
+    this.setState({ search });
   };
 
   onSubmitSearch = () => {
     const { onSubmitSearch } = this.props;
     const { search } = this.state;
-    console.log('0'.repeat(5 - search.length) + search);
-    if (onSubmitSearch) {
-      onSubmitSearch('0'.repeat(5 - search.length) + search);
+    // if()
+    // check if this is not number -> search by name
+    if (!isNaN(search) && search.length <= 5) {
+      // console.log('0'.repeat(5 - search.length) + search);
+      if (onSubmitSearch) {
+        onSubmitSearch('0'.repeat(5 - search.length) + search);
+      }
+    } else {
+      onSubmitSearch(search, true);
     }
   };
 
@@ -96,7 +93,7 @@ export default class LeftPanel extends React.Component<PropsType> {
         onChangeText={this.onChangeText}
         onClear={this.onClear}
         value={this.state.search}
-        placeholder="Nhập ID hoá đơn"
+        placeholder="Nhập ID hoặc tên KH"
         inputStyle={Style.normalDarkText}
         onSubmitEditing={this.onSubmitSearch}
       />

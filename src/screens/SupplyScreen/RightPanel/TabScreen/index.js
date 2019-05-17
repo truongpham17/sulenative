@@ -62,6 +62,7 @@ class TabDetail extends React.Component {
         initialLayout={{ flex: 1 }}
         renderTabBar={this.renderTabBar}
         tabBarPosition="top"
+        swipeEnabled={false}
       />
     );
   }

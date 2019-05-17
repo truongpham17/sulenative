@@ -6,6 +6,7 @@ import ChartLabels from './ChartLabel';
 import { formatPrice } from '../../../../../utils/String';
 import { Style } from '../../../../../components';
 import EmptyScreen from '../../../../../components/EmptyStatus';
+import { SubmitButton } from '../../../../../components/button';
 
 const colors = ['#5c6bc0', '#3f51b5', '#3949ab'];
 
@@ -25,6 +26,9 @@ class Info extends React.PureComponent {
         break;
       case 2:
         label = 'Lợi nhuận';
+        break;
+      case 3:
+        label = 'Tiền nợ';
         break;
       default:
         label = '';
@@ -79,7 +83,7 @@ class Info extends React.PureComponent {
 
   render() {
     const { store } = this.props;
-    const data = [store.totalFund, store.totalSoldMoney, store.totalLoiNhuan];
+    const data = [store.totalFund, store.totalSoldMoney, store.totalLoiNhuan, store.debt];
     const pieData = [store.totalSoldProduct, store.productQuantity];
     if (!store || !store.id || store.id.length === 0) {
       return <EmptyScreen label="Vui lòng chọn nguồn hàng" />;
@@ -90,7 +94,7 @@ class Info extends React.PureComponent {
     return (
       <View style={{ flex: 1, padding: 8 }}>
         <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flexDirection: 'row', flex: 1 }}>
+          <View style={{ flexDirection: 'row', flex: 3 }}>
             <BarChart
               style={{ flex: 1 }}
               data={data}
@@ -102,7 +106,7 @@ class Info extends React.PureComponent {
               <ChartLabels getLabel={this.getLabel} />
             </BarChart>
           </View>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 2 }}>
             <PieChart style={{ flex: 1 }} data={this.getPieData(pieData)} innerRadius={50} />
             <TextNative style={styles.totalTextStyle}>Tổng: {store.totalImportProduct}</TextNative>
             <View style={styles.briefContainerStyle}>
@@ -111,9 +115,11 @@ class Info extends React.PureComponent {
             </View>
           </View>
         </View>
-        <TextNative style={{ ...Style.textEmphasize, width: '100%', textAlign: 'center' }}>
+        <SubmitButton title="Trả nợ nguồn hàng" buttonStyle={{ width: 150, alignSelf: 'center' }} />
+
+        {/* <TextNative style={{ ...Style.textEmphasize, width: '100%', textAlign: 'center' }}>
           Nguồn hàng: {store.name}
-        </TextNative>
+        </TextNative> */}
         {/* <EmptyScreen /> */}
       </View>
     );

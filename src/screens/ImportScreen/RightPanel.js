@@ -15,7 +15,7 @@ import ImportItem from './components/ImportItem';
 import { formatPrice } from '../../utils/String';
 import { Title, EmptyStatus, Style } from '../../components';
 import { Product, Store } from '../../models';
-import { ActionButton } from '../../components/button';
+import { SubmitButton } from '../../components/button';
 
 type StateType = {
   inputProduct: Array<Product>,
@@ -36,7 +36,8 @@ const title = ['STT', 'Giá nhập', 'Giá bán', 'Số lượng', 'Nhập'];
 class RightPanel extends React.Component<PropsType, StateType> {
   state = {
     inputProduct: [Product.map({})],
-    note: ''
+    note: '',
+    debt: 0
   };
 
   componentWillReceiveProps(nextProps) {
@@ -120,18 +121,46 @@ class RightPanel extends React.Component<PropsType, StateType> {
     loadStoreProductImport({ id: currentStore.id, skip: skip === 0 ? 20 : skip, isContinue: true });
   };
 
-  onSubmitImport = () => {
+  onSetNote = () => {
+    AlertIOS.prompt('Ghi chú', 'Thêm ghi chú cho lần nhập hàng này', [
+      {
+        text: 'Huỷ',
+        style: 'cancel'
+      },
+      {
+        text: 'Tiếp',
+        onPress: text => {
+          this.setState({
+            note: text
+          });
+          this.onSetDebt();
+        }
+      }
+    ]);
+  };
+
+  onSetDebt = () => {
+    AlertIOS.prompt('Ghi thêm nợ', 'Nhập số tiền nợ nhà cung cấp cho lần nhập hàng này', [
+      {
+        text: 'Huỷ',
+        style: 'cancel'
+      },
+      {
+        text: 'Tiếp',
+        onPress: text => {
+          this.setState({
+            debt: text
+          });
+          this.onDone();
+        }
+      }
+    ]);
+  };
+
+  onDone = () => {
     const { quantity, validProducts } = this.state;
     const { note } = this.state;
     const { importProduct, currentStore } = this.props;
-    if (quantity === undefined || quantity === 0) {
-      AlertIOS.alert('Vui lòng nhập sản phẩm');
-      return;
-    }
-    if (currentStore.id.length === 0) {
-      AlertIOS.alert('Yêu cầu', 'Vui lòng chọn nhà cung cấp');
-      return;
-    }
     AlertIOS.alert('Xác nhận?', `Thêm ${quantity} sản phẩm vào nhà cung cấp ${currentStore.name}`, [
       {
         text: 'Huỷ',
@@ -157,6 +186,21 @@ class RightPanel extends React.Component<PropsType, StateType> {
           )
       }
     ]);
+  };
+
+  onSubmitImport = () => {
+    const { quantity, validProducts } = this.state;
+    const { note } = this.state;
+    const { importProduct, currentStore } = this.props;
+    if (quantity === undefined || quantity === 0) {
+      AlertIOS.alert('Vui lòng nhập sản phẩm');
+      return;
+    }
+    if (currentStore.id.length === 0) {
+      AlertIOS.alert('Yêu cầu', 'Vui lòng chọn nhà cung cấp');
+      return;
+    }
+    this.onSetNote();
   };
 
   getInfos() {
@@ -271,6 +315,7 @@ class RightPanel extends React.Component<PropsType, StateType> {
         onEndReached={this.onEndReached}
         extraData={products}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
       />
     );
   }
@@ -294,12 +339,17 @@ class RightPanel extends React.Component<PropsType, StateType> {
             paddingHorizontal: 10
           }}
           behavior="padding"
+          // keyboardVerticalOffset={64}
         >
           {currentStore.id.length === 0 ? this.renderAction() : this.renderContent()}
           {this.renderFooter()}
-
           <View style={styles.footerStyle}>
-            <ActionButton title="Xác nhận" onPress={this.onSubmitImport} />
+            <SubmitButton
+              title="Xác nhận"
+              onPress={this.onSubmitImport}
+              buttonStyle={{ width: 140 }}
+              textStyle={{ fontSize: 16 }}
+            />
           </View>
         </KeyboardAvoidingView>
       </View>

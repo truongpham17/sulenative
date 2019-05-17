@@ -38,12 +38,12 @@ class HistoryScreen extends React.Component {
     loadListBill({ skip: skip === 0 ? 20 : skip, isContinue: true });
   };
 
-  onLoadBill = id => {
-    console.log(id);
+  onLoadBill = (search, isSearchByName) => {
+    console.log(isSearchByName);
     const { loadListBill } = this.props;
     this.setState({ refreshing: true });
     loadListBill(
-      { skip: 0, billId: id },
+      { skip: 0, search, isSearchByName },
       {
         success: () => this.setState({ refreshing: false }),
         failure: () => this.setState({ refreshing: false })
@@ -52,7 +52,6 @@ class HistoryScreen extends React.Component {
   };
 
   extractData = () => {
-    console.log('extractData');
     const { listBill } = this.props;
     return listBill.map(item => ({
       name: item.id,
@@ -90,7 +89,7 @@ class HistoryScreen extends React.Component {
               haveSearch
               onAddStore={() => navigation.navigate('SaleScreen')}
               onClear={this.onLoadBill}
-              onSubmitSearch={id => this.onLoadBill(id)}
+              onSubmitSearch={(id, isByName) => this.onLoadBill(id, isByName)}
             />
           </View>
           <RightPanel containerStyle={styles.rightPanelContainer} />

@@ -19,9 +19,15 @@ export function loadListBill(data = { skip: 0, isContinue: false }, callback = {
   return async dispatch => {
     try {
       dispatch({ type: LOAD_LIST_BILL_REQUEST });
-      const url = !data.billId
-        ? `${ENDPOINTS.bill}?skip=${data.skip}&limit=20`
-        : `${ENDPOINTS.bill}?search=${data.billId}`;
+      let url = '';
+      if (data.isSearchByName) {
+        url = `${ENDPOINTS.bill}?customer=${data.search}`;
+      } else {
+        url = !data.search
+          ? `${ENDPOINTS.bill}?skip=${data.skip}&limit=20`
+          : `${ENDPOINTS.bill}?search=${data.search}`;
+      }
+
       const result = await query({
         endpoint: url
       });

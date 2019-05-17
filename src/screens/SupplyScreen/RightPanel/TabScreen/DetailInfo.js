@@ -20,7 +20,7 @@ type PropsType = {
   products: ProductBill[]
 };
 
-const title = ['STT', 'Số lượng', 'Giá nhập', 'Giá bán', 'Đã bán', 'Còn lại', 'Trả hàng'];
+const title = ['Số lượng', 'Giá nhập', 'Giá bán', 'Đã bán', 'Còn lại', 'Trả hàng', 'Sửa giá'];
 
 class DetailInfo extends React.Component<PropsType> {
   state = {
@@ -43,6 +43,8 @@ class DetailInfo extends React.Component<PropsType> {
 
     setPaybackQuantity({ quantity, id: product.id });
   };
+
+  onChangeExportPrice = (exportPrice, product) => {};
 
   onEndReached = () => {
     const { total, skip, loadStoreProductDetail, currentStore } = this.props;
@@ -156,7 +158,12 @@ class DetailInfo extends React.Component<PropsType> {
   keyExtractor = item => item.id;
 
   renderItem = ({ item, index }) => (
-    <DetailItem productBill={item} index={index + 1} onChangeText={this.onChangePaybackQuantity} />
+    <DetailItem
+      productBill={item}
+      index={index + 1}
+      onChangeText={this.onChangePaybackQuantity}
+      onChangeExportPrice={this.onChangeExportPrice}
+    />
   );
 
   renderFooter() {
@@ -186,6 +193,7 @@ class DetailInfo extends React.Component<PropsType> {
         onEndReachedThreshold={1}
         onEndReached={this.onEndReached}
         ListHeaderComponent={this.renderTitle(0)}
+        keyboardShouldPersistTaps="always"
       />
     );
   }
