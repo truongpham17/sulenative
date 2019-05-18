@@ -153,10 +153,12 @@ export function submitBill(data, callback: {}) {
         data,
         method: METHODS.post
       });
+      console.log(result.status);
       if (result.status === 201) {
         if (callback.success) {
-          callback.success();
+          callback.success(result.data);
         }
+        console.log(result.data);
         dispatch({
           type: SUBMIT_BILL_SUCCESS,
           payload: result.data
@@ -170,6 +172,7 @@ export function submitBill(data, callback: {}) {
         });
       }
     } catch (err) {
+      console.log(err);
       if (callback.failure) {
         callback.failure();
       }

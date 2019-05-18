@@ -30,7 +30,7 @@ class ListProduct extends React.Component {
     const { currentBill } = this.props;
     return (
       <FlatList
-        ItemSeparatorComponent={() => <Line color={Style.color.customDark} />}
+        ItemSeparatorComponent={() => <Line color={Style.color.customDark} height={0.5} />}
         data={currentBill.productList}
         renderItem={this.renderItem}
         contentContainerStyle={{ flexGrow: 1 }}

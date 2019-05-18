@@ -3,6 +3,8 @@ import { View, StyleSheet, KeyboardAvoidingView, Text, StatusBar } from 'react-n
 import { connect } from 'react-redux';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { Header } from 'react-native-elements';
+import { iOSColors } from 'react-native-typography';
+
 import { CancelButton } from './components';
 import StoreSelect from './StoreSelect';
 import PriceSelect from './PriceSelect';
@@ -18,7 +20,6 @@ import {
 } from '../../actions';
 import MenuIcon from '../../components/MenuIcon';
 import { Style } from '../../components';
-import { iOSColors } from 'react-native-typography';
 import Printer from '../../components/Printer';
 import LOAD_NUMBER from '../../utils/System';
 

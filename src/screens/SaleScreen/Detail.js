@@ -6,17 +6,30 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  AlertIOS
+  AlertIOS,
+  Modal
 } from 'react-native';
 // import { Print } from 'expo';
 import { connect } from 'react-redux';
 import { iOSUIKit } from 'react-native-typography';
+
 import { removeProductBill, setOtherCost, submitBill, setPrinterDevice } from '../../actions';
 import { DetailItem } from './components';
 import { formatPrice } from '../../utils/String';
 import CustomerInfo from './CustomerInfo';
-import { Style } from '../../components';
-import { Alert } from '../../utils/Dialog';
+import { Style, BillTemplate } from '../../components';
+import { SubmitButton } from '../../components/button';
+
+import {
+  BluetoothManager,
+  BluetoothEscposPrinter,
+  BluetoothTscPrinter
+  //   Device
+} from 'react-native-bluetooth-escpos-printer';
+import { AlertInfo, Alert } from '../../utils/Dialog';
+import BillImage from './BillImage';
+import { printBill } from '../../utils/Printer';
+import { getDatePrinting } from '../../utils/Date';
 
 const title = ['Nguồn', 'Đơn giá', 'SL', 'Tổng'];
 
@@ -26,7 +39,10 @@ class Detail extends React.Component {
     customerPhone: '',
     customerAddress: '',
     note: '',
-    debt: '0'
+    debt: '0',
+    modalVisible: false,
+    ids: [],
+    connected: false
   };
 
   onRemove = id => {
@@ -50,10 +66,63 @@ class Detail extends React.Component {
     }
   };
 
-  onSubmitBill = async () => {
-    const { productBills, totalQuantity, totalPrice, otherCost } = this.props;
-    const { customerName, customerPhone, customerAddress, note, debt } = this.state;
+  onSetupPrinterUrl = async url => {
+    const { setPrinterDevice } = this.props;
+    setPrinterDevice({ url });
+    BluetoothManager.connect(url).then(
+      () =>
+        this.setState({
+          modalVisible: false,
+          connected: true
+        }),
+      () => AlertInfo('Không thể kết nối')
+    );
+  };
 
+  onSetPrinterConfig = async () => {
+    const { printerURL } = this.props;
+    // check whether enable bluetooth
+    const isBluetoothEnable = await BluetoothManager.isBluetoothEnabled();
+    if (!isBluetoothEnable) {
+      AlertInfo('Bluetooth chưa được bật', 'Vui lòng bật bluetooth và thử lại');
+      return;
+    }
+
+    // check if devices already save printer URL, try to connect to this url
+    if (printerURL && printerURL.length > 0) {
+      // if connect successfully then start printing, else set up again
+      BluetoothManager.connect(printerURL).then(
+        () => {
+          // this.printBill();
+          this.setState({ connected: true });
+        },
+        () => {
+          this.onPrint();
+        }
+      );
+    }
+    // else, try to scan bluetooth
+    else {
+      // await BluetoothManager.connect('EF7AAB58-92AA-BF87-FC00-E119A7EA6A6E');
+      // console.log('connect successfully!!');
+      // this.setState({
+      //   connected: true
+      // });
+      this.setState({ modalVisible: true });
+      const devicesScan = await BluetoothManager.scanDevices();
+      this.setState({
+        ips: JSON.parse(devicesScan.found)
+      });
+    }
+  };
+
+  onSubmitBill = async () => {
+    const { productBills, totalQuantity, totalPrice, otherCost, submitBill } = this.props;
+    const { customerName, customerPhone, customerAddress, note, debt, connected } = this.state;
+    if (!connected) {
+      this.onSetPrinterConfig();
+      return;
+    }
     const data = {
       productList: [],
       customer: {
@@ -67,8 +136,11 @@ class Detail extends React.Component {
       totalPaid: parseInt(totalPrice, 10) - parseInt(debt, 10),
       otherCost
     };
+
+    let totalDiscount = 0;
     productBills.forEach(item => {
       if (item.soldQuantity > 0) {
+        totalDiscount += item.soldQuantity * item.discount;
         data.productList.push({
           product: item.product.id,
           quantity: item.soldQuantity,
@@ -83,20 +155,38 @@ class Detail extends React.Component {
       }
     });
 
-    const { printerURL, setPrinterDevice } = this.props;
-    // if (!printerURL || printerURL.length === 0) {
-    //   const printData = await Print.selectPrinterAsync();
-    //   if (printData) {
-    //     setPrinterDevice(printData);
-    //   }
-    // }
+    const printBillList = productBills.map(item => ({
+      quantity: item.soldQuantity > 0 ? item.soldQuantity : item.paybackQuantity,
+      price: item.product.exportPrice
+    }));
 
-    // await Print.printAsync({
-    //   printerURL,
-    //   html: '<h1>Hello friend!!</h1>'
-    // });
+    console.log(productBills);
+    console.log(printBillList);
 
-    this.sendAPISubmitBill(data);
+    submitBill(data, {
+      success: billInfo => {
+        AlertIOS.alert('Thanh toán thành công!!');
+        this.setState({
+          customerName: '',
+          customerAddress: '',
+          customerPhone: '',
+          debt: '0',
+          note: ''
+        });
+        printBill({
+          customer: data.customer.name,
+          id: billInfo._id,
+          thungan: 'Truong Pham',
+          date: getDatePrinting(),
+          productList: printBillList,
+          totalQuantity,
+          totalCost: totalPrice,
+          discount: totalDiscount,
+          otherCost
+        });
+      },
+      failure: () => AlertIOS.alert('Thất bại! Vui lòng huỷ bỏ hoá đơn vừa in và thử lại!')
+    });
   };
 
   getTitle = () => {
@@ -106,31 +196,6 @@ class Detail extends React.Component {
       ...productBills.filter(item => item.paybackQuantity > 0)
     ];
     return data;
-  };
-
-  sendAPISubmitBill = data => {
-    const { submitBill } = this.props;
-    submitBill(data, {
-      success: () => {
-        AlertIOS.alert('Thanh toán thành công!!');
-        this.setState({
-          customerName: '',
-          customerAddress: '',
-          customerPhone: '',
-          debt: '0',
-          note: ''
-        });
-      },
-      failure: () => AlertIOS.alert('Thất bại! Vui lòng huỷ bỏ hoá đơn vừa in và thử lại!')
-    });
-  };
-
-  showDialog = () => {
-    const { productBills } = this.props;
-    if (productBills.length === 0) {
-      return;
-    }
-    Alert('Xác nhận in hoá đơn?', null, 'Huỷ', 'In hoá đơn', this.onSubmitBill);
   };
 
   keyExtractor = item => item.id;
@@ -203,7 +268,7 @@ class Detail extends React.Component {
           />
         </View>
         <TouchableOpacity
-          onPress={this.showDialog}
+          onPress={this.onSubmitBill}
           style={[styles.submitButtonStyle, { marginTop: 10 }]}
         >
           <Text style={Style.buttonText}>In hoá đơn</Text>
@@ -212,8 +277,32 @@ class Detail extends React.Component {
     );
   }
 
+  renderScanningPrinter = () => (
+    <View style={{ flex: 1, marginTop: 20, alignItems: 'center' }}>
+      <Text style={Style.blackHeaderTitle}>Vui lòng chọn thiết bị bluetooth</Text>
+      <FlatList
+        data={this.state.ips}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={{
+              width: 400,
+              height: 48,
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            onPress={() => this.onSetupPrinterUrl(item.address)}
+          >
+            <Text style={Style.normalDarkText}>{item.name || 'UNKNOWN NAME'}</Text>
+          </TouchableOpacity>
+        )}
+      />
+    </View>
+  );
+
+  renderReBill = () => <BillImage callback={() => this.setState({ modalVisible: false })} />;
+
   render() {
-    const { customerName, customerAddress, customerPhone } = this.state;
+    const { customerName, customerAddress, customerPhone, connected } = this.state;
     const { productBills } = this.props;
     return (
       <View style={{ flex: 1 }}>
@@ -230,6 +319,9 @@ class Detail extends React.Component {
           address={customerAddress}
           phone={customerPhone}
         />
+        <Modal animationType="slide" transparent={false} visible={this.state.modalVisible}>
+          {this.renderScanningPrinter()}
+        </Modal>
         {this.renderFooter()}
       </View>
     );

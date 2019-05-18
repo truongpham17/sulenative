@@ -15,7 +15,7 @@ class RightPanel extends React.Component {
       <View style={[containerStyle]}>
         {billDetail.id ? (
           <View style={styles.containerStyle}>
-            <View style={{ width: '100%', height: 88, marginVertical: 20 }}>
+            <View style={{ width: '100%', height: 96, marginVertical: 20 }}>
               <BasicInfo />
             </View>
             <Text style={Style.smallTextEmphasize}>Sản phẩm</Text>

@@ -23,8 +23,10 @@ class BasicInfo extends React.Component {
       <View style={styles.containerStyle}>
         <View style={styles.nameContainer}>
           <View>
-            <Text style={[Style.blackEmphasizeTitle]}>{data.name || 'Alexander'}</Text>
-            <Text style={Style.smallPlaceholderText}>{data.phone || '0123456789'}</Text>
+            <Text style={[Style.blackEmphasizeTitle, { fontSize: 20 }]}>
+              {data.name || 'Alexander'}
+            </Text>
+            <Text style={[Style.smallPlaceholderText]}>{data.phone || '0123456789'}</Text>
           </View>
           <View style={{ flexDirection: 'row' }}>
             <Text style={Style.smallPlaceholderText}>Sold by: </Text>

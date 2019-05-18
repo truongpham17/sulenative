@@ -5786,6 +5786,11 @@ react-native-loading-spinner-overlay@^1.0.1:
   dependencies:
     prop-types "^15.6.2"
 
+react-native-modalize@^1.0.0-alpha.23:
+  version "1.0.0-alpha.23"
+  resolved "https://registry.yarnpkg.com/react-native-modalize/-/react-native-modalize-1.0.0-alpha.23.tgz#64da5dfc3716a12403e9fde46d45d6f3a6d72e8e"
+  integrity sha512-NYEsYLIBU3vekHfoISToQAZ/C11UEqpdvn4mGp4BS12NchqcNCsMOjBormomkfBKtGU33CNIcO6nSB5QC1rDfw==
+
 react-native-month-selector@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/react-native-month-selector/-/react-native-month-selector-1.4.0.tgz#d8137689d5e811495782742c3ae7276f5b330c51"
@@ -5885,6 +5890,11 @@ react-native-vector-icons@^6.4.2:
     lodash "^4.0.0"
     prop-types "^15.6.2"
     yargs "^13.2.2"
+
+react-native-view-shot@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/react-native-view-shot/-/react-native-view-shot-2.6.0.tgz#3b23675826f67658366352c4b97b59a6aded2f43"
+  integrity sha512-yO9vWi/11m2hEJl8FrW1SMeVzFfPtMKh20MUInGqlsL0H8Ya2JGGlFfrBzx1KiFR2hFb5OdsTLYNtcVZtJ6pLQ==
 
 react-native@0.59.8:
   version "0.59.8"

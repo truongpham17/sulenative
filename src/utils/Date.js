@@ -3,6 +3,11 @@ export function getDate(value) {
   return `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
 }
 
+export function getDatePrinting() {
+  const date = new Date();
+  return `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
+}
+
 export function getTwoDigit(value) {
   if (value.toString().length === 1) {
     return `0${value}`;

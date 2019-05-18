@@ -9,9 +9,9 @@ export function formatPrice(value) {
   const index = price.indexOf('-');
 
   if (price.length > 3 && index === -1) {
-    price = `${price.slice(0, price.length - 3)}.${price.slice(price.length - 3)}`;
+    price = `${price.slice(0, price.length - 3)},${price.slice(price.length - 3)}`;
   } else if (price.length > 4 && index > -1) {
-    price = `-${price.slice(1, price.length - 3)}.${price.slice(price.length - 3)}`;
+    price = `-${price.slice(1, price.length - 3)},${price.slice(price.length - 3)}`;
   }
   return `$ ${price}`;
 }

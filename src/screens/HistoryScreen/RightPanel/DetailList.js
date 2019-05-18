@@ -13,7 +13,7 @@ class DetailList extends React.Component {
         <Text style={[Style.textEmphasize, { fontWeight: 'bold' }]}>{value}</Text>
       </View>
 
-      <View style={{ width: '100%', height: 1, backgroundColor: Style.color.customDark }} />
+      <View style={{ width: '100%', height: 0.5, backgroundColor: Style.color.customDark }} />
     </View>
   );
 
