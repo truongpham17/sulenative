@@ -59,6 +59,7 @@ class Printer extends React.Component {
       loading: false
     });
   };
+
   print = async () => {
     if (this.state.boundAddress.length > 0) {
       await BluetoothEscposPrinter.printerInit();

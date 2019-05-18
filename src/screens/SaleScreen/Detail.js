@@ -6,16 +6,19 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  AlertIOS
+  AlertIOS,
+  Modal,
 } from 'react-native';
 // import { Print } from 'expo';
 import { connect } from 'react-redux';
 import { iOSUIKit } from 'react-native-typography';
+
 import { removeProductBill, setOtherCost, submitBill, setPrinterDevice } from '../../actions';
 import { DetailItem } from './components';
 import { formatPrice } from '../../utils/String';
 import CustomerInfo from './CustomerInfo';
-import { Style } from '../../components';
+import { Style, BillTemplate } from '../../components';
+import { SubmitButton } from '../../components/button';
 
 const title = ['Nguồn', 'Đơn giá', 'SL', 'Tổng'];
 
@@ -25,7 +28,8 @@ class Detail extends React.Component {
     customerPhone: '',
     customerAddress: '',
     note: '',
-    debt: '0'
+    debt: '0',
+    modalVisible: false,
   };
 
   onRemove = id => {
@@ -82,20 +86,9 @@ class Detail extends React.Component {
       }
     });
 
-    const { printerURL, setPrinterDevice } = this.props;
-    // if (!printerURL || printerURL.length === 0) {
-    //   const printData = await Print.selectPrinterAsync();
-    //   if (printData) {
-    //     setPrinterDevice(printData);
-    //   }
-    // }
+    this.printBill(data);
 
-    // await Print.printAsync({
-    //   printerURL,
-    //   html: '<h1>Hello friend!!</h1>'
-    // });
-
-    this.sendAPISubmitBill(data);
+    // this.sendAPISubmitBill(data);
   };
 
   getTitle = () => {
@@ -106,6 +99,10 @@ class Detail extends React.Component {
     ];
     return data;
   };
+
+  printBill = async data => {
+    this.setState({ modalVisible: true });
+  }
 
   sendAPISubmitBill = data => {
     const { submitBill } = this.props;
@@ -238,6 +235,21 @@ class Detail extends React.Component {
           address={customerAddress}
           phone={customerPhone}
         />
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.modalVisible}
+        >
+          <View style={{ marginTop: 22, padding: 20 }}>
+            <View>
+              <BillTemplate />
+              <SubmitButton
+                onPress={() => this.setState({ modalVisible: false })}
+                title='Hoàn tất'
+              />
+            </View>
+          </View>
+        </Modal>
         {this.renderFooter()}
       </View>
     );
