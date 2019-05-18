@@ -1,5 +1,7 @@
 import { query } from '../services/api';
 import { ENDPOINTS, METHODS } from '../constants/api';
+import LOAD_NUMBER from '../utils/System';
+import { LOAD_STORE_INFO_SUCCESS } from './detail';
 
 export const ADD_STORE_REQUEST = 'set-current-store-request';
 export const ADD_STORE_SUCCESS = 'set-current-store-success';
@@ -77,13 +79,13 @@ export function loadStore(callback = {}) {
   };
 }
 
-export function updateStore(data: { id: string, name: string }, callback = {}) {
+export function updateStore(data: { id: string, name: string, debt: string }, callback = {}) {
   return async dispatch => {
     try {
       dispatch({ type: UPDATE_STORE_REQUEST });
       const result = await query({
         endpoint: `${ENDPOINTS.store}/${data.id}`,
-        data: { name: data.name },
+        data: { name: data.name, debt: data.debt },
         method: METHODS.patch
       });
       if (result.status === 200) {
@@ -122,6 +124,11 @@ export function importProduct(data: {}, callback: {}) {
         method: METHODS.post,
         data
       });
+      const setDebt = await query({
+        endpoint: `${ENDPOINTS.store}/${data.storeId}`,
+        method: METHODS.patch,
+        data: { debt: data.debt }
+      });
       if (result.status === 200) {
         if (callback.success) {
           callback.success();
@@ -141,7 +148,7 @@ export function importProduct(data: {}, callback: {}) {
     }
   };
 }
-export function loadStoreHistory(data = { id: '', skip: 0, limit: 20 }, callback = {}) {
+export function loadStoreHistory(data = { id: '', skip: 0, limit: LOAD_NUMBER }, callback = {}) {
   return async dispatch => {
     try {
       dispatch({ type: LOAD_HISTORY_REQUEST });

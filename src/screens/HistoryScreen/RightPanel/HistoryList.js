@@ -58,7 +58,9 @@ const styles = StyleSheet.create({
   containerStyle: {
     flex: 3,
     marginEnd: 10,
-    backgroundColor: Style.color.white
+    backgroundColor: Style.color.white,
+    borderWidth: 1,
+    borderColor: Style.color.lightBorder
   },
   itemContainerStyle: {
     flex: 1,
@@ -80,7 +82,3 @@ const styles = StyleSheet.create({
     backgroundColor: Style.color.white
   }
 });
-
-export default connect(state => ({
-  currentBill: state.sellHistory.currentBill
-}))(HistoryList);

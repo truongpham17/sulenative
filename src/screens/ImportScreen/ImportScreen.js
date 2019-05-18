@@ -146,18 +146,7 @@ class ImportScreen extends React.Component<PropsType> {
               onRefresh={this.onRefresh}
             />
           </View>
-          <View
-            style={{
-              flex: 7,
-              borderRadius: 10,
-              margin: 10,
-              marginLeft: 0,
-              backgroundColor: 'white',
-              overflow: 'hidden'
-            }}
-          >
-            <RightPanel currentStore={currentStore} importProduct={importProduct} />
-          </View>
+          <RightPanel currentStore={currentStore} importProduct={importProduct} />
           <Spinner
             visible={this.props.loading || this.props.storeLoading}
             color={iOSColors.tealBlue}

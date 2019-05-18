@@ -44,7 +44,6 @@ class TimeAnalyse extends React.Component {
   render() {
     const { containerStyle } = this.props;
     const data = this.getValueData();
-    console.log(data);
     return (
       <View style={[styles.containerStyle, containerStyle]}>
         <Text style={Style.textEmphasize}>Theo thời gian</Text>

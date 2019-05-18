@@ -5,6 +5,7 @@ import {
   LOAD_BILL_DETAIL_SUCCESS
 } from '../actions/sellHistory';
 import { Bill } from '../models';
+import LOAD_NUMBER from '../utils/System';
 
 const INITIAL_STATE = {
   listBill: [],
@@ -24,7 +25,7 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         listBill,
-        skip: action.payload.skip + 20,
+        skip: action.payload.skip + LOAD_NUMBER,
         total: action.payload.total
       };
     case LOAD_BILL_DETAIL_REQUEST:

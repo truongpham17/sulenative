@@ -16,6 +16,7 @@ import { DetailItem } from './components';
 import { formatPrice } from '../../utils/String';
 import CustomerInfo from './CustomerInfo';
 import { Style } from '../../components';
+import { Alert } from '../../utils/Dialog';
 
 const title = ['Nguồn', 'Đơn giá', 'SL', 'Tổng'];
 
@@ -129,16 +130,7 @@ class Detail extends React.Component {
     if (productBills.length === 0) {
       return;
     }
-    AlertIOS.alert('Xác nhận in hoá đơn?', null, [
-      {
-        text: 'Huỷ',
-        style: 'cancel'
-      },
-      {
-        text: 'In hoá đơn',
-        onPress: () => this.onSubmitBill()
-      }
-    ]);
+    Alert('Xác nhận in hoá đơn?', null, 'Huỷ', 'In hoá đơn', this.onSubmitBill);
   };
 
   keyExtractor = item => item.id;
@@ -207,7 +199,7 @@ class Detail extends React.Component {
             value={note}
             onChangeText={text => this.onChangeText(text, 'note')}
             placeholder="Ghi chú..."
-            style={{ ...Style.normalDarkText, flex: 1 }}
+            style={styles.noteInputStyle}
           />
         </View>
         <TouchableOpacity
@@ -320,10 +312,23 @@ const styles = StyleSheet.create({
   },
   footerContainerStyle: {
     width: '100%',
-    height: 240,
+    height: 260,
     padding: 10,
     backgroundColor: Style.color.darkBackground,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10
+  },
+  noteInputStyle: {
+    ...Style.normalDarkText,
+    width: '100%',
+    height: 44,
+    color: Style.color.black,
+    borderWidth: 0.5,
+    borderColor: Style.color.lightBorder,
+    borderRadius: 5,
+    backgroundColor: Style.color.background,
+    marginTop: 8,
+    paddingStart: 8,
+    marginBottom: 8
   }
 });

@@ -14,7 +14,10 @@ import {
   LOAD_HISTORY_SUCCESS,
   IMPORT_PRODUCT_SUCCESS,
   IMPORT_PRODUCT_FAILURE,
-  IMPORT_PRODUCT_REQUEST
+  IMPORT_PRODUCT_REQUEST,
+  LOAD_STORE_INFO_REQUEST,
+  LOAD_STORE_INFO_FAILURE,
+  LOAD_STORE_INFO_SUCCESS
 } from '../actions';
 import { Store } from '../models';
 
@@ -71,10 +74,15 @@ export default (state = INITIAL_STATE, action) => {
         loading: false,
         stores: state.stores.map((item: Store) => {
           if (item.id === action.payload._id) {
-            return { ...item, name: action.payload.name };
+            return { ...item, name: action.payload.name, debt: action.payload.debt };
           }
           return item;
-        })
+        }),
+        currentStore: {
+          ...state.currentStore,
+          name: action.payload.name,
+          debt: action.payload.debt
+        }
       };
     case SET_CURRENT_STORE:
       return {
@@ -126,6 +134,24 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         stores
         // loading: false
+      };
+
+    case LOAD_STORE_INFO_REQUEST:
+      return {
+        ...state,
+        loading: true
+      };
+    case LOAD_STORE_INFO_FAILURE:
+      return {
+        ...state,
+        loading: false
+      };
+
+    case LOAD_STORE_INFO_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        currentStore: Store.map(action.payload)
       };
 
     default:

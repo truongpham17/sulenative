@@ -19,6 +19,7 @@ import { LeftPanel, Style } from '../../components';
 import RightPanel from './RightPanel/RightPanel';
 import { getDate } from '../../utils/Date';
 import { Store } from '../../models';
+import { Promt } from '../../utils/Dialog';
 
 type PropsType = {
   currentStore: Store
@@ -44,13 +45,8 @@ class SupplyScreen extends React.Component<PropsType> {
   };
 
   onPress = id => {
-    const {
-      setCurrentStore,
-      loadStoreInfo,
-      loadStoreProductDetail,
-      loadStoreHistoryDetail
-    } = this.props;
-    setCurrentStore(id);
+    const { loadStoreInfo, loadStoreProductDetail, loadStoreHistoryDetail } = this.props;
+    // setCurrentStore(id);
     loadStoreInfo(id);
     loadStoreProductDetail({ id, skip: 0 });
     loadStoreHistoryDetail({ id, skip: 0 });
@@ -73,22 +69,11 @@ class SupplyScreen extends React.Component<PropsType> {
   };
 
   showDialog = (title, action) => {
-    AlertIOS.prompt(title, null, [
-      {
-        text: 'Huỷ',
-        style: 'cancel'
-      },
-      {
-        text: 'Thêm',
-        onPress: text => action(text)
-      },
-      'plain-text'
-    ]);
+    Promt(title, null, 'Huỷ', 'Thêm', action);
   };
 
   extractStoreData = () => {
     const { stores } = this.props;
-    console.log(stores);
     const data = stores.map((store: Store) => ({
       name: store.name,
       date: `${getDate(store.createdAt)}`,

@@ -20,6 +20,7 @@ import MenuIcon from '../../components/MenuIcon';
 import { Style } from '../../components';
 import { iOSColors } from 'react-native-typography';
 import Printer from '../../components/Printer';
+import LOAD_NUMBER from '../../utils/System';
 
 class SaleScreen extends React.Component {
   componentDidMount() {
@@ -40,7 +41,7 @@ class SaleScreen extends React.Component {
     const { setCurrentStore, loadStoreProduct, loadNewStore } = this.props;
     setCurrentStore(id);
     loadNewStore();
-    loadStoreProduct({ id, skip: 0, limit: 20 });
+    loadStoreProduct({ id, skip: 0, limit: LOAD_NUMBER });
   };
 
   handleRefresh = () => {

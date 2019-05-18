@@ -13,6 +13,7 @@ import {
   LOAD_NEW_STORE,
   SET_OTHER_COST
 } from '../actions';
+import LOAD_NUMBER from '../utils/System';
 
 const INITIAL_STATE = {
   isSell: true,
@@ -201,7 +202,7 @@ export default (state = INITIAL_STATE, action) => {
             ...state.currentProductBills,
             ...action.payload.products.filter(item => !productIds.includes(item.id))
           ],
-          skip: action.payload.skip + 20,
+          skip: action.payload.skip + LOAD_NUMBER,
           loadingBill: false,
           firstLoading: false,
           loading: false
@@ -224,7 +225,7 @@ export default (state = INITIAL_STATE, action) => {
           ...soldoutProducts // product sold out
         ],
         total: action.payload.total,
-        skip: action.payload.skip + 20,
+        skip: action.payload.skip + LOAD_NUMBER,
         loadingBill: false,
         firstLoading: false,
         loading: false

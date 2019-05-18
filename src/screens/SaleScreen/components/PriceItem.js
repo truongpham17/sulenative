@@ -14,6 +14,7 @@ import { formatPrice } from '../../../utils/String';
 import { ProductBill } from '../../../models';
 import { SubmitButton, EditButton } from '../../../components/button';
 import { Style } from '../../../components';
+import { AlertInfo, Promt } from '../../../utils/Dialog';
 
 type PropsType = {
   product: ProductBill,
@@ -48,16 +49,16 @@ class PriceItem extends React.Component<PropsType> {
   onDiscount = value => {
     const { product, setDiscount } = this.props;
     if (isNaN(value)) {
-      AlertIOS.alert('Vui lòng nhập số!');
+      AlertInfo('Vui lòng nhập số!');
       return;
     }
     const discount = parseInt(value, 10);
     if (discount > product.product.exportPrice) {
-      AlertIOS.alert('Giá giảm phải thấp hơn giá bán!');
+      AlertInfo('Giá giảm phải thấp hơn giá bán!');
       return;
     }
     if (discount < 0) {
-      AlertIOS.alert('Không được giảm giá âm!');
+      AlertInfo('Không được giảm giá âm!');
       return;
     }
     if (setDiscount) {
@@ -86,23 +87,7 @@ class PriceItem extends React.Component<PropsType> {
   };
 
   onDiscountPress = () => {
-    AlertIOS.prompt(
-      'Nhập số tiền giảm',
-      null,
-      [
-        {
-          text: 'Huỷ',
-          style: 'cancel'
-        },
-        {
-          text: 'Xong',
-          onPress: value => this.onDiscount(value)
-        }
-      ],
-      'plain-text',
-      '',
-      'numeric'
-    );
+    Promt('Nhập số tiền giảm', null, 'Huỷ', 'Xong', this.onDiscount, null, '', 'numeric');
   };
 
   onFocus = () => {

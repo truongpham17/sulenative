@@ -8,6 +8,7 @@ import { LeftPanel, Style } from '../../components';
 import { getDate } from '../../utils/Date';
 import { formatPrice } from '../../utils/String';
 import MenuIcon from '../../components/MenuIcon';
+import LOAD_NUMBER from '../../utils/System';
 
 class HistoryScreen extends React.Component {
   state = {
@@ -16,7 +17,6 @@ class HistoryScreen extends React.Component {
 
   componentDidMount() {
     const { navigation } = this.props;
-    // loadListBill({ skip: 0, limit: 20 });
     this.focusListener = navigation.addListener('didFocus', () => this.onLoadBill(null));
   }
 
@@ -34,12 +34,11 @@ class HistoryScreen extends React.Component {
 
   onEndReached = () => {
     const { skip, total, loadListBill } = this.props;
-    if (Math.max(skip, 20) >= total) return;
-    loadListBill({ skip: skip === 0 ? 20 : skip, isContinue: true });
+    if (Math.max(skip, LOAD_NUMBER) >= total) return;
+    loadListBill({ skip: skip === 0 ? LOAD_NUMBER : skip, isContinue: true });
   };
 
   onLoadBill = (search, isSearchByName) => {
-    console.log(isSearchByName);
     const { loadListBill } = this.props;
     this.setState({ refreshing: true });
     loadListBill(

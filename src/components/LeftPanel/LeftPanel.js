@@ -56,7 +56,6 @@ export default class LeftPanel extends React.Component<PropsType> {
     // if()
     // check if this is not number -> search by name
     if (!isNaN(search) && search.length <= 5) {
-      // console.log('0'.repeat(5 - search.length) + search);
       if (onSubmitSearch) {
         onSubmitSearch('0'.repeat(5 - search.length) + search);
       }

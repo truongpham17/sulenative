@@ -31,7 +31,7 @@ class Panel extends React.Component {
   };
 
   render() {
-    const { activeItemKey } = this.props;
+    const { activeItemKey, user } = this.props;
     return (
       <View style={styles.containerStyle}>
         <View style={styles.headerStyle}>
@@ -73,13 +73,16 @@ class Panel extends React.Component {
           onPress={this.onPress}
           activeItem={activeItemKey}
         />
-        <Item
-          title="Thống kê"
-          icon={{ name: 'activity', size: 24, type: 'feather' }}
-          itemKey={itemKey[4]}
-          onPress={this.onPress}
-          activeItem={activeItemKey}
-        />
+        {user.role === 'admin' ? (
+          <Item
+            title="Thống kê"
+            icon={{ name: 'activity', size: 24, type: 'feather' }}
+            itemKey={itemKey[4]}
+            onPress={this.onPress}
+            activeItem={activeItemKey}
+          />
+        ) : null}
+
         <Item
           title="Thông tin"
           icon={{ name: 'user', size: 24, type: 'feather' }}
@@ -87,6 +90,7 @@ class Panel extends React.Component {
           onPress={this.onPress}
           activeItem={activeItemKey}
         />
+
         <Item
           title="Đăng xuất"
           icon={{ name: 'log-out', size: 24, type: 'feather' }}
@@ -100,7 +104,7 @@ class Panel extends React.Component {
 }
 
 export default connect(
-  null,
+  state => ({ user: state.user.info }),
   { logout }
 )(Panel);
 

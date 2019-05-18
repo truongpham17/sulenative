@@ -1,6 +1,7 @@
 import { Product } from '../models';
 import { ENDPOINTS } from '../constants/api';
 import { query } from '../services/api';
+import LOAD_NUMBER from '../utils/System';
 
 export const LOAD_PRODUCT_IMPORT_REQUEST = 'load-product-import-request';
 export const LOAD_PRODUCT_IMPORT_SUCCESS = 'load-product-import-success';
@@ -9,16 +10,15 @@ export const LOAD_PRODUCT_IMPORT_FAILURE = 'load-product-import-failure';
 export const REMOVE_PRODUCT_ITEM = 'remove-product-item';
 
 export function loadStoreProductImport(
-  data = { id: '', skip: 0, limit: 20, isContinue: false },
+  data = { id: '', skip: 0, limit: LOAD_NUMBER, isContinue: false },
   callback = {}
 ) {
   return async dispatch => {
     try {
       dispatch({ type: LOAD_PRODUCT_IMPORT_REQUEST });
       const result = await query({
-        endpoint: `${ENDPOINTS.store}/${data.id}/products?skip=${data.skip}&limit=${20}`
+        endpoint: `${ENDPOINTS.store}/${data.id}/products?skip=${data.skip}&limit=${LOAD_NUMBER}`
       });
-      console.log(result.data);
       if (result.status === 200) {
         dispatch({
           type: LOAD_PRODUCT_IMPORT_SUCCESS,

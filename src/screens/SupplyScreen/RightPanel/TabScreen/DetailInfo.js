@@ -8,19 +8,24 @@ import {
   setPaybackQuantity,
   loadStoreProductDetail,
   returnProduct,
-  loadStore
+  loadStore,
+  updateStore,
+  loadStoreInfo,
+  setCurrentStore
 } from '../../../../actions';
 import { formatPrice } from '../../../../utils/String';
 import DetailItem from '../../components/DetailItem';
-import { ActionButton } from '../../../../components/button';
-import { Footer, Title, Style } from '../../../../components';
+import { SubmitButton } from '../../../../components/button';
+import { Title, Style, RowTable } from '../../../../components';
 import EmptyScreen from '../../../../components/EmptyStatus';
+import LOAD_NUMBER from '../../../../utils/System';
+import { Promt, AlertInfo } from '../../../../utils/Dialog';
 
 type PropsType = {
   products: ProductBill[]
 };
 
-const title = ['Số lượng', 'Giá nhập', 'Giá bán', 'Đã bán', 'Còn lại', 'Trả hàng', 'Sửa giá'];
+const title = ['Số lượng', 'Giá nhập', 'Giá bán', 'Đã bán', 'Còn lại'];
 
 class DetailInfo extends React.Component<PropsType> {
   state = {
@@ -48,13 +53,16 @@ class DetailInfo extends React.Component<PropsType> {
 
   onEndReached = () => {
     const { total, skip, loadStoreProductDetail, currentStore } = this.props;
-    if (Math.max(skip, 20) >= total) return;
-    loadStoreProductDetail({ id: currentStore.id, skip: skip === 0 ? 20 : skip, isContinue: true });
+    if (Math.max(skip, LOAD_NUMBER) >= total) return;
+    loadStoreProductDetail({
+      id: currentStore.id,
+      skip: skip === 0 ? LOAD_NUMBER : skip,
+      isContinue: true
+    });
   };
 
   onCreateBill = data => {
     this.onRefreshData();
-    console.log(data);
   };
 
   onRefreshData = () => {
@@ -63,6 +71,20 @@ class DetailInfo extends React.Component<PropsType> {
       loadStore(currentStore.id);
       loadStoreProductDetail({ id: currentStore.id, skip: 0 });
     }
+  };
+
+  onPayDebt = () => {
+    const { currentStore } = this.props;
+    Promt(
+      'Nhập số tiền trả',
+      null,
+      'Huỷ',
+      'Trả nợ',
+      this.updateStore,
+      null,
+      currentStore.debt,
+      'numeric'
+    );
   };
 
   onReturnProduct = isAll => {
@@ -132,6 +154,7 @@ class DetailInfo extends React.Component<PropsType> {
     let totalQuantity = 0;
     let soldQuantity = 0;
     let totalImportPrice = 0;
+    let totalSoldMoney = 0;
     let quantity = 0;
     if (products.length === 0) {
       return {
@@ -146,13 +169,43 @@ class DetailInfo extends React.Component<PropsType> {
       totalImportPrice += item.product.total * item.product.importPrice;
       soldQuantity += item.product.total - item.product.quantity;
       quantity += item.product.quantity;
+      totalSoldMoney += (item.product.total - item.product.quantity) * item.product.exportPrice;
     });
     return {
       totalQuantity,
       totalImportPrice,
       soldQuantity,
-      quantity
+      quantity,
+      totalSoldMoney
     };
+  };
+
+  updateStore = text => {
+    const { currentStore, updateStore } = this.props;
+    if (isNaN(text) || text.length === 0) {
+      AlertInfo(
+        'Lỗi',
+        `Vui lòng nhập số lớn hơn 0 và bé hơn ${currentStore.debt}`,
+        this.updateStore
+      );
+      return;
+    }
+    const value = parseInt(text, 10);
+    if (value <= 0 || value > currentStore.debt) {
+      AlertInfo(
+        'Lỗi',
+        `Vui lòng nhập số lớn hơn 0 và bé hơn ${currentStore.debt}`,
+        this.updateStore
+      );
+      return;
+    }
+    updateStore(
+      { id: currentStore.id, name: currentStore.name, debt: currentStore.debt - value },
+      {
+        success: () => AlertInfo('Thành công!'),
+        failure: () => AlertInfo('Lỗi!', 'Vui lòng thử lại!')
+      }
+    );
   };
 
   keyExtractor = item => item.id;
@@ -166,20 +219,52 @@ class DetailInfo extends React.Component<PropsType> {
     />
   );
 
-  renderFooter() {
+  renderDetailItem = (title, info) => (
+    <RowTable itemContainerStyle={{ alignItems: 'flex-start' }} flexArray={[2, 1]}>
+      <Text style={Style.normalDarkText}>{title}</Text>
+      <Text
+        style={[
+          Style.textEmphasize,
+          {
+            textAlign: 'right',
+            width: '100%'
+          }
+        ]}
+      >
+        {info}
+      </Text>
+    </RowTable>
+  );
+
+  renderDetail() {
+    const { currentStore } = this.props;
     const data = this.getInfos();
     return (
-      <Footer
-        data={[
-          'Sum',
-          data.totalQuantity,
-          formatPrice(data.totalImportPrice),
-          '',
-          `${data.soldQuantity} cái`,
-          `${data.quantity} cái`,
-          ''
-        ]}
-      />
+      <View style={styles.detailContainerStyle}>
+        <Text style={styles.textStyle}>Thông tin</Text>
+        {this.renderDetailItem('Tên nguồn hàng: ', currentStore.name)}
+        {this.renderDetailItem('Đã nhập: ', formatPrice(data.totalQuantity))}
+        {this.renderDetailItem('Đã bán: ', formatPrice(data.soldQuantity))}
+        {this.renderDetailItem('Còn lại: ', `${data.quantity} cái`)}
+        {this.renderDetailItem('Tổng tiền nhập: ', formatPrice(data.totalImportPrice))}
+        {this.renderDetailItem('Tổng tiền bán được: ', formatPrice(data.totalSoldMoney))}
+        {this.renderDetailItem('Tiền nợ nguồn hàng: ', formatPrice(currentStore.debt))}
+        <View style={{ width: '100%', marginTop: 10, flexDirection: 'row' }}>
+          <SubmitButton
+            title="Trả hàng"
+            onPress={() => this.onReturnProduct(false)}
+            buttonStyle={{ flex: 1, marginEnd: 5, borderRadius: 0 }}
+            textStyle={{ fontSize: 16 }}
+          />
+          <SubmitButton
+            disable={currentStore.debt === 0}
+            title="Trả nợ"
+            onPress={() => this.onPayDebt(false)}
+            buttonStyle={{ flex: 1, marginStart: 5, borderRadius: 0 }}
+            textStyle={{ fontSize: 16 }}
+          />
+        </View>
+      </View>
     );
   }
 
@@ -212,20 +297,21 @@ class DetailInfo extends React.Component<PropsType> {
       return <EmptyScreen label="Nguồn hàng này chưa có sản phẩm" />;
     }
     return (
-      <View style={styles.containerStyle}>
-        {this.renderContent()}
-        {this.renderFooter()}
-        <View style={styles.footerStyle}>
-          <ActionButton title="Trả hàng" onPress={() => this.onReturnProduct(false)} />
-          <ActionButton title="Trả tất cả" onPress={() => this.onReturnProduct(true)} />
-        </View>
+      <View style={{ flex: 1, flexDirection: 'row', padding: 10 }}>
+        <View style={styles.containerStyle}>{this.renderContent()}</View>
+        <View style={{ flex: 2 }}>{this.renderDetail()}</View>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  containerStyle: { flex: 1 },
+  containerStyle: {
+    flex: 3,
+    borderWidth: 1,
+    borderColor: Style.color.lightBorder,
+    marginEnd: 10
+  },
   inputStyle: {
     width: 100,
     height: 32,
@@ -247,6 +333,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginBottom: 4,
     marginTop: 8
+  },
+  detailContainerStyle: {
+    backgroundColor: Style.color.white,
+    borderWidth: 1,
+    borderColor: Style.color.lightBorder,
+    padding: 8,
+    marginBottom: 10
+  },
+  textStyle: {
+    ...Style.blackTitle,
+    textAlign: 'center',
+    width: '100%'
   }
 });
 
@@ -254,9 +352,18 @@ export default connect(
   state => ({
     products: state.detail.products,
     pageIndex: state.store.pageIndex,
-    currentStore: state.detail.store,
+    currentStore: state.store.currentStore,
     total: state.detail.totalProduct,
     skip: state.detail.skipProduct
   }),
-  { loadStoreProduct, setPaybackQuantity, loadStoreProductDetail, returnProduct, loadStore }
+  {
+    loadStoreProduct,
+    setPaybackQuantity,
+    loadStoreProductDetail,
+    returnProduct,
+    loadStore,
+    updateStore,
+    loadStoreInfo,
+    setCurrentStore
+  }
 )(DetailInfo);

@@ -70,8 +70,6 @@ class StatictisScreen extends React.Component {
   }
 
   loadNewData = () => {
-    // console.log('hello');
-
     const { getReportDetail } = this.props;
     const { start, end, modalType } = this.state;
     getReportDetail({ start: start.toJSON(), end: end.toJSON() }, modalType === 'date');

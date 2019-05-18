@@ -1,58 +1,52 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
+import { connect } from 'react-redux';
 
-import HistoryList from './HistoryList';
-import CustomerDetail from './CustomerDetail';
-import BillDetail from './BillDetail';
-import { Style } from '../../../components';
+import { Style, Line } from '../../../components';
+import BasicInfo from './BasicInfo';
+import ListProduct from './ListProduct';
+import DetailList from './DetailList';
+import EmptyScreen from '../../../components/EmptyStatus';
 
 class RightPanel extends React.Component {
   render() {
-    const { containerStyle } = this.props;
+    const { containerStyle, billDetail } = this.props;
     return (
-      <View style={[{ flex: 1 }, containerStyle]}>
-        <View style={styles.containerStyle}>
-          <HistoryList />
-          <View style={styles.detailContainerStyle}>
-            <BillDetail />
-            <CustomerDetail />
+      <View style={[containerStyle]}>
+        {billDetail.id ? (
+          <View style={styles.containerStyle}>
+            <View style={{ width: '100%', height: 88, marginVertical: 20 }}>
+              <BasicInfo />
+            </View>
+            <Text style={Style.smallTextEmphasize}>Sản phẩm</Text>
+            <Line color={Style.color.lightBorder} />
+            <View style={{ flex: 2, maxHeight: '30%', marginBottom: 10 }}>
+              <ListProduct />
+            </View>
+            <Text style={Style.smallTextEmphasize}>Thông tin</Text>
+
+            <Line color={Style.color.lightBorder} />
+            <View style={{ flex: 2 }}>
+              <DetailList />
+            </View>
           </View>
-        </View>
+        ) : (
+          <EmptyScreen label="Vui lòng chọn hoá đơn" />
+        )}
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  infoContainerStyle: {
-    flex: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row'
-  },
-  buttonStyle: {
-    borderRadius: 8,
-    width: 140,
-    height: 48,
-    backgroundColor: Style.color.blackBlue
-  },
-  footerStyle: {
-    height: 48,
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    marginBottom: 8,
-    marginTop: 4
-  },
   containerStyle: {
-    flex: 3,
-    flexDirection: 'row'
-  },
-  detailContainerStyle: {
-    flex: 2,
-    justifyContent: 'flex-start'
+    flex: 1,
+    paddingHorizontal: 90,
+    backgroundColor: Style.color.white,
+    paddingVertical: 10
   }
 });
 
-export default RightPanel;
+export default connect(state => ({
+  billDetail: state.sellHistory.currentBill
+}))(RightPanel);

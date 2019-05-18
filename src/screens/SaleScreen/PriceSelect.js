@@ -12,6 +12,7 @@ import {
   setDiscount,
   loadStoreProduct
 } from '../../actions';
+import LOAD_NUMBER from '../../utils/System';
 
 type PropsType = {
   currentStore: Store,
@@ -75,10 +76,10 @@ class PriceSelect extends React.Component<PropsType> {
 
   onEndReached = () => {
     const { total, skip, currentStore, loadStoreProduct, loading } = this.props;
-    if (Math.max(skip, 20) >= total || loading) return;
+    if (Math.max(skip, LOAD_NUMBER) >= total || loading) return;
     loadStoreProduct({
       id: currentStore.id,
-      skip: skip === 0 ? 20 : skip,
+      skip: skip === 0 ? LOAD_NUMBER : skip,
       isContinue: true
     });
   };

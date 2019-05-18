@@ -1,6 +1,7 @@
 import { ENDPOINTS, METHODS } from '../constants/api';
 import { query } from '../services/api';
 import { ProductBill } from '../models';
+import LOAD_NUMBER from '../utils/System';
 
 export const LOAD_DETAIL_REQUEST = 'load-detail-request';
 export const LOAD_DETAIL_SUCCESS = 'load-detail-success';
@@ -25,16 +26,15 @@ export const RETURN_PRODUCT_SUCCESS = 'return-product-success';
 export const RETURN_PRODUCT_FAILURE = 'return-product-failure';
 
 export function loadStoreProductDetail(
-  data = { id: '', skip: 0, limit: 20, isContinue: false },
+  data = { id: '', skip: 0, limit: LOAD_NUMBER, isContinue: false },
   callback = {}
 ) {
   return async dispatch => {
     try {
       dispatch({ type: LOAD_PRODUCT_DETAIL_REQUEST });
       const result = await query({
-        endpoint: `${ENDPOINTS.store}/${data.id}/products?skip=${data.skip}&limit=${20}`
+        endpoint: `${ENDPOINTS.store}/${data.id}/products?skip=${data.skip}&limit=${LOAD_NUMBER}`
       });
-      console.log(result.data);
       if (result.status === 200) {
         dispatch({
           type: LOAD_PRODUCT_DETAIL_SUCCESS,
@@ -67,14 +67,14 @@ export function loadStoreProductDetail(
 }
 
 export function loadStoreHistoryDetail(
-  data = { id: '', skip: 0, limit: 20, isContinue: false },
+  data = { id: '', skip: 0, limit: LOAD_NUMBER, isContinue: false },
   callback = {}
 ) {
   return async dispatch => {
     try {
       dispatch({ type: LOAD_HISTORY_DETAIL_REQUEST });
       const result = await query({
-        endpoint: `${ENDPOINTS.store}/${data.id}/history?skip=${data.skip}&limit=${20}`
+        endpoint: `${ENDPOINTS.store}/${data.id}/history?skip=${data.skip}&limit=${LOAD_NUMBER}`
       });
       if (result.status === 200) {
         dispatch({
@@ -120,6 +120,7 @@ export function loadStoreInfo(id, callback = {}) {
           type: LOAD_STORE_INFO_SUCCESS,
           payload: result.data
         });
+
         if (callback.success) {
           callback.success();
         }

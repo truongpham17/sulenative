@@ -1,6 +1,7 @@
 import { query } from '../services/api';
 import { ENDPOINTS } from '../constants/api';
 import { Bill } from '../models';
+import LOAD_NUMBER from '../utils/System';
 
 export const LOAD_BILL_HISTORY_REQUEST = 'load-bill-history-request';
 export const LOAD_BILL_HISTORY_SUCCESS = 'load-bill-history-success';
@@ -24,7 +25,7 @@ export function loadListBill(data = { skip: 0, isContinue: false }, callback = {
         url = `${ENDPOINTS.bill}?customer=${data.search}`;
       } else {
         url = !data.search
-          ? `${ENDPOINTS.bill}?skip=${data.skip}&limit=20`
+          ? `${ENDPOINTS.bill}?skip=${data.skip}&limit=${LOAD_NUMBER}`
           : `${ENDPOINTS.bill}?search=${data.search}`;
       }
 

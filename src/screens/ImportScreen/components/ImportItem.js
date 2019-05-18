@@ -8,6 +8,7 @@ import { Product } from '../../../models';
 import { SubmitButton, EditButton } from '../../../components/button';
 import { formatPrice } from '../../../utils/String';
 import { Style } from '../../../components';
+import { Alert, AlertInfo } from '../../../utils/Dialog';
 
 type PropsType = {
   index: number,
@@ -34,12 +35,7 @@ class ImportItem extends React.Component<PropsType> {
     const { onSubmit, data, isFocus, index } = this.props;
     if (!data.quantity || data.quantity === '0' || !data.importPrice || data.importPrice === '0') {
       this.setState({ autoFocus: false });
-      AlertIOS.alert('Vui lòng nhập thông tin chính xác', null, [
-        {
-          text: 'Ok',
-          onPress: () => this.setState({ autoFocus: true })
-        }
-      ]);
+      AlertInfo('Vui lòng nhập thông tin chính xác', () => this.setState({ autoFocus: true }));
       setTimeout(() => {
         Keyboard.dismiss();
       }, 100);
@@ -81,6 +77,12 @@ class ImportItem extends React.Component<PropsType> {
     }
   };
 
+  onFocus = () => {
+    this.setState({
+      isEnable: true
+    });
+  };
+
   renderRemoveButton() {
     return (
       <TouchableOpacity onPress={this.onRemove} style={styles.removeButtonStyle}>
@@ -105,7 +107,7 @@ class ImportItem extends React.Component<PropsType> {
             backgroundColor: isEnable ? Style.color.white : Style.color.lightGray
           }}
         >
-          <Text style={Style.normalDarkText}>{index}</Text>
+          {/* <Text style={Style.normalDarkText}>{index}</Text> */}
           <TextInput
             value={isEnable ? data.importPrice.toString() : formatPrice(data.importPrice)}
             style={styles.inputStyle}
@@ -117,8 +119,9 @@ class ImportItem extends React.Component<PropsType> {
             onSubmitEditing={() => {
               this.secondTextInput.focus();
             }}
-            editable={isEnable}
+            // editable={isEnable}
             returnKeyType="next"
+            onFocus={this.onFocus}
           />
           <TextInput
             value={isEnable ? data.exportPrice.toString() : formatPrice(data.exportPrice)}
@@ -131,8 +134,9 @@ class ImportItem extends React.Component<PropsType> {
             ref={input => {
               this.secondTextInput = input;
             }}
-            editable={isEnable}
+            // editable={isEnable}
             returnKeyType="next"
+            onFocus={this.onFocus}
           />
 
           <TextInput
@@ -142,22 +146,27 @@ class ImportItem extends React.Component<PropsType> {
             onChangeText={text => this.onChangeText(text, 'quantity')}
             onSubmitEditing={() => {
               this.onPress();
-              if (autoFocus) {
+              if (isFocus) {
                 this.firstTextInput.focus();
+              } else {
+                this.setState({
+                  isEnable: false
+                });
               }
             }}
             ref={input => {
               this.thirdTextInput = input;
             }}
-            editable={isEnable}
+            // editable={isEnable}
             returnKeyType="next"
+            onFocus={this.onFocus}
           />
-
+          {/* 
           {isFocus || isEnable ? (
             <SubmitButton title="Xong" onPress={this.onPress} />
           ) : (
             <EditButton title="Sửa" onPress={() => this.onEdit()} />
-          )}
+          )} */}
         </RowTable>
       </Swipeout>
     );

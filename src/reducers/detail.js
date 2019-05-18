@@ -18,6 +18,7 @@ import {
   RETURN_PRODUCT_SUCCESS
 } from '../actions/detail';
 import { ProductBill, Store } from '../models';
+import LOAD_NUMBER from '../utils/System';
 
 const INITIAL_STATE = {
   products: [],
@@ -48,16 +49,7 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         loading: true
       };
-    case LOAD_STORE_INFO_REQUEST:
-      return {
-        ...state,
-        loading: true
-      };
-    case LOAD_STORE_INFO_FAILURE:
-      return {
-        ...state,
-        loading: false
-      };
+
     case LOAD_DETAIL_SUCCESS:
       return {
         ...state,
@@ -65,7 +57,7 @@ export default (state = INITIAL_STATE, action) => {
         totalProduct: action.payload.productList.total,
         histories: [...state.histories, ...action.payload.historyList.histories],
         totalHistory: action.payload.historyList.total,
-        pageSize: state.pageSize + 20,
+        pageSize: state.pageSize + LOAD_NUMBER,
         loading: false
       };
     case SET_PAYBACK_QUANTITY:
@@ -80,11 +72,7 @@ export default (state = INITIAL_STATE, action) => {
       };
     case RESET_VALUE:
       return { ...INITIAL_STATE };
-    case LOAD_STORE_INFO_SUCCESS:
-      return {
-        ...state,
-        store: Store.map(action.payload)
-      };
+
     case LOAD_PRODUCT_DETAIL_FAILURE:
       return { ...state, loading: false };
     case LOAD_PRODUCT_DETAIL_REQUEST:
@@ -96,7 +84,7 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         products,
-        skipProduct: action.payload.skip + 20,
+        skipProduct: action.payload.skip + LOAD_NUMBER,
         totalProduct: action.payload.total,
         loading: false
       };
@@ -118,7 +106,7 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         histories,
         totalHistory: action.payload.total,
-        skipHistory: action.payload.skip + 20,
+        skipHistory: action.payload.skip + LOAD_NUMBER,
         totalQuantity: action.payload.totalQuantity,
         totalPrice: action.payload.totalPrice,
         loading: false

@@ -23,7 +23,7 @@ export default (state = INITIAL_STATE, action) => {
         isLogged: true,
         isLogging: false,
         error: null,
-        info: action.payload,
+        info: { ...action.payload, role: 'admin2' },
         loading: false
       };
     case LOGIN_FAILURE:

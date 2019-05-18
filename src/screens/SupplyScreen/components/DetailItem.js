@@ -5,6 +5,7 @@ import RowTable from '../../../components/RowTable';
 import { Product, ProductBill } from '../../../models';
 import { SubmitButton } from '../../../components/button';
 import { Style } from '../../../components';
+import { Promt } from '../../../utils/Dialog';
 
 type PropsType = {
   index: number,
@@ -32,20 +33,13 @@ class DetailItem extends React.Component<PropsType> {
 
   onEditExportPrice = () => {
     const { onChangeExportPrice, productBill } = this.props;
-    AlertIOS.prompt(
+    Promt(
       'Nhập giá bán',
       null,
-      [
-        {
-          text: 'Huỷ',
-          style: 'cancel'
-        },
-        {
-          text: 'Xong',
-          onPress: value => onChangeExportPrice(value, productBill.product)
-        }
-      ],
-      'plain-text',
+      'Huỷ',
+      'Xong',
+      value => onChangeExportPrice(value, productBill.product),
+      null,
       '',
       'numeric'
     );
@@ -92,22 +86,12 @@ class DetailItem extends React.Component<PropsType> {
     ];
     return (
       <Swipeout right={btn} backgroundColor={Style.color.lightGray}>
-        <RowTable
-          containerStyle={
-            // isEditing && productBill.paybackQuantity > 0
-            //   ? { backgroundColor: Style.color.lightGray }
-            //   : { backgroundColor: Style.color.white }
-            { backgroundColor: Style.color.white }
-          }
-        >
-          {/* <Text style={Style.normalDarkText}>{index}</Text> */}
+        <RowTable containerStyle={{ backgroundColor: Style.color.white }}>
           <Text style={Style.normalDarkText}>{product.total}</Text>
           <Text style={Style.normalDarkText}>{product.importPrice}</Text>
           <Text style={Style.normalDarkText}>{product.exportPrice}</Text>
           <Text style={Style.normalDarkText}>{product.total - product.quantity}</Text>
           <Text style={Style.normalDarkText}>{product.quantity}</Text>
-          {this.renderPaybackButton()}
-          {/* {this.renderEditButton()} */}
         </RowTable>
       </Swipeout>
     );

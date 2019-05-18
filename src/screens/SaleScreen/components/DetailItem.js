@@ -15,7 +15,6 @@ type PropsType = {
 
 class DetailItem extends React.PureComponent<PropsType> {
   renderTextItem() {
-    console.log('render again');
     const { data } = this.props;
     let quantity;
     let style;

@@ -1,6 +1,7 @@
 import { ProductBill } from '../models';
 import { query } from '../services/api';
 import { ENDPOINTS, METHODS } from '../constants/api';
+import LOAD_NUMBER from '../utils/System';
 
 export const SET_IS_SELL = 'set-type';
 export const SET_SELL_QUANTITY = 'set-product-quantity';
@@ -61,14 +62,14 @@ export function setProductReturn(data: ProductBill) {
 
 // type  = BILL || IMPORT
 export function loadStoreProduct(
-  data = { id: '', skip: 0, limit: 20, isContinue: false },
+  data = { id: '', skip: 0, limit: LOAD_NUMBER, isContinue: false },
   callback = {}
 ) {
   return async dispatch => {
     try {
       dispatch({ type: LOAD_PRODUCT_REQUEST, payload: { firstLoading: data.skip === 0 } });
       const result = await query({
-        endpoint: `${ENDPOINTS.store}/${data.id}/products?skip=${data.skip}&limit=${20}`
+        endpoint: `${ENDPOINTS.store}/${data.id}/products?skip=${data.skip}&limit=${LOAD_NUMBER}`
       });
       if (result.status === 200) {
         dispatch({

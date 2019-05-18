@@ -31,7 +31,8 @@ export default {
     lightBorder: '#D1C4E9',
     darkBorder: '#383E59',
     blackBackground: '#14141E',
-    blackLightBackground: '#212128'
+    blackLightBackground: '#212128',
+    disableButton: iOSColors.gray
   },
   lightHeader: {
     fontFamily: 'AvenirNext-Bold',
@@ -78,6 +79,12 @@ export default {
     color: '#323854',
     fontSize: 16
   },
+  superBigTextEmphasize: {
+    fontFamily: 'AvenirNext-Bold',
+    fontWeight: 'bold',
+    color: '#323854',
+    fontSize: 40
+  },
   textLightEmphasize: {
     fontFamily: 'AvenirNext-Medium',
     fontWeight: '500',
@@ -110,6 +117,11 @@ export default {
     fontFamily: 'AvenirNext-Medium',
     color: '#9E9E9E',
     fontSize: 18
+  },
+  smallPlaceholderText: {
+    fontFamily: 'AvenirNext-Medium',
+    color: '#9E9E9E',
+    fontSize: 14
   },
   noteText: {
     fontFamily: 'AvenirNext-Regular',

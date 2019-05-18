@@ -56,13 +56,11 @@ class Info extends React.PureComponent {
   };
 
   getPieData = data => {
-    console.log(data);
     const { storeSelect } = this.state;
     return data.map((value, index) => ({
       value,
       svg: {
         fill: colors[index]
-        // onPress: () => console.log('press', index)
       },
       key: `pie-${index}`,
       label: this.getPieLabel(index, value),
@@ -115,11 +113,9 @@ class Info extends React.PureComponent {
             </View>
           </View>
         </View>
-        <SubmitButton title="Trả nợ nguồn hàng" buttonStyle={{ width: 150, alignSelf: 'center' }} />
-
-        {/* <TextNative style={{ ...Style.textEmphasize, width: '100%', textAlign: 'center' }}>
+        <TextNative style={{ ...Style.textEmphasize, width: '100%', textAlign: 'center' }}>
           Nguồn hàng: {store.name}
-        </TextNative> */}
+        </TextNative>
         {/* <EmptyScreen /> */}
       </View>
     );
@@ -145,5 +141,5 @@ const styles = StyleSheet.create({
 });
 
 export default connect(state => ({
-  store: state.detail.store
+  store: state.store.currentStore
 }))(Info);

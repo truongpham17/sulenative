@@ -8,14 +8,19 @@ import { Title, Style, Footer } from '../../../../components';
 import { getDate } from '../../../../utils/Date';
 import { formatPrice } from '../../../../utils/String';
 import EmptyScreen from '../../../../components/EmptyStatus';
+import LOAD_NUMBER from '../../../../utils/System';
 
 const title = ['STT', 'Ngày nhập', 'Số lượng nhập', 'Tổng vốn', 'Ghi chú'];
 
 class History extends React.Component {
   onEndReached = () => {
     const { loadStoreHistoryDetail, currentStore, skip, total } = this.props;
-    if (Math.max(skip, 20) >= total) return;
-    loadStoreHistoryDetail({ id: currentStore.id, skip: skip === 0 ? 20 : skip, isContinue: true });
+    if (Math.max(skip, LOAD_NUMBER) >= total) return;
+    loadStoreHistoryDetail({
+      id: currentStore.id,
+      skip: skip === 0 ? LOAD_NUMBER : skip,
+      isContinue: true
+    });
   };
 
   keyExtractor = item => item.date;
@@ -40,7 +45,6 @@ class History extends React.Component {
 
   render() {
     const { histories, currentStore } = this.props;
-    console.log(currentStore);
     if (!currentStore || !currentStore.id || currentStore.id.length === 0) {
       return <EmptyScreen label="Vui lòng chọn nguồn hàng" />;
     }
@@ -77,7 +81,7 @@ const styles = StyleSheet.create({
 export default connect(
   state => ({
     pageIndex: state.store.pageIndexHistory,
-    currentStore: state.detail.store,
+    currentStore: state.store.currentStore,
     histories: state.detail.histories,
     skip: state.detail.skipHistory,
     total: state.detail.totalHistory,
