@@ -15,7 +15,8 @@ import {
   LOAD_HISTORY_DETAIL_SUCCESS,
   RETURN_PRODUCT_FAILURE,
   RETURN_PRODUCT_REQUEST,
-  RETURN_PRODUCT_SUCCESS
+  RETURN_PRODUCT_SUCCESS,
+  UPDATE_PRICE_SUCCESS
 } from '../actions/detail';
 import { ProductBill, Store } from '../models';
 import LOAD_NUMBER from '../utils/System';
@@ -118,6 +119,16 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, loading: false };
     case RETURN_PRODUCT_SUCCESS:
       return { ...state, loading: false, tempData: action.payload };
+
+    case UPDATE_PRICE_SUCCESS:
+      return {
+        ...state,
+        products: state.products.map(item =>
+          item.id !== action.payload.id
+            ? item
+            : { ...item, product: { ...item.product, exportPrice: action.payload.exportPrice } }
+        )
+      };
     default:
       return state;
   }

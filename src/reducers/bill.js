@@ -166,7 +166,8 @@ export default (state = INITIAL_STATE, action) => {
       return {
         isSell: true,
         productBills: [],
-        ...data
+        ...data,
+        otherCost: '0'
       };
     case LOAD_PRODUCT_REQUEST:
       return {

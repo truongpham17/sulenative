@@ -1,11 +1,28 @@
-import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from '../actions';
+import {
+  LOGIN_REQUEST,
+  LOGIN_SUCCESS,
+  LOGIN_FAILURE,
+  LOGOUT,
+  GET_USER_SUCCESS
+} from '../actions/user';
+import {
+  GET_REPORT_REQUEST,
+  GET_USER_FAILURE,
+  GET_USER_REQUEST,
+  SELECT_USER,
+  ADD_USER_SUCCESS,
+  ADD_USER_REQUEST,
+  ADD_STORE_FAILURE
+} from '../actions';
 
 const INITIAL_STATE = {
   isLogged: false,
   isLogging: false,
   error: null,
   info: null,
-  loading: false
+  loading: false,
+  users: [],
+  currentUser: ''
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -23,7 +40,7 @@ export default (state = INITIAL_STATE, action) => {
         isLogged: true,
         isLogging: false,
         error: null,
-        info: { ...action.payload, role: 'admin2' },
+        info: { ...action.payload },
         loading: false
       };
     case LOGIN_FAILURE:
@@ -35,6 +52,42 @@ export default (state = INITIAL_STATE, action) => {
       };
     case LOGOUT:
       return INITIAL_STATE;
+    case GET_USER_SUCCESS:
+      return {
+        ...state,
+        users: action.payload,
+        loading: false
+      };
+    case GET_USER_REQUEST:
+      return {
+        ...state,
+        loading: true
+      };
+    case GET_USER_FAILURE:
+      return {
+        ...state,
+        loading: false
+      };
+    case SELECT_USER:
+      return {
+        ...state,
+        currentUser: state.users.find(item => item._id === action.payload) || []
+      };
+    case ADD_USER_REQUEST:
+      return {
+        ...state,
+        loading: true
+      };
+    case ADD_STORE_FAILURE:
+      return {
+        ...state,
+        loading: false
+      };
+    case ADD_USER_SUCCESS:
+      return {
+        ...state,
+        loading: false
+      };
     default:
       return state;
   }

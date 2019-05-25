@@ -1,11 +1,94 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal } from 'react-native';
 import { connect } from 'react-redux';
+import { BluetoothManager } from 'react-native-bluetooth-escpos-printer';
 import { Style } from '../../../components';
 import { SubmitButton } from '../../../components/button';
 import { formatPrice } from '../../../utils/String';
+import { printBill } from '../../../utils/Printer';
+import { getDatePrinting } from '../../../utils/Date';
+import { AlertInfo } from '../../../utils/Dialog';
 
 class DetailList extends React.Component {
+  state = {
+    modalVisible: false,
+    ids: [],
+    connected: false
+  };
+  onSetupPrinterUrl = async url => {
+    const { setPrinterDevice } = this.props;
+    setPrinterDevice({ url });
+    BluetoothManager.connect(url).then(
+      () =>
+        this.setState({
+          modalVisible: false,
+          connected: true
+        }),
+      () => AlertInfo('Không thể kết nối')
+    );
+  };
+
+  onSetPrinterConfig = async () => {
+    const { printerURL } = this.props;
+    // check whether enable bluetooth
+    const isBluetoothEnable = await BluetoothManager.isBluetoothEnabled();
+    if (!isBluetoothEnable) {
+      AlertInfo('Bluetooth chưa được bật', 'Vui lòng bật bluetooth và thử lại');
+      return;
+    }
+
+    // check if devices already save printer URL, try to connect to this url
+    if (printerURL && printerURL.length > 0) {
+      // if connect successfully then start printing, else set up again
+      BluetoothManager.connect(printerURL).then(
+        () => {
+          this.setState({ connected: true });
+        },
+        () => {
+          this.onPrint();
+        }
+      );
+    } else {
+      this.setState({ modalVisible: true });
+      const devicesScan = await BluetoothManager.scanDevices();
+      this.setState({
+        ips: JSON.parse(devicesScan.found)
+      });
+    }
+  };
+
+  printBill = () => {
+    const { billDetail, printerURL, user } = this.props;
+    // if (printerURL.length === 0) {
+    //   this.onSetupPrinterUrl();
+    //   return;
+    // }
+    let totalCostWithoutDiscount = 0;
+
+    billDetail.productList.forEach(item => {
+      if (item.soldQuantity > 0) {
+        totalCostWithoutDiscount += item.soldQuantity * item.product.exportPrice;
+      }
+    });
+
+    printBill({
+      customerName: billDetail.customer.name,
+      customerPhone: billDetail.customer.phone,
+      id: billDetail.id,
+      thungan: billDetail.createdBy.fullname,
+      date: getDatePrinting(billDetail.createAt),
+      productList: billDetail.productList.map(item => ({
+        quantity: item.soldQuantity > 0 ? item.soldQuantity : -item.paybackQuantity,
+        price: item.product.exportPrice
+      })),
+      totalQuantity: billDetail.totalQuantity,
+      totalCost: billDetail.totalPrice,
+      discount: totalCostWithoutDiscount - billDetail.totalPrice + billDetail.otherCost,
+      otherCost: billDetail.otherCost,
+      preCost: totalCostWithoutDiscount
+    });
+  };
+
   renderItem = (label, value) => (
     <View style={{ flex: 1 }}>
       <View style={styles.itemContainerStyle}>
@@ -17,8 +100,30 @@ class DetailList extends React.Component {
     </View>
   );
 
+  renderScanningPrinter = () => (
+    <View style={{ flex: 1, marginTop: 20, alignItems: 'center' }}>
+      <Text style={Style.blackHeaderTitle}>Vui lòng chọn thiết bị bluetooth</Text>
+      <FlatList
+        data={this.state.ips}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={{
+              width: 400,
+              height: 48,
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            onPress={() => this.onSetupPrinterUrl(item.address)}
+          >
+            <Text style={Style.normalDarkText}>{item.name || 'UNKNOWN NAME'}</Text>
+          </TouchableOpacity>
+        )}
+      />
+    </View>
+  );
+
   render() {
-    const { billDetail } = this.props;
+    const { billDetail, onPayDebt } = this.props;
     let totalDiscount = 0;
     let total = 0;
     billDetail.productList.forEach(item => {
@@ -26,6 +131,7 @@ class DetailList extends React.Component {
       const value = item.soldQuantity > 0 ? item.soldQuantity : -item.paybackQuantity;
       total += value * item.product.exportPrice;
     });
+    const isDebt = billDetail.totalPrice - billDetail.totalPaid > 0;
     return (
       <View style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
@@ -43,25 +149,31 @@ class DetailList extends React.Component {
         <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 10 }}>
           <SubmitButton
             title="In hoá đơn"
-            onPress={() => {}}
+            onPress={() => this.printBill()}
             textStyle={{ fontSize: 16, color: Style.color.lightBlue }}
             buttonStyle={styles.buttonStyle}
           />
 
           <SubmitButton
             title="Trả tiền thiếu"
-            onPress={() => {}}
-            textStyle={{ fontSize: 16, color: Style.color.lightBlue }}
+            disable={!isDebt}
+            onPress={() => onPayDebt(billDetail.id)}
+            textStyle={{ fontSize: 16, color: isDebt ? Style.color.lightBlue : Style.color.white }}
             buttonStyle={styles.buttonStyle}
           />
         </View>
+        <Modal animationType="slide" transparent={false} visible={this.state.modalVisible}>
+          {this.renderScanningPrinter()}
+        </Modal>
       </View>
     );
   }
 }
 
 export default connect(state => ({
-  billDetail: state.sellHistory.currentBill
+  billDetail: state.sellHistory.currentBill,
+  printerURL: state.print.printerURL,
+  user: state.user.info
 }))(DetailList);
 
 const styles = StyleSheet.create({

@@ -1,6 +1,6 @@
 import React from 'react';
 import { iOSColors } from 'react-native-typography';
-import { View, StyleSheet, AlertIOS, Text } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { connect } from 'react-redux';
 import { Header } from 'react-native-elements';
 import Spinner from 'react-native-loading-spinner-overlay';

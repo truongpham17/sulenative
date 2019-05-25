@@ -54,12 +54,14 @@ export default (state = INITIAL_STATE, action) => {
         loading: false
       };
     case LOAD_STORE_SUCCESS:
+      const defaultStore = action.payload.find(item => item.isDefault);
       return {
         ...state,
         loadingStore: false,
         stores: action.payload.map(value => Store.map(value)),
         firstLoading: false,
-        loading: false
+        loading: false,
+        currentStore: (defaultStore && Store.map(defaultStore)) || { id: '' }
       };
     case ADD_STORE_SUCCESS:
       return {

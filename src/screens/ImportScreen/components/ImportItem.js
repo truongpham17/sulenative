@@ -92,8 +92,8 @@ class ImportItem extends React.Component<PropsType> {
   }
 
   render() {
-    const { index, isFocus, data } = this.props;
-    const { isEnable, autoFocus } = this.state;
+    const { isFocus, data } = this.props;
+    const { isEnable } = this.state;
     const btn = [
       {
         component: this.renderRemoveButton(),
@@ -157,16 +157,9 @@ class ImportItem extends React.Component<PropsType> {
             ref={input => {
               this.thirdTextInput = input;
             }}
-            // editable={isEnable}
             returnKeyType="next"
             onFocus={this.onFocus}
           />
-          {/* 
-          {isFocus || isEnable ? (
-            <SubmitButton title="Xong" onPress={this.onPress} />
-          ) : (
-            <EditButton title="Sửa" onPress={() => this.onEdit()} />
-          )} */}
         </RowTable>
       </Swipeout>
     );

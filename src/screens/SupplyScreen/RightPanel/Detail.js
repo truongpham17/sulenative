@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import { iOSColors, iOSUIKit } from 'react-native-typography';
+import { iOSColors } from 'react-native-typography';
 import { connect } from 'react-redux';
 import { formatPrice } from '../../../utils/String';
 import { Store } from '../../../models/Store';

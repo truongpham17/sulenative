@@ -167,7 +167,8 @@ class RightPanel extends React.Component<PropsType, StateType> {
               storeId: currentStore.id,
               note: `${note} `,
               productList: validProducts,
-              debt: debtAdd
+              debt: debtAdd,
+              shoudSaveAsHistory: true
             },
             {
               success: () => {
@@ -237,7 +238,7 @@ class RightPanel extends React.Component<PropsType, StateType> {
     <ImportItem
       index={index}
       onSubmit={this.onSubmitItem}
-      isFocus={index === 0}
+      isFocus={index === 0 || item.quantity === 0}
       data={item}
       onChange={this.onChange}
       onRemove={this.onRemove}
@@ -279,7 +280,7 @@ class RightPanel extends React.Component<PropsType, StateType> {
       <View style={styles.detailContainer}>
         <Text style={styles.textStyle}>Thông tin</Text>
         {this.renderDetailItem('Tên nguồn hàng: ', currentStore.name)}
-        {this.renderDetailItem('Tổng số lượng nhập: ', `${quantity} cái`)}
+        {this.renderDetailItem('Tổng số lượng nhập: ', `${quantity || 0} cái`)}
         {this.renderDetailItem('Tổng tiền nhập: ', formatPrice(importPrice))}
         {this.renderDetailItem('Tông tiền có thể bán: ', formatPrice(exportPrice))}
         {this.renderDetailItem('Tiền nợ nguồn hàng: ', formatPrice(currentStore.debt))}

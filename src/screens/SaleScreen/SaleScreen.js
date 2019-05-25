@@ -29,7 +29,7 @@ class SaleScreen extends React.Component {
     this.focusListener = navigation.addListener('didFocus', this.handleRefresh);
 
     setTimeout(() => {
-      loadStore();
+      loadStore({ success: id => this.onStoreItemPress(id) });
     }, 100);
   }
 

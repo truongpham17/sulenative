@@ -3,12 +3,13 @@ import { View, StyleSheet, Text } from 'react-native';
 import { connect } from 'react-redux';
 import { Header } from 'react-native-elements';
 import RightPanel from './RightPanel/RightPanel';
-import { loadListBill, loadBillDetail } from '../../actions';
+import { loadListBill, loadBillDetail, payDebt } from '../../actions';
 import { LeftPanel, Style } from '../../components';
 import { getDate } from '../../utils/Date';
 import { formatPrice } from '../../utils/String';
 import MenuIcon from '../../components/MenuIcon';
 import LOAD_NUMBER from '../../utils/System';
+import { AlertInfo, Alert } from '../../utils/Dialog';
 
 class HistoryScreen extends React.Component {
   state = {
@@ -28,6 +29,16 @@ class HistoryScreen extends React.Component {
   onPress = id => {
     const { loadBillDetail } = this.props;
     loadBillDetail(id);
+  };
+
+  onPayDebt = id => {
+    const { payDebt, loadBillDetail } = this.props;
+    Alert('Xác nhận trả tiền', '', 'Huỷ', 'Xác nhận', () =>
+      payDebt(id, {
+        success: () => loadBillDetail(id),
+        failure: () => AlertInfo('Thất bại! Vui lòng thử lại.')
+      })
+    );
   };
 
   onLongPress = () => {};
@@ -91,7 +102,7 @@ class HistoryScreen extends React.Component {
               onSubmitSearch={(id, isByName) => this.onLoadBill(id, isByName)}
             />
           </View>
-          <RightPanel containerStyle={styles.rightPanelContainer} />
+          <RightPanel containerStyle={styles.rightPanelContainer} onPayDebt={this.onPayDebt} />
         </View>
       </View>
     );
@@ -120,5 +131,5 @@ export default connect(
     skip: state.sellHistory.skip,
     total: state.sellHistory.total
   }),
-  { loadListBill, loadBillDetail }
+  { loadListBill, loadBillDetail, payDebt }
 )(HistoryScreen);

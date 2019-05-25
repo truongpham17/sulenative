@@ -13,13 +13,13 @@ import TimeAnalyse from './TimeAnalyse/TimeAnalyse';
 import Title from './Title';
 import { MenuIcon, Style } from '../../components';
 import { ActionButton } from '../../components/button';
-import { getReverseDate, getDateFromString, getTwoDigit } from '../../utils/Date';
+import { getReverseDate, getDateFromString, getTwoDigit, getDate5Soon } from '../../utils/Date';
 
 class StatictisScreen extends React.Component {
   state = {
     modalVisible: false,
     modalType: '',
-    start: new Date(),
+    start: new Date(getDate5Soon()),
     end: new Date(),
     selectedStartMonth: undefined,
     selectedEndMonth: undefined,
@@ -29,7 +29,7 @@ class StatictisScreen extends React.Component {
 
   componentDidMount() {
     const { navigation } = this.props;
-    this.focusListener = navigation.addListener('didFocus', this.loadNewData);
+    this.focusListener = navigation.addListener('didFocus', this.loadInitData);
     // loadNewData();
   }
 
@@ -69,10 +69,17 @@ class StatictisScreen extends React.Component {
     return value;
   }
 
+  loadInitData = () => {
+    const { getReportDetail } = this.props;
+    getReportDetail({ start: getDate5Soon(), end: getReverseDate() }, true);
+  };
   loadNewData = () => {
     const { getReportDetail } = this.props;
-    const { start, end, modalType } = this.state;
-    getReportDetail({ start: start.toJSON(), end: end.toJSON() }, modalType === 'date');
+    const { modalType, start, end } = this.state;
+    getReportDetail(
+      { start: getReverseDate(start), end: getReverseDate(end) },
+      modalType === 'date'
+    );
   };
 
   renderDateModal() {
@@ -94,7 +101,7 @@ class StatictisScreen extends React.Component {
           buttonStyle={styles.buttonStyle}
           onPress={() => {
             this.setState({
-              modalType: '',
+              modalType: 'date',
               modalVisible: false
             });
             this.loadNewData();
@@ -139,7 +146,7 @@ class StatictisScreen extends React.Component {
         <ActionButton
           title="Xong"
           onPress={() => {
-            this.setState({ modalVisible: false, modalType: '' });
+            this.setState({ modalVisible: false, modalType: 'month' });
             this.loadNewData();
           }}
           buttonStyle={styles.buttonStyle}
@@ -166,7 +173,7 @@ class StatictisScreen extends React.Component {
 
   render() {
     const { navigation, billCount, totalSoldMoney, reportByTime, reportByStore } = this.props;
-    const { start, end, type } = this.state;
+    const { start, end, type, modalType } = this.state;
     return (
       <View style={styles.containerStyle}>
         <MenuIcon navigation={navigation} />
@@ -181,8 +188,16 @@ class StatictisScreen extends React.Component {
             containerStyle={{ marginBottom: 20 }}
             onDatePress={this.onDatePress}
             onMonthPress={this.onMonthPress}
-            start={`${getTwoDigit(start.getMonth() + 1)}-${start.getFullYear()}`}
-            end={`${getTwoDigit(end.getMonth() + 1)}-${end.getFullYear()}`}
+            start={
+              modalType === 'month'
+                ? `${getTwoDigit(start.getMonth() + 1)}-${start.getFullYear()}`
+                : `${getTwoDigit(start.getDate())}-${getTwoDigit(start.getMonth() + 1)}`
+            }
+            end={
+              modalType === 'month'
+                ? `${getTwoDigit(end.getMonth() + 1)}-${end.getFullYear()}`
+                : `${getTwoDigit(end.getDate())}-${getTwoDigit(end.getMonth() + 1)}`
+            }
           />
           <View style={styles.topViewStyle}>
             <TimeAnalyse containerStyle={styles.timeContainerStyle} data={reportByTime} />

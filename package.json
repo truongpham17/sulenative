@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
-    "debug": "open 'rndebugger://set-debugger-loc?host=localhost&port=19001'"
+    "debug": "open 'rndebugger://set-debugger-loc?host=localhost&port=19001'",
+    "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -17,6 +18,8 @@
     "react-native-elements": "^1.1.0",
     "react-native-gesture-handler": "^1.2.1",
     "react-native-loading-spinner-overlay": "^1.0.1",
+    "react-native-material-dropdown": "^0.11.1",
+    "react-native-modal": "^11.0.1",
     "react-native-modalize": "^1.0.0-alpha.23",
     "react-native-month-selector": "^1.4.0",
     "react-native-radio-buttons": "^1.0.0",

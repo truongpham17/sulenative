@@ -22,7 +22,7 @@ class CustomerInfo extends React.Component {
     }
 
     return (
-      <View style={styles.containerStyle} behavior="padding">
+      <View style={[styles.containerStyle]} behavior="padding">
         <TouchableWithoutFeedback onPress={() => this.setState({ showFull: false })}>
           <View style={styles.floatingView}>
             <Icon name="minus" color={Style.color.white} type="feather" />
@@ -30,19 +30,19 @@ class CustomerInfo extends React.Component {
           </View>
         </TouchableWithoutFeedback>
         <Input
-          leftIcon={{ name: 'user', size: 21, type: 'feather', color: Style.color.background }}
+          leftIcon={{ name: 'user', size: 21, type: 'feather', color: Style.color.white }}
           inputContainerStyle={styles.textInputStyle}
           inputStyle={[Style.normalLightText, { marginTop: 5, fontSize: 17 }]}
-          placeholderTextColor={Style.color.background}
+          placeholderTextColor={Style.color.white}
           leftIconContainerStyle={{ marginRight: 10, marginLeft: 0 }}
           onChangeText={text => onChangeText(text, 'customerName')}
           value={name}
           placeholder="Tên khách hàng"
         />
         <Input
-          leftIcon={{ name: 'phone', size: 21, type: 'feather', color: Style.color.background }}
+          leftIcon={{ name: 'phone', size: 21, type: 'feather', color: Style.color.white }}
           inputContainerStyle={styles.textInputStyle}
-          placeholderTextColor={Style.color.background}
+          placeholderTextColor={Style.color.white}
           inputStyle={[Style.normalLightText, { marginTop: 5, fontSize: 17 }]}
           leftIconContainerStyle={{ marginRight: 10, marginLeft: 0 }}
           onChangeText={text => onChangeText(text, 'customerPhone')}
@@ -51,10 +51,10 @@ class CustomerInfo extends React.Component {
           keyboardType="numeric"
         />
         <Input
-          leftIcon={{ name: 'map-pin', size: 21, type: 'feather', color: Style.color.background }}
+          leftIcon={{ name: 'map-pin', size: 21, type: 'feather', color: Style.color.white }}
           inputStyle={[Style.normalLightText, { marginTop: 5, fontSize: 17 }]}
           inputContainerStyle={styles.textInputStyle}
-          placeholderTextColor={Style.color.background}
+          placeholderTextColor={Style.color.white}
           leftIconContainerStyle={{ marginRight: 10, marginLeft: 0 }}
           onChangeText={text => onChangeText(text, 'customerAddress')}
           value={address}
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   containerStyle: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Style.color.blackBlue
+    backgroundColor: '#7986cb'
   },
   titleStyle: {
     ...Style.normalLightText
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     top: -32,
     height: 32,
     width: 140,
-    backgroundColor: Style.color.blackBlue,
+    backgroundColor: '#7986cb',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row'

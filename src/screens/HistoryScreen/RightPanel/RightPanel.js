@@ -10,7 +10,7 @@ import EmptyScreen from '../../../components/EmptyStatus';
 
 class RightPanel extends React.Component {
   render() {
-    const { containerStyle, billDetail } = this.props;
+    const { containerStyle, billDetail, onPayDebt } = this.props;
     return (
       <View style={[containerStyle]}>
         {billDetail.id ? (
@@ -27,7 +27,7 @@ class RightPanel extends React.Component {
 
             <Line color={Style.color.lightBorder} />
             <View style={{ flex: 2 }}>
-              <DetailList />
+              <DetailList onPayDebt={onPayDebt} />
             </View>
           </View>
         ) : (

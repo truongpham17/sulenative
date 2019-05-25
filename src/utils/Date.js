@@ -1,10 +1,10 @@
 export function getDate(value) {
   const date = new Date(value);
-  return `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
+  return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
 }
 
-export function getDatePrinting() {
-  const date = new Date();
+export function getDatePrinting(dateValue) {
+  const date = dateValue ? new Date(dateValue) : new Date();
   return `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
 }
 
@@ -15,9 +15,16 @@ export function getTwoDigit(value) {
   return value;
 }
 
-export function getReverseDate() {
+export function getReverseDate(value) {
+  const date = value || new Date();
+  return `${date.getFullYear()}-${getTwoDigit(date.getMonth() + 1)}-${getTwoDigit(date.getDate())}`;
+}
+
+export function getDate5Soon() {
   const date = new Date();
-  return `${date.getFullYear()}-${getTwoDigit(date.getMonth())}-${getTwoDigit(date.getDate())}`;
+  return `${date.getFullYear()}-${getTwoDigit(date.getMonth() + 1)}-${getTwoDigit(
+    Math.max(date.getDate() - 5, 1)
+  )}`;
 }
 
 export function getDateFromString(date) {

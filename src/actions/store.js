@@ -1,7 +1,6 @@
 import { query } from '../services/api';
 import { ENDPOINTS, METHODS } from '../constants/api';
 import LOAD_NUMBER from '../utils/System';
-import { LOAD_STORE_INFO_SUCCESS } from './detail';
 
 export const ADD_STORE_REQUEST = 'set-current-store-request';
 export const ADD_STORE_SUCCESS = 'set-current-store-success';
@@ -60,10 +59,13 @@ export function loadStore(callback = {}) {
       dispatch({ type: LOAD_STORE_REQUEST });
       const result = await query({ endpoint: ENDPOINTS.store });
       if (result.status === 200) {
-        if (callback.success) {
-          callback.success();
-        }
         dispatch({ type: LOAD_STORE_SUCCESS, payload: result.data.list });
+        if (callback.success) {
+          const defaultValue = result.data.list.find(item => item.isDefault);
+          if (defaultValue) {
+            callback.success(defaultValue._id);
+          }
+        }
       } else {
         if (callback.failure) {
           callback.failure();
@@ -115,7 +117,7 @@ export function setCurrentStore(data: string) {
   };
 }
 
-export function importProduct(data: {}, callback: {}) {
+export function importProduct(data, callback) {
   return async dispatch => {
     try {
       dispatch({ type: IMPORT_PRODUCT_REQUEST });
@@ -123,11 +125,6 @@ export function importProduct(data: {}, callback: {}) {
         endpoint: ENDPOINTS.importStore,
         method: METHODS.post,
         data
-      });
-      const setDebt = await query({
-        endpoint: `${ENDPOINTS.store}/${data.storeId}`,
-        method: METHODS.patch,
-        data: { debt: data.debt }
       });
       if (result.status === 200) {
         if (callback.success) {

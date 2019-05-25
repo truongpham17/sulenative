@@ -29,6 +29,8 @@ export class Store {
 
   debt = 0;
 
+  isDefault = false;
+
   static map(data) {
     const store = new Store();
     store.name = data.name;
@@ -53,6 +55,7 @@ export class Store {
     store.totalSoldMoney = data.totalSoldMoney;
     store.totalLoiNhuan = data.totalLoiNhuan;
     store.debt = data.debt;
+    store.isDefault = data.isDefault;
     return store;
   }
 }

@@ -1,5 +1,5 @@
 import { query } from '../services/api';
-import { ENDPOINTS } from '../constants/api';
+import { ENDPOINTS, METHODS } from '../constants/api';
 import { Bill } from '../models';
 import LOAD_NUMBER from '../utils/System';
 
@@ -15,6 +15,10 @@ export const LOAD_LIST_BILL_FAILURE = 'load-list-bill-failure';
 export const LOAD_BILL_DETAIL_REQUEST = 'load-bill-detail-request';
 export const LOAD_BILL_DETAIL_SUCCESS = 'load-bill-detail-success';
 export const LOAD_BILL_DETAIL_FAILURE = 'load-bill-detail-failure';
+
+export const PAY_DEBT_REQUEST = 'get-debt-request';
+export const PAY_DEBT_SUCCESS = 'get-debt-success';
+export const PAY_DEBT_FAILURE = 'get-debt-failure';
 
 export function loadListBill(data = { skip: 0, isContinue: false }, callback = {}) {
   return async dispatch => {
@@ -93,6 +97,42 @@ export function loadBillDetail(id, callback = {}) {
       }
       dispatch({
         type: LOAD_BILL_DETAIL_FAILURE
+      });
+    }
+  };
+}
+
+export function payDebt(id, callback = {}) {
+  return async dispatch => {
+    try {
+      dispatch({ type: PAY_DEBT_REQUEST });
+      const result = await query({
+        endpoint: `${ENDPOINTS.bill}/paid/${id}`,
+        method: METHODS.patch
+      });
+      if (result.status === 200) {
+        if (callback.success) {
+          callback.success();
+        }
+        dispatch({
+          type: PAY_DEBT_SUCCESS,
+          payload: id
+        });
+      } else {
+        dispatch({
+          type: PAY_DEBT_FAILURE
+        });
+        if (callback.failure) {
+          callback.failure();
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      if (callback.failure) {
+        callback.failure();
+      }
+      dispatch({
+        type: PAY_DEBT_FAILURE
       });
     }
   };

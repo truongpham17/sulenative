@@ -73,7 +73,7 @@ class Panel extends React.Component {
           onPress={this.onPress}
           activeItem={activeItemKey}
         />
-        {user.role === 'admin' ? (
+        {user.role === 1 ? (
           <Item
             title="Thống kê"
             icon={{ name: 'activity', size: 24, type: 'feather' }}
@@ -82,15 +82,15 @@ class Panel extends React.Component {
             activeItem={activeItemKey}
           />
         ) : null}
-
-        <Item
-          title="Thông tin"
-          icon={{ name: 'user', size: 24, type: 'feather' }}
-          itemKey={itemKey[5]}
-          onPress={this.onPress}
-          activeItem={activeItemKey}
-        />
-
+        {user.role === 1 ? (
+          <Item
+            title="Tài khoản"
+            icon={{ name: 'user', size: 24, type: 'feather' }}
+            itemKey={itemKey[5]}
+            onPress={this.onPress}
+            activeItem={activeItemKey}
+          />
+        ) : null}
         <Item
           title="Đăng xuất"
           icon={{ name: 'log-out', size: 24, type: 'feather' }}

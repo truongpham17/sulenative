@@ -9,7 +9,7 @@ class ListProduct extends React.Component {
     const quantity = item.soldQuantity > 0 ? item.soldQuantity : -item.paybackQuantity;
     return (
       <View style={styles.itemContainer}>
-        <Text style={Style.textEmphasize}>{item.product.store.name}</Text>
+        <Text style={[Style.textEmphasize, { width: '40%' }]}>{item.product.store.name}</Text>
         <View
           style={{
             backgroundColor: Style.color.background,
@@ -20,7 +20,9 @@ class ListProduct extends React.Component {
         >
           <Text style={Style.normalDarkText}>{quantity}</Text>
         </View>
-        <Text style={[Style.textEmphasize, { fontWeight: 'bold' }]}>
+        <Text
+          style={[Style.textEmphasize, { fontWeight: 'bold', width: '40%', textAlign: 'right' }]}
+        >
           {formatPrice(item.product.exportPrice)}
         </Text>
       </View>

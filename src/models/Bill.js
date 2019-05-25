@@ -17,6 +17,8 @@ export class Bill {
 
   createdAt: string;
 
+  createdBy: {};
+
   id: string;
 
   paymentStatus: string; // "paid" "debt"
@@ -31,6 +33,9 @@ export class Bill {
     if (data.customer) {
       bill.customer = Customer.map(data.customer);
     }
+    if (data.createdBy) {
+      bill.createdBy = data.createdBy;
+    }
 
     bill.otherCost = data.otherCost;
     bill.note = data.note;
@@ -39,6 +44,7 @@ export class Bill {
     bill.totalPaid = data.totalPaid;
     bill.paymentStatus = data.paymentStatus;
     bill.createdAt = data.createdAt;
+
     return bill;
   }
 }

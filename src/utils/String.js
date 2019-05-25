@@ -1,6 +1,6 @@
 export function formatPrice(value) {
   if (!value) {
-    return value;
+    return '$ 0';
   }
   if (value === 0 || value === '0') {
     return '$ 0';

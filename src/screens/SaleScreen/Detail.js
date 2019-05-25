@@ -17,13 +17,10 @@ import { removeProductBill, setOtherCost, submitBill, setPrinterDevice } from '.
 import { DetailItem } from './components';
 import { formatPrice } from '../../utils/String';
 import CustomerInfo from './CustomerInfo';
-import { Style, BillTemplate } from '../../components';
-import { SubmitButton } from '../../components/button';
+import { Style } from '../../components';
 
 import {
-  BluetoothManager,
-  BluetoothEscposPrinter,
-  BluetoothTscPrinter
+  BluetoothManager
   //   Device
 } from 'react-native-bluetooth-escpos-printer';
 import { AlertInfo, Alert } from '../../utils/Dialog';
@@ -117,12 +114,12 @@ class Detail extends React.Component {
   };
 
   onSubmitBill = async () => {
-    const { productBills, totalQuantity, totalPrice, otherCost, submitBill } = this.props;
-    const { customerName, customerPhone, customerAddress, note, debt, connected } = this.state;
-    if (!connected) {
-      this.onSetPrinterConfig();
-      return;
-    }
+    const { productBills, totalQuantity, totalPrice, otherCost, submitBill, user } = this.props;
+    const { customerName, customerPhone, customerAddress, note, debt } = this.state;
+    // if (!connected) {
+    //   this.onSetPrinterConfig();
+    //   return;
+    // }
     const data = {
       productList: [],
       customer: {
@@ -133,8 +130,9 @@ class Detail extends React.Component {
       note,
       totalQuantity,
       totalPrice,
-      totalPaid: parseInt(totalPrice, 10) - parseInt(debt, 10),
-      otherCost
+      totalPaid: parseInt(totalPrice, 10) - parseInt(debt, 10) + parseInt(otherCost, 10),
+      otherCost,
+      createdBy: user._id
     };
 
     let totalDiscount = 0;
@@ -156,12 +154,9 @@ class Detail extends React.Component {
     });
 
     const printBillList = productBills.map(item => ({
-      quantity: item.soldQuantity > 0 ? item.soldQuantity : item.paybackQuantity,
+      quantity: item.soldQuantity > 0 ? item.soldQuantity : -item.paybackQuantity,
       price: item.product.exportPrice
     }));
-
-    console.log(productBills);
-    console.log(printBillList);
 
     submitBill(data, {
       success: billInfo => {
@@ -174,18 +169,21 @@ class Detail extends React.Component {
           note: ''
         });
         printBill({
-          customer: data.customer.name,
+          customerName: data.customer.name,
+          customerPhone: data.customer.phone,
           id: billInfo._id,
-          thungan: 'Truong Pham',
+          thungan: user.fullname,
           date: getDatePrinting(),
           productList: printBillList,
           totalQuantity,
           totalCost: totalPrice,
           discount: totalDiscount,
-          otherCost
+          otherCost,
+          // eslint-disable-next-line no-mixed-operators
+          preCost: totalPrice + totalDiscount - otherCost
         });
       },
-      failure: () => AlertIOS.alert('Thất bại! Vui lòng huỷ bỏ hoá đơn vừa in và thử lại!')
+      failure: () => AlertIOS.alert('Thất bại!', 'Vui lòng thử lại')
     });
   };
 
@@ -334,7 +332,8 @@ export default connect(
     totalQuantity: state.bill.totalQuantity,
     totalDiscount: state.bill.totalDiscount,
     otherCost: state.bill.otherCost,
-    printerURL: state.print.printerURL
+    printerURL: state.print.printerURL,
+    user: state.user.info
   }),
   { removeProductBill, setOtherCost, submitBill, setPrinterDevice }
 )(Detail);

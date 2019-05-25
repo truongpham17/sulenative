@@ -5,6 +5,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import { connect } from 'react-redux';
 import { login, loadStore } from '../../actions';
 import { Style } from '../../components';
+import { AlertInfo } from '../../utils/Dialog';
 
 type PropsType = {
   login: () => null
@@ -68,11 +69,16 @@ class LoginScreen extends React.Component<PropsType, StateType> {
       success: () => {
         loadStore({ success: () => navigation.navigate('MainNavigation') });
       },
-      failure: () => {
-        this.setState({
-          passwordError: 'Tên tài khoản hoặc mật khẩu chưa đúng',
-          emailError: 'Tên tài khoản hoặc mật khẩu chưa đúng'
-        });
+      failure: isInactive => {
+        console.log(isInactive);
+        if (!isInactive) {
+          this.setState({
+            passwordError: 'Tên tài khoản hoặc mật khẩu chưa đúng',
+            emailError: 'Tên tài khoản hoặc mật khẩu chưa đúng'
+          });
+        } else {
+          AlertInfo('Tài khoản đã bị vô hiệu hoá', 'Liên hệ Admin để mở khoá cho tài khoản này');
+        }
       }
     });
   };

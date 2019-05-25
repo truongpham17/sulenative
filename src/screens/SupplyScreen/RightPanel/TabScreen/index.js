@@ -20,7 +20,7 @@ class TabDetail extends React.Component {
 
   onIndexChange = index => {
     const { user } = this.props;
-    if (user.info === 'admin') {
+    if (user.role === 1) {
       this.setState({ index });
     }
   };

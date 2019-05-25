@@ -1,5 +1,7 @@
 import { iOSColors } from 'react-native-typography';
 
+const BEST_SELLER_IMG = require('../assets/best-seller.png');
+
 export default {
   fontFamily: {
     bold: 'AvenirNext-Bold',
@@ -127,5 +129,6 @@ export default {
     fontFamily: 'AvenirNext-Regular',
     fontSize: 10,
     color: '#f4511e'
-  }
+  },
+  bestSeller: BEST_SELLER_IMG
 };

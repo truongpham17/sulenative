@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>sulenative.ipa</key>
+	<array>
+		<dict>
+			<key>architectures</key>
+			<array>
+				<string>armv7</string>
+				<string>arm64</string>
+			</array>
+			<key>certificate</key>
+			<dict>
+				<key>SHA1</key>
+				<string>CADB5E0A14980401E0095A301894E8433A0F5AF7</string>
+				<key>dateExpires</key>
+				<string>5/18/20</string>
+				<key>type</key>
+				<string>iOS Distribution</string>
+			</dict>
+			<key>entitlements</key>
+			<dict>
+				<key>application-identifier</key>
+				<string>YFND2EEW8S.org.reactjs.native.example.sulenative</string>
+				<key>com.apple.developer.team-identifier</key>
+				<string>YFND2EEW8S</string>
+				<key>get-task-allow</key>
+				<false/>
+				<key>keychain-access-groups</key>
+				<array>
+					<string>YFND2EEW8S.org.reactjs.native.example.sulenative</string>
+				</array>
+			</dict>
+			<key>name</key>
+			<string>sulenative.app</string>
+			<key>profile</key>
+			<dict>
+				<key>UUID</key>
+				<string>001cc1e0-2b72-4bf0-a08d-306c54891c99</string>
+				<key>name</key>
+				<string>iOS Team Ad Hoc Provisioning Profile: org.reactjs.native.example.sulenative</string>
+			</dict>
+			<key>team</key>
+			<dict>
+				<key>id</key>
+				<string>YFND2EEW8S</string>
+				<key>name</key>
+				<string>Quoc Khanh</string>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>

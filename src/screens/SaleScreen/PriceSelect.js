@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, Text, AlertIOS, FlatList } from 'react-native';
+import { View, StyleSheet, Text, AlertIOS, FlatList, TextInput } from 'react-native';
 import { connect } from 'react-redux';
+import { Button } from 'react-native-elements';
+import Modal from 'react-native-modal';
 import { PriceItem } from './components';
 import { EmptyStatus, Style } from '../../components';
 import { Store, ProductBill } from '../../models';
@@ -10,9 +12,13 @@ import {
   setProductBill,
   setProductReturn,
   setDiscount,
-  loadStoreProduct
+  loadStoreProduct,
+  importProduct
 } from '../../actions';
 import LOAD_NUMBER from '../../utils/System';
+import { AcceptNumber } from '../../utils/Number';
+import { SubmitButton } from '../../components/button';
+import { AlertInfo } from '../../utils/Dialog';
 
 type PropsType = {
   currentStore: Store,
@@ -24,7 +30,11 @@ type PropsType = {
 
 class PriceSelect extends React.Component<PropsType> {
   state = {
-    refreshing: false
+    refreshing: false,
+    modalVisible: false,
+    importPrice: '0',
+    exportPrice: '0',
+    quantity: '0'
   };
   onQuantityChange = (productBill, value, isSubmit) => {
     const { setQuantity, isSell } = this.props;
@@ -84,6 +94,29 @@ class PriceSelect extends React.Component<PropsType> {
     });
   };
 
+  onAddNewProduct = () => {
+    const { importPrice, exportPrice, quantity } = this.state;
+    const { loadStoreProduct, currentStore , importProduct} = this.props;
+    if (parseInt(importPrice, 10) <= 0 || parseInt(quantity, 10) <= 0) {
+      AlertInfo('Vui lòng nhập thông tin chính xác');
+      return;
+    }
+    importProduct(
+      {
+        storeId: currentStore.id,
+        productList: [{ importPrice, exportPrice, quantity }],
+        shoudSaveAsHistory: false
+      },
+      {
+        success: () => {
+          this.setState({ modalVisible: false });
+          loadStoreProduct({ id: currentStore.id, skip: 0, limit: LOAD_NUMBER });
+        },
+        failure: () => AlertInfo('Thất bại!', 'Vui lòng thử lại')
+      }
+    );
+  };
+
   setDiscount = (id, value) => {
     const { setDiscount } = this.props;
     setDiscount({ id, value });
@@ -136,13 +169,76 @@ class PriceSelect extends React.Component<PropsType> {
     );
   }
 
+  renderAddNewButton = () => (
+    <Button
+      title="Thêm mới"
+      icon={{
+        name: 'plus',
+        type: 'feather',
+        size: 16,
+        color: Style.color.white
+      }}
+      titleStyle={[Style.buttonText]}
+      type="solid"
+      onPress={() => this.setState({ modalVisible: true })}
+      buttonStyle={{ width: 120, backgroundColor: Style.color.lightBlue, borderRadius: 5 }}
+    />
+  );
+
+  renderModalContent = () => (
+    <View style={styles.modal}>
+      <Text style={[Style.bigTextEmphasize, { textAlign: 'center' }]}>Thêm sản phẩm</Text>
+      <View style={styles.itemStyle}>
+        <Text style={Style.normalDarkText}>Giá nhập: </Text>
+        <TextInput
+          style={styles.textInputStyle}
+          value={this.state.importPrice}
+          onChangeText={text => this.setState({ importPrice: AcceptNumber(text) })}
+        />
+      </View>
+      <View style={styles.itemStyle}>
+        <Text style={Style.normalDarkText}>Giá bán: </Text>
+        <TextInput
+          style={styles.textInputStyle}
+          value={this.state.exportPrice}
+          onChangeText={text => this.setState({ exportPrice: AcceptNumber(text) })}
+        />
+      </View>
+      <View style={styles.itemStyle}>
+        <Text style={Style.normalDarkText}>Số lượng: </Text>
+        <TextInput
+          style={styles.textInputStyle}
+          value={this.state.quantity}
+          onChangeText={text => this.setState({ quantity: AcceptNumber(text) })}
+        />
+      </View>
+      <SubmitButton title="Thêm" buttonStyle={{ width: '96%' }} onPress={this.onAddNewProduct} />
+    </View>
+  );
+
   render() {
+    const { currentStore } = this.props;
+
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.titleContainerStyle}>
           <Text style={Style.blackEmphasizeTitle}>Chọn số lượng</Text>
+          {currentStore.isDefault ? this.renderAddNewButton() : null}
         </View>
         {this.renderContent()}
+
+        <Modal
+          isVisible={this.state.modalVisible}
+          animationIn="fadeIn"
+          animationOut="fadeOut"
+          onBackdropPress={() => {
+            this.setState({ modalVisible: false });
+          }}
+          hideModalContentWhileAnimating
+          backdropOpacity={0.4}
+        >
+          {this.renderModalContent()}
+        </Modal>
       </View>
     );
   }
@@ -152,9 +248,11 @@ const styles = StyleSheet.create({
   titleContainerStyle: {
     alignItems: 'center',
     height: 64,
-    justifyContent: 'center',
     width: '100%',
-    backgroundColor: Style.color.darkBackground
+    backgroundColor: Style.color.darkBackground,
+    padding: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-around'
   },
   contentStyle: {
     paddingVertical: 5,
@@ -165,6 +263,36 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     flexDirection: 'row',
     paddingTop: 10
+  },
+  modal: {
+    marginTop: -260,
+    width: '30%',
+    height: '40%',
+    alignSelf: 'center',
+    backgroundColor: Style.color.white,
+    justifyContent: 'space-between',
+    padding: 10,
+    alignItems: 'center'
+  },
+  itemStyle: {
+    height: 48,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 10,
+    alignItems: 'center',
+    width: '100%'
+  },
+  textInputStyle: {
+    paddingStart: 4,
+    ...Style.textEmphasize,
+    width: 120,
+    borderWidth: 0.5,
+    borderColor: Style.color.lightBorder,
+    borderRadius: 5,
+    backgroundColor: Style.color.background,
+    paddingEnd: 4,
+    paddingVertical: 2,
+    marginEnd: -4
   }
 });
 
@@ -185,6 +313,7 @@ export default connect(
     setProductBill,
     setProductReturn,
     setDiscount,
-    loadStoreProduct
+    loadStoreProduct,
+    importProduct
   }
 )(PriceSelect);

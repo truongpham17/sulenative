@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, StyleSheet, Text, FlatList, AlertIOS } from 'react-native';
+import Modal from 'react-native-modal';
 import { connect } from 'react-redux';
 import { iOSColors } from 'react-native-typography';
-import { Product, ProductBill } from '../../../../models';
+import { Product, ProductBill, Store } from '../../../../models';
 import {
   loadStoreProduct,
   setPaybackQuantity,
@@ -11,7 +12,8 @@ import {
   loadStore,
   updateStore,
   loadStoreInfo,
-  setCurrentStore
+  setCurrentStore,
+  updateExportPrice
 } from '../../../../actions';
 import { formatPrice } from '../../../../utils/String';
 import DetailItem from '../../components/DetailItem';
@@ -22,14 +24,17 @@ import LOAD_NUMBER from '../../../../utils/System';
 import { Promt, AlertInfo } from '../../../../utils/Dialog';
 
 type PropsType = {
-  products: ProductBill[]
+  products: ProductBill[],
+  currentStore: Store
 };
 
 const title = ['Số lượng', 'Giá nhập', 'Giá bán', 'Đã bán', 'Còn lại'];
 
 class DetailInfo extends React.Component<PropsType> {
   state = {
-    paybackQuantity: []
+    paybackQuantity: [],
+    modalVisible: false,
+    selectedId: ''
   };
 
   onChangePaybackQuantity = (text, product: Product) => {
@@ -49,7 +54,13 @@ class DetailInfo extends React.Component<PropsType> {
     setPaybackQuantity({ quantity, id: product.id });
   };
 
-  onChangeExportPrice = (exportPrice, product) => {};
+  onChangeExportPrice = (exportPrice, product) => {
+    const { updateExportPrice } = this.props;
+    updateExportPrice(
+      { id: product.id, exportPrice },
+      { success: () => {}, failure: () => AlertInfo('Thất bại!') }
+    );
+  };
 
   onEndReached = () => {
     const { total, skip, loadStoreProductDetail, currentStore } = this.props;
@@ -87,12 +98,22 @@ class DetailInfo extends React.Component<PropsType> {
     );
   };
 
+  onCardPress = id => {
+    this.setState({
+      modalVisible: true,
+      selectedId: id
+    });
+  };
+
   onReturnProduct = isAll => {
     const { products, returnProduct } = this.props;
-
-    const data = isAll
+    console.log(products);
+    console.log(products);
+    const checkHaveReturnProduct = products.find(item => item.paybackQuantity > 0);
+    const data = !checkHaveReturnProduct
       ? this.getReturnProductData(products, true)
       : this.getReturnProductData(products.filter(item => item.paybackQuantity > 0));
+    console.log(data);
     if (data.totalQuantity === 0) {
       return;
     }
@@ -150,34 +171,42 @@ class DetailInfo extends React.Component<PropsType> {
   }
 
   getInfos = () => {
-    const { products } = this.props;
-    let totalQuantity = 0;
-    let soldQuantity = 0;
-    let totalImportPrice = 0;
-    let totalSoldMoney = 0;
-    let quantity = 0;
-    if (products.length === 0) {
-      return {
-        totalQuantity,
-        totalImportPrice,
-        soldQuantity,
-        quantity
-      };
-    }
-    products.forEach(item => {
-      totalQuantity += item.product.total;
-      totalImportPrice += item.product.total * item.product.importPrice;
-      soldQuantity += item.product.total - item.product.quantity;
-      quantity += item.product.quantity;
-      totalSoldMoney += (item.product.total - item.product.quantity) * item.product.exportPrice;
-    });
+    const { currentStore } = this.props;
     return {
-      totalQuantity,
-      totalImportPrice,
-      soldQuantity,
-      quantity,
-      totalSoldMoney
+      totalQuantity: currentStore.totalImportProduct,
+      totalImportPrice: currentStore.totalFund,
+      soldQuantity: currentStore.totalSoldProduct,
+      quantity: currentStore.productQuantity,
+      totalSoldMoney: currentStore.totalSoldMoney
     };
+    // const { products } = this.props;
+    // let totalQuantity = 0;
+    // let soldQuantity = 0;
+    // let totalImportPrice = 0;
+    // let totalSoldMoney = 0;
+    // let quantity = 0;
+    // if (products.length === 0) {
+    //   return {
+    //     totalQuantity,
+    //     totalImportPrice,
+    //     soldQuantity,
+    //     quantity
+    //   };
+    // }
+    // products.forEach(item => {
+    //   totalQuantity += item.product.total;
+    //   totalImportPrice += item.product.total * item.product.importPrice;
+    //   soldQuantity += item.product.total - item.product.quantity;
+    //   quantity += item.product.quantity;
+    //   totalSoldMoney += (item.product.total - item.product.quantity) * item.product.exportPrice;
+    // });
+    // return {
+    //   totalQuantity,
+    //   totalImportPrice,
+    //   soldQuantity,
+    //   quantity,
+    //   totalSoldMoney
+    // };
   };
 
   updateStore = text => {
@@ -213,9 +242,10 @@ class DetailInfo extends React.Component<PropsType> {
   renderItem = ({ item, index }) => (
     <DetailItem
       productBill={item}
-      index={index + 1}
-      onChangeText={this.onChangePaybackQuantity}
+      index={index}
+      onChangePaybackQuantity={this.onChangePaybackQuantity}
       onChangeExportPrice={this.onChangeExportPrice}
+      onCardPress={this.onCardPress}
     />
   );
 
@@ -236,6 +266,55 @@ class DetailInfo extends React.Component<PropsType> {
     </RowTable>
   );
 
+  renderInfoItem = () => {
+    const { selectedId } = this.state;
+    const { products } = this.props;
+    const data = products.find(item => item.id === selectedId);
+    if (!data) {
+      // this.setState({
+      //   modalVisible: false
+      // });
+      return <View />;
+    }
+    return (
+      <View
+        style={{
+          alignSelf: 'center',
+          backgroundColor: Style.color.white,
+          width: '30%',
+          height: '50%',
+          justifyContent: 'space-around',
+          padding: 10
+        }}
+      >
+        <View style={{ flex: 1 }}>
+          <Text style={[Style.blackHeaderTitle, { textAlign: 'center' }]}>Thông tin sản phẩm</Text>
+        </View>
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={Style.normalDarkText}>Tổng số lượng nhập: </Text>
+          <Text style={Style.textEmphasize}>{data.product.total} cái</Text>
+        </View>
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={Style.normalDarkText}>Giá nhập: </Text>
+          <Text style={Style.textEmphasize}>{formatPrice(data.product.importPrice)}</Text>
+        </View>
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={Style.normalDarkText}>Giá bán: </Text>
+          <Text style={Style.textEmphasize}>{formatPrice(data.product.exportPrice)}</Text>
+        </View>
+
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={Style.normalDarkText}>Đã bán: </Text>
+          <Text style={Style.textEmphasize}>{data.product.total - data.product.quantity} cái</Text>
+        </View>
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={Style.normalDarkText}>Còn lại: </Text>
+          <Text style={Style.textEmphasize}>{data.product.quantity} cái</Text>
+        </View>
+      </View>
+    );
+  };
+
   renderDetail() {
     const { currentStore } = this.props;
     const data = this.getInfos();
@@ -243,15 +322,15 @@ class DetailInfo extends React.Component<PropsType> {
       <View style={styles.detailContainerStyle}>
         <Text style={styles.textStyle}>Thông tin</Text>
         {this.renderDetailItem('Tên nguồn hàng: ', currentStore.name)}
-        {this.renderDetailItem('Đã nhập: ', formatPrice(data.totalQuantity))}
-        {this.renderDetailItem('Đã bán: ', formatPrice(data.soldQuantity))}
+        {this.renderDetailItem('Đã nhập: ', `${data.totalQuantity} cái`)}
+        {this.renderDetailItem('Đã bán: ', `${data.soldQuantity} cái`)}
         {this.renderDetailItem('Còn lại: ', `${data.quantity} cái`)}
         {this.renderDetailItem('Tổng tiền nhập: ', formatPrice(data.totalImportPrice))}
         {this.renderDetailItem('Tổng tiền bán được: ', formatPrice(data.totalSoldMoney))}
         {this.renderDetailItem('Tiền nợ nguồn hàng: ', formatPrice(currentStore.debt))}
         <View style={{ width: '100%', marginTop: 10, flexDirection: 'row' }}>
           <SubmitButton
-            title="Trả hàng"
+            title={'Trả hàng'}
             onPress={() => this.onReturnProduct(false)}
             buttonStyle={{ flex: 1, marginEnd: 5, borderRadius: 0 }}
             textStyle={{ fontSize: 16 }}
@@ -277,8 +356,9 @@ class DetailInfo extends React.Component<PropsType> {
         keyExtractor={this.keyExtractor}
         onEndReachedThreshold={1}
         onEndReached={this.onEndReached}
-        ListHeaderComponent={this.renderTitle(0)}
         keyboardShouldPersistTaps="always"
+        numColumns={2}
+        style={{ padding: 2 }}
       />
     );
   }
@@ -300,6 +380,15 @@ class DetailInfo extends React.Component<PropsType> {
       <View style={{ flex: 1, flexDirection: 'row', padding: 10 }}>
         <View style={styles.containerStyle}>{this.renderContent()}</View>
         <View style={{ flex: 2 }}>{this.renderDetail()}</View>
+        <Modal
+          isVisible={this.state.modalVisible}
+          animationIn="fadeIn"
+          animationOut="fadeOut"
+          onBackdropPress={() => this.setState({ modalVisible: false })}
+          backdropOpacity={0.4}
+        >
+          {this.renderInfoItem()}
+        </Modal>
       </View>
     );
   }
@@ -364,6 +453,7 @@ export default connect(
     loadStore,
     updateStore,
     loadStoreInfo,
-    setCurrentStore
+    setCurrentStore,
+    updateExportPrice
   }
 )(DetailInfo);

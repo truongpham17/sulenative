@@ -12,7 +12,7 @@ class BasicInfo extends React.Component {
     const data = currentBill.customer || {};
     let text = '';
     let textStyle = {};
-    if (billDetail.totalPrice - billDetail.totalPaid === 0) {
+    if (billDetail.paymentStatus === 'paid') {
       text = 'Đã thanh toán';
       textStyle = styles.specificText;
     } else {
@@ -24,13 +24,15 @@ class BasicInfo extends React.Component {
         <View style={styles.nameContainer}>
           <View>
             <Text style={[Style.blackEmphasizeTitle, { fontSize: 20 }]}>
-              {data.name || 'Alexander'}
+              {data.name || 'Không có tên'}
             </Text>
-            <Text style={[Style.smallPlaceholderText]}>{data.phone || '0123456789'}</Text>
+            <Text style={[Style.smallPlaceholderText]}>{data.phone || 'Không có số'}</Text>
           </View>
           <View style={{ flexDirection: 'row' }}>
-            <Text style={Style.smallPlaceholderText}>Sold by: </Text>
-            <Text style={(Style.textEmphasize, { marginBottom: 1 })}>Truong Pham</Text>
+            <Text style={Style.smallPlaceholderText}>Nhân viên: </Text>
+            <Text style={(Style.textEmphasize, { marginBottom: 1 })}>
+              {billDetail.createdBy.fullname}
+            </Text>
           </View>
         </View>
         <View>
@@ -46,10 +48,11 @@ class BasicInfo extends React.Component {
             </Text>
           </View>
           <View style={styles.numericContainer}>
-            <Text style={Style.smallPlaceholderText}>Order: {currentBill.id}</Text>
-            <View>
-              <Text style={textStyle}>{text}</Text>
-            </View>
+            <Text style={textStyle}>{text}</Text>
+
+            <Text style={[Style.smallPlaceholderText, { textAlign: 'center' }]}>
+              Mã hoá đơn: {currentBill.id}
+            </Text>
           </View>
         </View>
       </View>
@@ -74,11 +77,10 @@ const styles = StyleSheet.create({
     width: '40%',
     height: '100%',
     justifyContent: 'space-between',
-    paddingVertical: 8
+    paddingVertical: 4
   },
   numericContainer: {
     flex: 1,
-    flexDirection: 'row',
     justifyContent: 'space-between'
   },
   specificText: {
@@ -87,7 +89,8 @@ const styles = StyleSheet.create({
     fontFamily: 'AvenirNext-Medium',
     fontWeight: '500',
     fontSize: 14,
-    paddingHorizontal: 2
+    paddingHorizontal: 2,
+    textAlign: 'center'
   },
   specificTextError: {
     backgroundColor: '#FCEFED',
@@ -95,6 +98,7 @@ const styles = StyleSheet.create({
     fontFamily: 'AvenirNext-Medium',
     fontWeight: '500',
     fontSize: 14,
-    paddingHorizontal: 4
+    paddingHorizontal: 4,
+    textAlign: 'center'
   }
 });

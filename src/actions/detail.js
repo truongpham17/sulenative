@@ -25,6 +25,10 @@ export const RETURN_PRODUCT_REQUEST = 'return-product-request';
 export const RETURN_PRODUCT_SUCCESS = 'return-product-success';
 export const RETURN_PRODUCT_FAILURE = 'return-product-failure';
 
+export const UPDATE_PRICE_REQUEST = 'update-price-request';
+export const UPDATE_PRICE_SUCCESS = 'update-price-success';
+export const UPDATE_PRICE_FAILURE = 'update-price-failure';
+
 export function loadStoreProductDetail(
   data = { id: '', skip: 0, limit: LOAD_NUMBER, isContinue: false },
   callback = {}
@@ -36,12 +40,22 @@ export function loadStoreProductDetail(
         endpoint: `${ENDPOINTS.store}/${data.id}/products?skip=${data.skip}&limit=${LOAD_NUMBER}`
       });
       if (result.status === 200) {
+        const filterBySellQuantity =
+          result.data.list
+            .map(item => ProductBill.map({ product: item, id: item._id }))
+            .sort((a, b) => b.product.soldQuantity - a.product.soldQuantity) || [];
+        const filterByExportPrice = filterBySellQuantity
+          .slice(3, filterBySellQuantity.length)
+          .sort((a, b) => a.product.exportPrice - b.product.exportPrice);
+
         dispatch({
           type: LOAD_PRODUCT_DETAIL_SUCCESS,
+          // order 3th export
           payload: {
-            products: result.data.list.map(item =>
-              ProductBill.map({ product: item, id: item._id })
-            ),
+            // products: result.data.list.map(item =>
+            //   ProductBill.map({ product: item, id: item._id })
+            // ),
+            products: [...filterBySellQuantity.slice(0, 3), ...filterByExportPrice],
             total: result.data.total,
             skip: data.skip,
             id: data.id,
@@ -184,6 +198,36 @@ export function returnProduct(data, callback = {}) {
       if (callback.failure) {
         callback.failure();
       }
+    }
+  };
+}
+
+export function updateExportPrice(data, callback) {
+  console.log(data);
+  return async dispatch => {
+    try {
+      dispatch({ type: UPDATE_PRICE_REQUEST });
+      const result = await query({
+        endpoint: `/product/${data.id}`,
+        method: METHODS.patch,
+        data: { exportPrice: data.exportPrice }
+      });
+      if (result.status === 200) {
+        if (callback.success) {
+          callback.success();
+        }
+        dispatch({ type: UPDATE_PRICE_SUCCESS, payload: data });
+      } else {
+        if (callback.failure) {
+          callback.failure();
+        }
+        dispatch({ type: UPDATE_PRICE_FAILURE });
+      }
+    } catch (er) {
+      if (callback.failure) {
+        callback.failure();
+      }
+      dispatch({ type: UPDATE_PRICE_FAILURE, payload: er });
     }
   };
 }
