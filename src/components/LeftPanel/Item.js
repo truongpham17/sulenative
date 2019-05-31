@@ -33,9 +33,7 @@ export default class Item extends React.Component<PropsType> {
         <View
           style={[
             styles.containerStyle,
-            isActive
-              ? { backgroundColor: Style.color.customGray, borderColor: Style.color.darkBorder }
-              : {}
+            isActive ? { borderColor: Style.color.selectedBorder } : {}
           ]}
         >
           <View style={styles.detailStyle}>
@@ -61,7 +59,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: 'white',
     borderWidth: 2,
-    borderColor: Style.color.lightBorder,
+    borderColor: Style.color.darkBorder,
     justifyContent: 'center'
   },
   detailStyle: {

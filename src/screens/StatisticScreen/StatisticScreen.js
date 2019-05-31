@@ -11,14 +11,14 @@ import Card from './Card/Card';
 import StoreAnalyse from './StoreAnalyse/StoreAnalyse';
 import TimeAnalyse from './TimeAnalyse/TimeAnalyse';
 import Title from './Title';
-import { MenuIcon, Style } from '../../components';
+import { MenuIcon, Style, MenuBar, LoadingModal } from '../../components';
 import { ActionButton } from '../../components/button';
 import { getReverseDate, getDateFromString, getTwoDigit, getDate5Soon } from '../../utils/Date';
 
 class StatictisScreen extends React.Component {
   state = {
     modalVisible: false,
-    modalType: '',
+    modalType: 'date',
     start: new Date(getDate5Soon()),
     end: new Date(),
     selectedStartMonth: undefined,
@@ -29,13 +29,15 @@ class StatictisScreen extends React.Component {
 
   componentDidMount() {
     const { navigation } = this.props;
-    this.focusListener = navigation.addListener('didFocus', this.loadInitData);
+    this.loadInitData();
+
+    // this.focusListener = navigation.addListener('didFocus', this.loadInitData);
     // loadNewData();
   }
 
   componentWillUnmount() {
     // Remove the event listener
-    this.focusListener.remove();
+    // this.focusListener.remove();
   }
 
   onDatePress = () => {
@@ -53,6 +55,7 @@ class StatictisScreen extends React.Component {
   };
 
   onSelection = item => {
+    console.log(item);
     this.setState({
       type: item
     });
@@ -182,46 +185,67 @@ class StatictisScreen extends React.Component {
           centerComponent={<Text style={iOSUIKit.title3EmphasizedWhite}>Thống kê</Text>}
           backgroundColor={Style.color.blackBlue}
         />
+        <LoadingModal visible={this.props.loading} />
+
         {this.renderModal()}
-        <View style={styles.contentStyle}>
-          <Title
-            containerStyle={{ marginBottom: 20 }}
-            onDatePress={this.onDatePress}
-            onMonthPress={this.onMonthPress}
-            start={
-              modalType === 'month'
-                ? `${getTwoDigit(start.getMonth() + 1)}-${start.getFullYear()}`
-                : `${getTwoDigit(start.getDate())}-${getTwoDigit(start.getMonth() + 1)}`
-            }
-            end={
-              modalType === 'month'
-                ? `${getTwoDigit(end.getMonth() + 1)}-${end.getFullYear()}`
-                : `${getTwoDigit(end.getDate())}-${getTwoDigit(end.getMonth() + 1)}`
-            }
-          />
-          <View style={styles.topViewStyle}>
-            <TimeAnalyse containerStyle={styles.timeContainerStyle} data={reportByTime} />
-            <Card billCount={billCount} totalSoldMoney={totalSoldMoney} navigation={navigation} />
-          </View>
-          <View style={{ flex: 1, flexDirection: 'row' }}>
-            <StoreAnalyse
-              stores={reportByStore}
-              containerStyle={[styles.storeContainerStyle, { marginEnd: 10, flex: 2 }]}
-              storeSelectedId={this.state.storeSelectedId}
-              onChange={value => this.setState({ storeSelectedId: value })}
-              selectedOption={type}
-              onSelection={this.onSelection}
+        <View style={{ flex: 1, flexDirection: 'row' }}>
+          <MenuBar navigation={navigation} />
+          <View style={styles.contentStyle}>
+            <Title
+              containerStyle={{ marginBottom: 20 }}
+              onDatePress={this.onDatePress}
+              onMonthPress={this.onMonthPress}
+              start={
+                modalType === 'month'
+                  ? `${getTwoDigit(start.getMonth() + 1)}-${start.getFullYear()}`
+                  : `${getTwoDigit(start.getDate())}-${getTwoDigit(start.getMonth() + 1)}`
+              }
+              end={
+                modalType === 'month'
+                  ? `${getTwoDigit(end.getMonth() + 1)}-${end.getFullYear()}`
+                  : `${getTwoDigit(end.getDate())}-${getTwoDigit(end.getMonth() + 1)}`
+              }
             />
-            <StoreDetail
-              containerStyle={[styles.storeContainerStyle, { marginStart: 10 }]}
-              data={this.getStoreDetailData()}
-            />
+            <View style={styles.topViewStyle}>
+              <TimeAnalyse
+                containerStyle={styles.timeContainerStyle}
+                data={reportByTime}
+                type={this.state.modalType}
+              />
+              <Card billCount={billCount} totalSoldMoney={totalSoldMoney} navigation={navigation} />
+            </View>
+            <View style={{ flex: 1, flexDirection: 'row' }}>
+              <StoreAnalyse
+                stores={reportByStore}
+                containerStyle={[styles.storeContainerStyle, { marginEnd: 10, flex: 2 }]}
+                storeSelectedId={this.state.storeSelectedId}
+                onChange={value => this.setState({ storeSelectedId: value })}
+                selectedOption={type}
+                onSelection={this.onSelection}
+              />
+              <StoreDetail
+                containerStyle={[styles.storeContainerStyle, { marginStart: 10 }]}
+                data={this.getStoreDetailData()}
+              />
+            </View>
           </View>
         </View>
       </View>
     );
   }
 }
+
+export default connect(
+  state => ({
+    stores: state.store.stores,
+    billCount: state.report.billCount,
+    totalSoldMoney: state.report.totalSoldMoney,
+    reportByTime: state.report.reportByTime,
+    reportByStore: state.report.reportByStore,
+    loading: state.report.loading
+  }),
+  { getReportDetail }
+)(StatictisScreen);
 
 const styles = StyleSheet.create({
   topViewStyle: {
@@ -273,14 +297,3 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around'
   }
 });
-
-export default connect(
-  state => ({
-    stores: state.store.stores,
-    billCount: state.report.billCount,
-    totalSoldMoney: state.report.totalSoldMoney,
-    reportByTime: state.report.reportByTime,
-    reportByStore: state.report.reportByStore
-  }),
-  { getReportDetail }
-)(StatictisScreen);

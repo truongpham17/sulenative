@@ -62,7 +62,7 @@ export function setProductReturn(data: ProductBill) {
 
 // type  = BILL || IMPORT
 export function loadStoreProduct(
-  data = { id: '', skip: 0, limit: LOAD_NUMBER, isContinue: false },
+  data = { id: '', skip: 0, limit: LOAD_NUMBER, isContinue: false, shouldRemoveEmpty: false },
   callback = {}
 ) {
   return async dispatch => {
@@ -72,12 +72,13 @@ export function loadStoreProduct(
         endpoint: `${ENDPOINTS.store}/${data.id}/products?skip=${data.skip}&limit=${LOAD_NUMBER}`
       });
       if (result.status === 200) {
+        const filterProducts = data.shouldRemoveEmpty
+          ? result.data.list.filter(item => item.quantity > 0)
+          : result.data.list;
         dispatch({
           type: LOAD_PRODUCT_SUCCESS,
           payload: {
-            products: result.data.list.map(item =>
-              ProductBill.map({ product: item, id: item._id })
-            ),
+            products: filterProducts.map(item => ProductBill.map({ product: item, id: item._id })),
             total: result.data.total,
             skip: data.skip,
             id: data.id,

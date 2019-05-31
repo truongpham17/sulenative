@@ -7,7 +7,7 @@ import detail from './detail';
 import sellHistory from './sellHistory';
 import importProduct from './import';
 import report from './report';
-import print from './print';
+import app from './app';
 
 export default combineReducers({
   user,
@@ -17,5 +17,5 @@ export default combineReducers({
   sellHistory,
   importProduct,
   report,
-  print
+  app
 });

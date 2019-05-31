@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   containerStyle: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#7986cb'
+    backgroundColor: Style.color.blackBlue
   },
   titleStyle: {
     ...Style.normalLightText

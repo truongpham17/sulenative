@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal } from 'react-native';
 import { connect } from 'react-redux';
 import { BluetoothManager } from 'react-native-bluetooth-escpos-printer';
+import { setPrinterConnect, setPrinterDevice } from '../../../actions';
 import { Style } from '../../../components';
 import { SubmitButton } from '../../../components/button';
 import { formatPrice } from '../../../utils/String';
@@ -40,14 +41,9 @@ class DetailList extends React.Component {
     // check if devices already save printer URL, try to connect to this url
     if (printerURL && printerURL.length > 0) {
       // if connect successfully then start printing, else set up again
-      BluetoothManager.connect(printerURL).then(
-        () => {
-          this.setState({ connected: true });
-        },
-        () => {
-          this.onPrint();
-        }
-      );
+      BluetoothManager.connect(printerURL).then(() => {
+        this.props.setPrinterConnect(true);
+      });
     } else {
       this.setState({ modalVisible: true });
       const devicesScan = await BluetoothManager.scanDevices();
@@ -58,11 +54,12 @@ class DetailList extends React.Component {
   };
 
   printBill = () => {
-    const { billDetail, printerURL, user } = this.props;
-    // if (printerURL.length === 0) {
-    //   this.onSetupPrinterUrl();
-    //   return;
-    // }
+    const { billDetail } = this.props;
+    if (!this.props.connect) {
+      this.onSetPrinterConfig();
+      return;
+    }
+
     let totalCostWithoutDiscount = 0;
 
     billDetail.productList.forEach(item => {
@@ -170,11 +167,15 @@ class DetailList extends React.Component {
   }
 }
 
-export default connect(state => ({
-  billDetail: state.sellHistory.currentBill,
-  printerURL: state.print.printerURL,
-  user: state.user.info
-}))(DetailList);
+export default connect(
+  state => ({
+    billDetail: state.sellHistory.currentBill,
+    printerURL: state.user.printerURL,
+    user: state.user.info,
+    connect: state.user.printerConnect
+  }),
+  { setPrinterConnect, setPrinterDevice }
+)(DetailList);
 
 const styles = StyleSheet.create({
   itemContainerStyle: {
@@ -182,7 +183,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
-    // paddingHorizontal: 10
   },
   buttonStyle: {
     width: 140,

@@ -86,10 +86,16 @@ class RightPanel extends React.Component {
   renderModal = () => {
     const { currentUser } = this.props;
     let active;
+    let fullname;
     if (this.state.active === null) {
       active = currentUser.active;
     } else {
       active = this.state.active;
+    }
+    if (this.state.fullname === null) {
+      fullname = currentUser.fullname;
+    } else {
+      fullname = this.state.fullname;
     }
     return (
       <View style={styles.editContainerStyle}>
@@ -102,7 +108,7 @@ class RightPanel extends React.Component {
           <Text style={[Style.normalDarkText, { paddingTop: 2 }]}>Họ và tên: </Text>
           <TextInput
             style={styles.textInputStyle}
-            value={this.state.fullname || currentUser.fullname}
+            value={fullname}
             onChangeText={text => this.setState({ fullname: text })}
           />
         </View>
@@ -272,8 +278,8 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   editContainerStyle: {
-    marginTop: -260,
-    width: '30%',
+    marginTop: -300,
+    width: '40%',
     height: '60%',
     alignSelf: 'center',
     backgroundColor: Style.color.white,

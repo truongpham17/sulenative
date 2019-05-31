@@ -39,7 +39,8 @@ export default (state = INITIAL_STATE, action) => {
     case LOAD_BILL_DETAIL_SUCCESS:
       return {
         ...state,
-        currentBill: Bill.map(action.payload)
+        currentBill: Bill.map(action.payload),
+        loading: false
       };
     case PAY_DEBT_SUCCESS:
       console.log(action.payload);

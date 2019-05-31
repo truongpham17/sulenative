@@ -5,11 +5,11 @@ import { Style } from '../../../components';
 const CancelButton = props => (
   <Button
     title={props.title}
-    titleStyle={Style.normalLightText}
+    titleStyle={[Style.normalLightText, { color: Style.color.blackBlue }]}
     buttonStyle={{
       width: 140,
       height: 32,
-      backgroundColor: '#40496B',
+      backgroundColor: Style.color.lightPink,
       justifyContent: 'center',
       alignItems: 'center',
       padding: 0

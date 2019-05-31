@@ -44,7 +44,7 @@ class BasicInfo extends React.Component {
             }}
           >
             <Text style={[Style.superBigTextEmphasize, { textAlign: 'right' }]}>
-              {formatPrice(billDetail.totalPrice)}.00{'    '}
+              {formatPrice(billDetail.totalPrice)}
             </Text>
           </View>
           <View style={styles.numericContainer}>

@@ -48,7 +48,7 @@ class StoreSelect extends React.Component<PropsType> {
           buttonStyle={[
             styles.itemStore,
             item.id === currentStore.id
-              ? { backgroundColor: Style.color.customGray, borderColor: '#323854' }
+              ? { backgroundColor: Style.color.customGray, borderColor: Style.color.selectedBorder }
               : {}
           ]}
           titleStyle={[Style.textEmphasize, { fontWeight: '600' }]}
@@ -83,7 +83,7 @@ class StoreSelect extends React.Component<PropsType> {
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.titleContainerStyle}>
-          <Text style={Style.blackEmphasizeTitle}>Chọn nguồn hàng</Text>
+          <Text style={Style.blackEmphasizeTitle}>Nguồn hàng</Text>
           <View style={{ flexDirection: 'row' }}>
             <Button
               title="Bán"
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   itemStore: {
     backgroundColor: Style.color.white,
     borderWidth: 2,
-    borderColor: Style.color.lightBorder,
+    borderColor: Style.color.darkBorder,
     height: 100,
     justifyContent: 'center',
     alignItems: 'center',

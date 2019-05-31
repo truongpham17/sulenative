@@ -9,7 +9,7 @@ const OptionIcon = props => (
       containerStyle={{ width: 32, height: 32 }}
       name="menu"
       type="feather"
-      size={32}
+      size={28}
       color={Style.color.white}
       onPress={() => props.navigation.openDrawer()}
       underlayColor="transparent"

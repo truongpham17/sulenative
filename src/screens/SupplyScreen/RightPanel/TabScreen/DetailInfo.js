@@ -107,8 +107,6 @@ class DetailInfo extends React.Component<PropsType> {
 
   onReturnProduct = isAll => {
     const { products, returnProduct } = this.props;
-    console.log(products);
-    console.log(products);
     const checkHaveReturnProduct = products.find(item => item.paybackQuantity > 0);
     const data = !checkHaveReturnProduct
       ? this.getReturnProductData(products, true)

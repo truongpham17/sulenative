@@ -56,11 +56,10 @@ function calculateTotalValue(products, otherCost) {
 
 export default (state = INITIAL_STATE, action) => {
   let updateProduct;
-  let productIds;
-  let products;
-  let soldoutProducts = [];
   let productBills = [];
   let data = {};
+  let currentProductBills = [];
+
   switch (action.type) {
     case SET_IS_SELL:
       return {
@@ -81,56 +80,84 @@ export default (state = INITIAL_STATE, action) => {
         })
       };
     case SET_PRODUCT_BILL:
-      updateProduct = false;
-      state.productBills.forEach(item => {
-        if (item.id === action.payload.id && !updateProduct) {
-          updateProduct = true;
+      updateProduct = state.productBills.find(
+        item => item.id === action.payload.id && item.paybackQuantity === 0
+      );
+
+      currentProductBills = state.currentProductBills.map(item => {
+        if (item.id === action.payload.id) {
+          return {
+            ...item,
+            soldQuantity: action.payload.soldQuantity
+          };
         }
+        return item;
       });
+
       productBills = updateProduct
         ? state.productBills.map(item => {
-            if (item.id === action.payload.id) {
-              return action.payload;
+            if (item.id === action.payload.id && item.paybackQuantity === 0) {
+              return { ...action.payload, paybackQuantity: 0 };
             }
             return item;
           })
-        : [...state.productBills, action.payload];
+        : [...state.productBills, { ...action.payload, paybackQuantity: 0 }];
       data = calculateTotalValue(productBills, state.otherCost);
 
       return {
         ...state,
         productBills,
+        currentProductBills,
         ...data
       };
 
     case SET_PRODUCT_RETURN:
-      updateProduct = false;
-      state.productBills.forEach(item => {
-        if (item.id === action.payload.id && !updateProduct) {
-          updateProduct = true;
+      console.log(action.payload);
+      updateProduct = state.productBills.find(
+        item => item.id === action.payload.id && item.soldQuantity === 0
+      );
+      currentProductBills = state.currentProductBills.map(item => {
+        if (item.id === action.payload.id) {
+          return {
+            ...item,
+            paybackQuantity: action.payload.paybackQuantity
+          };
         }
+        return item;
       });
-
       productBills = updateProduct
         ? state.productBills.map(item => {
-            if (item.id === action.payload.id) {
-              return action.payload;
+            if (item.id === action.payload.id && item.soldQuantity === 0) {
+              return { ...action.payload, soldQuantity: 0 };
             }
             return item;
           })
-        : [...state.productBills, action.payload];
+        : [...state.productBills, { ...action.payload, soldQuantity: 0 }];
       data = calculateTotalValue(productBills, state.otherCost);
       return {
         ...state,
         productBills,
-        ...data
+        ...data,
+        currentProductBills
       };
     case REMOVE_PRODUCT_BILL:
       productBills = state.productBills.filter(item => item.id !== action.payload);
+
+      currentProductBills = state.currentProductBills.map(item => {
+        if (item === action.payload.id) {
+          return {
+            ...item,
+            soldQuantity: action.payload.paybackQuantity
+          };
+        }
+        return item;
+      });
+
       data = calculateTotalValue(productBills, state.otherCost);
       return {
         ...state,
         productBills,
+        currentProductBills,
         ...data
       };
     case SET_DISCOUNT:
@@ -164,10 +191,11 @@ export default (state = INITIAL_STATE, action) => {
     case SUBMIT_BILL_SUCCESS:
       data = calculateTotalValue([], 0);
       return {
-        isSell: true,
-        productBills: [],
-        ...data,
-        otherCost: '0'
+        ...state
+        // isSell: true,
+        // productBills: [],
+        // ...data,
+        // otherCost: '0'
       };
     case LOAD_PRODUCT_REQUEST:
       return {
@@ -185,24 +213,21 @@ export default (state = INITIAL_STATE, action) => {
         firstLoading: false
       };
     case LOAD_PRODUCT_SUCCESS:
-      // products already bought
-      products = state.productBills.filter(
-        item =>
-          item.product.store.id === action.payload.id &&
-          (item.soldQuantity > 0 || item.paybackQuantity > 0)
-      );
+      // // products already bought
+      // products = state.productBills.filter(
+      //   item =>
+      //     item.product.store.id === action.payload.id &&
+      //     (item.soldQuantity > 0 || item.paybackQuantity > 0)
+      // );
 
-      // id of products already bought
-      productIds = products.map(item => item.id);
+      // // id of products already bought
+      // productIds = products.map(item => item.id);
 
       // add new products
       if (action.payload.isContinue) {
         return {
           ...state,
-          currentProductBills: [
-            ...state.currentProductBills,
-            ...action.payload.products.filter(item => !productIds.includes(item.id))
-          ],
+          currentProductBills: [...state.currentProductBills, ...action.payload.products],
           skip: action.payload.skip + LOAD_NUMBER,
           loadingBill: false,
           firstLoading: false,
@@ -210,21 +235,35 @@ export default (state = INITIAL_STATE, action) => {
         };
       }
 
-      // soldout product
-      soldoutProducts = action.payload.products.filter(
-        item => item.product.quantity === 0 && !productIds.includes(item.id)
-      );
-      soldoutProducts.forEach(item => {
-        productIds.push(item.id);
+      productBills = action.payload.products.map(item => {
+        let existProductSell = 0;
+        let existProductPay = 0;
+        state.productBills.forEach(bill => {
+          if (bill.id === item.id && bill.soldQuantity > 0) {
+            existProductSell = bill.soldQuantity;
+          }
+          if (bill.id === item.id && bill.paybackQuantity > 0) {
+            existProductPay = bill.paybackQuantity;
+          }
+        });
+
+        return { ...item, soldQuantity: existProductSell, paybackQuantity: existProductPay };
       });
+      // // soldout product
+      // soldoutProducts = action.payload.products.filter(
+      //   item => item.product.quantity === 0 && !productIds.includes(item.id)
+      // );
+      // soldoutProducts.forEach(item => {
+      //   productIds.push(item.id);
+      // });
       return {
         ...state,
-        currentProductBills: [
-          ...products, // product already bought,
-          ...action.payload.products // product have quantity
-            .filter(item => !productIds.includes(item.id)),
-          ...soldoutProducts // product sold out
-        ],
+        currentProductBills:
+          // ...state.currentProductBills, // product already bought,
+          // action.payload.products.filter(item => !ids.includes(item.id))
+          productBills, // product have quantity
+        // .filter(item => !productIds.includes(item.id))
+        // ...soldoutProducts // product sold out
         total: action.payload.total,
         skip: action.payload.skip + LOAD_NUMBER,
         loadingBill: false,

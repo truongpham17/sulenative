@@ -3,16 +3,17 @@ import {
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
   LOGOUT,
-  GET_USER_SUCCESS
+  GET_USER_SUCCESS,
+  SET_PRINTER_CONNECT
 } from '../actions/user';
 import {
-  GET_REPORT_REQUEST,
   GET_USER_FAILURE,
   GET_USER_REQUEST,
   SELECT_USER,
   ADD_USER_SUCCESS,
   ADD_USER_REQUEST,
-  ADD_STORE_FAILURE
+  ADD_STORE_FAILURE,
+  SET_PRINTER_DEVICE
 } from '../actions';
 
 const INITIAL_STATE = {
@@ -22,7 +23,10 @@ const INITIAL_STATE = {
   info: null,
   loading: false,
   users: [],
-  currentUser: ''
+  currentUser: '',
+  printerURL: '',
+  printerName: '',
+  printerConnect: false
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -56,7 +60,8 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         users: action.payload,
-        loading: false
+        loading: false,
+        printerURL: ''
       };
     case GET_USER_REQUEST:
       return {
@@ -87,6 +92,18 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         loading: false
+      };
+    case SET_PRINTER_DEVICE:
+      return {
+        ...state,
+        printerURL: action.payload.url,
+        name: action.payload.name
+      };
+
+    case SET_PRINTER_CONNECT:
+      return {
+        ...state,
+        printerConnect: action.payload
       };
     default:
       return state;

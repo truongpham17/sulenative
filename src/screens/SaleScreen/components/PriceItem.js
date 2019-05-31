@@ -180,7 +180,7 @@ class PriceItem extends React.Component<PropsType> {
     if (product.soldQuantity > 0 && isSubmit && !this.state.isFocus) {
       containerStyle = {
         backgroundColor: Style.color.customGray,
-        borderColor: Style.color.darkBorder
+        borderColor: Style.color.selectedBorder
       };
       value = `${product.soldQuantity} cái`;
     } else if (product.paybackQuantity > 0 && isSubmit && !this.state.isFocus) {

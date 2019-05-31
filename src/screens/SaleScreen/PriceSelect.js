@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, StyleSheet, Text, AlertIOS, FlatList, TextInput } from 'react-native';
+import { View, StyleSheet, Text, AlertIOS, FlatList } from 'react-native';
 import { connect } from 'react-redux';
-import { Button } from 'react-native-elements';
+import { Button, SearchBar } from 'react-native-elements';
 import Modal from 'react-native-modal';
-import { PriceItem } from './components';
+import { PriceItemNew } from './components';
 import { EmptyStatus, Style } from '../../components';
 import { Store, ProductBill } from '../../models';
 import {
@@ -16,9 +16,9 @@ import {
   importProduct
 } from '../../actions';
 import LOAD_NUMBER from '../../utils/System';
-import { AcceptNumber } from '../../utils/Number';
 import { SubmitButton } from '../../components/button';
 import { AlertInfo } from '../../utils/Dialog';
+import { formatPrice } from '../../utils/String';
 
 type PropsType = {
   currentStore: Store,
@@ -34,28 +34,19 @@ class PriceSelect extends React.Component<PropsType> {
     modalVisible: false,
     importPrice: '0',
     exportPrice: '0',
-    quantity: '0'
+    quantity: '0',
+    search: '',
+    filter: '',
+    selectedProduct: null
   };
   onQuantityChange = (productBill, value, isSubmit) => {
-    const { setQuantity, isSell } = this.props;
-    if (isNaN(value)) {
-      AlertIOS.alert('Vui lòng nhập số!!');
-      return;
-    }
-
-    const quantity = parseInt(value, 10);
-
-    if (isSell && productBill.product.quantity < quantity) {
-      AlertIOS.alert(`Sản phẩm chỉ còn ${productBill.product.quantity} cái!`);
-      return;
-    }
-
-    setQuantity({ id: productBill.id, value: quantity });
+    const { isSell } = this.props;
+    // if (value === 0) return;
 
     if (isSubmit) {
       const product = isSell
-        ? { ...productBill, soldQuantity: value }
-        : { ...productBill, paybackQuantity: value };
+        ? { ...productBill, soldQuantity: value, paybackQuantity: 0 }
+        : { ...productBill, paybackQuantity: value, soldQuantity: 0 };
       this.onSubmit(product);
     }
   };
@@ -96,7 +87,7 @@ class PriceSelect extends React.Component<PropsType> {
 
   onAddNewProduct = () => {
     const { importPrice, exportPrice, quantity } = this.state;
-    const { loadStoreProduct, currentStore , importProduct} = this.props;
+    const { loadStoreProduct, currentStore, importProduct } = this.props;
     if (parseInt(importPrice, 10) <= 0 || parseInt(quantity, 10) <= 0) {
       AlertInfo('Vui lòng nhập thông tin chính xác');
       return;
@@ -117,6 +108,13 @@ class PriceSelect extends React.Component<PropsType> {
     );
   };
 
+  onCardPress = productBill => {
+    this.setState({
+      selectedProduct: productBill,
+      modalVisible: true
+    });
+  };
+
   setDiscount = (id, value) => {
     const { setDiscount } = this.props;
     setDiscount({ id, value });
@@ -127,21 +125,31 @@ class PriceSelect extends React.Component<PropsType> {
     return productBills.filter(item => item.id === id).length > 0;
   };
 
-  keyExtractor = item => item.id;
+  keyExtractor = item => `${item.id} - ${item.soldQuantity}`;
+
+  getData = () => {
+    const { currentProductBills } = this.props;
+    const { filter } = this.state;
+    if (!filter) {
+      return currentProductBills;
+    }
+    return currentProductBills.filter(item => item.product.exportPrice === parseInt(filter, 10));
+  };
 
   renderItem = ({ item }) => (
-    <PriceItem
-      product={item}
+    <PriceItemNew
+      productBill={item}
       onQuantityChange={(id, value, isSubmit) => this.onQuantityChange(id, value, isSubmit)}
       onSubmit={data => this.onSubmit(data)}
       isSubmit={this.isSubmit(item.id)}
       isSell={this.props.isSell}
       setDiscount={this.setDiscount}
+      onCardPress={this.onCardPress}
     />
   );
 
   renderContent() {
-    const { currentProductBills, currentStore } = this.props;
+    const { currentStore } = this.props;
     if (!currentStore.id || currentStore.id === '') {
       return (
         <EmptyStatus
@@ -154,10 +162,10 @@ class PriceSelect extends React.Component<PropsType> {
     }
     return (
       <FlatList
-        data={currentProductBills}
+        data={this.getData()}
         renderItem={this.renderItem}
         keyExtractor={this.keyExtractor}
-        extraData={this.props}
+        extraData={this.props.isSell}
         onEndReachedThreshold={0.5}
         onEndReached={this.onEndReached}
         style={styles.contentStyle}
@@ -165,6 +173,7 @@ class PriceSelect extends React.Component<PropsType> {
         onRefresh={this.onRefresh}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
+        numColumns={3}
       />
     );
   }
@@ -185,34 +194,68 @@ class PriceSelect extends React.Component<PropsType> {
     />
   );
 
-  renderModalContent = () => (
-    <View style={styles.modal}>
-      <Text style={[Style.bigTextEmphasize, { textAlign: 'center' }]}>Thêm sản phẩm</Text>
-      <View style={styles.itemStyle}>
-        <Text style={Style.normalDarkText}>Giá nhập: </Text>
-        <TextInput
-          style={styles.textInputStyle}
-          value={this.state.importPrice}
-          onChangeText={text => this.setState({ importPrice: AcceptNumber(text) })}
-        />
+  renderModalContent = () => {
+    const { selectedProduct } = this.state;
+    if (!selectedProduct) {
+      return <View />;
+    }
+    return (
+      <View
+        style={{
+          alignSelf: 'center',
+          backgroundColor: Style.color.white,
+          width: '30%',
+          height: '50%',
+          justifyContent: 'space-around',
+          padding: 10
+        }}
+      >
+        <View style={{ flex: 1 }}>
+          <Text style={[Style.blackHeaderTitle, { textAlign: 'center' }]}>Thông tin sản phẩm</Text>
+        </View>
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={Style.normalDarkText}>Tổng số lượng nhập: </Text>
+          <Text style={Style.textEmphasize}>{selectedProduct.product.total} cái</Text>
+        </View>
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={Style.normalDarkText}>Giá nhập: </Text>
+          <Text style={Style.textEmphasize}>
+            {formatPrice(selectedProduct.product.importPrice)}
+          </Text>
+        </View>
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={Style.normalDarkText}>Giá bán: </Text>
+          <Text style={Style.textEmphasize}>
+            {formatPrice(selectedProduct.product.exportPrice)}
+          </Text>
+        </View>
+
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={Style.normalDarkText}>Đã bán: </Text>
+          <Text style={Style.textEmphasize}>
+            {selectedProduct.product.total - selectedProduct.product.quantity} cái
+          </Text>
+        </View>
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={Style.normalDarkText}>Còn lại: </Text>
+          <Text style={Style.textEmphasize}>{selectedProduct.product.quantity} cái</Text>
+        </View>
       </View>
-      <View style={styles.itemStyle}>
-        <Text style={Style.normalDarkText}>Giá bán: </Text>
-        <TextInput
-          style={styles.textInputStyle}
-          value={this.state.exportPrice}
-          onChangeText={text => this.setState({ exportPrice: AcceptNumber(text) })}
-        />
-      </View>
-      <View style={styles.itemStyle}>
-        <Text style={Style.normalDarkText}>Số lượng: </Text>
-        <TextInput
-          style={styles.textInputStyle}
-          value={this.state.quantity}
-          onChangeText={text => this.setState({ quantity: AcceptNumber(text) })}
-        />
-      </View>
-      <SubmitButton title="Thêm" buttonStyle={{ width: '96%' }} onPress={this.onAddNewProduct} />
+    );
+  };
+
+  renderSearchBar = () => (
+    <View style={{ width: 240 }}>
+      <SearchBar
+        platform="ios"
+        inputContainerStyle={{ height: 30 }}
+        onChangeText={search => this.setState({ search })}
+        onClear={() => this.setState({ filter: '' })}
+        value={this.state.search}
+        placeholder="Giá bán: "
+        inputStyle={Style.normalDarkText}
+        onSubmitEditing={() => this.setState({ filter: this.state.search })}
+      />
     </View>
   );
 
@@ -222,8 +265,8 @@ class PriceSelect extends React.Component<PropsType> {
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.titleContainerStyle}>
-          <Text style={Style.blackEmphasizeTitle}>Chọn số lượng</Text>
-          {currentStore.isDefault ? this.renderAddNewButton() : null}
+          <Text style={Style.blackEmphasizeTitle}>Nguồn hàng: {currentStore.name}</Text>
+          {this.renderSearchBar()}
         </View>
         {this.renderContent()}
 
@@ -239,6 +282,11 @@ class PriceSelect extends React.Component<PropsType> {
         >
           {this.renderModalContent()}
         </Modal>
+        <SubmitButton
+          title="Xong"
+          buttonStyle={{ width: 200, alignSelf: 'center', margin: 4, marginTop: 10 }}
+          onPress={this.props.onSubmit}
+        />
       </View>
     );
   }
@@ -252,11 +300,11 @@ const styles = StyleSheet.create({
     backgroundColor: Style.color.darkBackground,
     padding: 10,
     flexDirection: 'row',
-    justifyContent: 'space-around'
+    justifyContent: 'space-between'
   },
   contentStyle: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 5,
     flex: 1
   },
   emptyContainerStyle: {

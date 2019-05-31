@@ -7,9 +7,9 @@ import thunk from 'redux-thunk';
 import reducers from '../reducers';
 
 const persistConfig = {
-  key: 'suleposzz',
+  key: 'sulepos1',
   storage: AsyncStorage,
-  whitelist: ['user', 'print']
+  whitelist: ['user']
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);

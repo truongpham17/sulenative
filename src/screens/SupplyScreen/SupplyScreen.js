@@ -1,9 +1,7 @@
 import React from 'react';
-import { iOSColors } from 'react-native-typography';
 import { View, StyleSheet, Text } from 'react-native';
 import { connect } from 'react-redux';
 import { Header } from 'react-native-elements';
-import Spinner from 'react-native-loading-spinner-overlay';
 import MenuIcon from '../../components/MenuIcon';
 import {
   loadStore,
@@ -15,7 +13,7 @@ import {
   loadStoreProductDetail,
   loadStoreHistoryDetail
 } from '../../actions';
-import { LeftPanel, Style } from '../../components';
+import { LeftPanel, Style, MenuBar, LoadingModal } from '../../components';
 import RightPanel from './RightPanel/RightPanel';
 import { getDate } from '../../utils/Date';
 import { Store } from '../../models';
@@ -32,12 +30,12 @@ class SupplyScreen extends React.Component<PropsType> {
 
   componentDidMount() {
     const { navigation } = this.props;
-    this.focusListener = navigation.addListener('didFocus', this.handleRefresh);
+    // this.focusListener = navigation.addListener('didFocus', this.handleRefresh);
   }
 
   componentWillUnmount() {
     // Remove the event listener
-    this.focusListener.remove();
+    // this.focusListener.remove();
   }
 
   onLongPress = id => {
@@ -112,6 +110,7 @@ class SupplyScreen extends React.Component<PropsType> {
           backgroundColor={Style.color.blackBlue}
         />
         <View style={{ flex: 1, flexDirection: 'row', backgroundColor: Style.color.background }}>
+          <MenuBar navigation={navigation} />
           <View
             style={{
               flex: 3,
@@ -121,7 +120,7 @@ class SupplyScreen extends React.Component<PropsType> {
             }}
           >
             <LeftPanel
-              title="Chọn nguồn hàng"
+              title="Nguồn hàng"
               containerStyle={{ flex: 1 }}
               data={this.extractStoreData()}
               onLongPress={this.onLongPress}
@@ -145,7 +144,7 @@ class SupplyScreen extends React.Component<PropsType> {
           >
             <RightPanel />
           </View>
-          <Spinner visible={this.props.loading} color={iOSColors.tealBlue} />
+          <LoadingModal visible={this.props.loading} />
         </View>
       </View>
     );

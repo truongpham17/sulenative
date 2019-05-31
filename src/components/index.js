@@ -8,6 +8,9 @@ import RowTable from './RowTable';
 import EmptyStatus from './EmptyStatus';
 import Style from './Style';
 import BillTemplate from './BillTemplate';
+import MenuBar from './MenuBar';
+import LoadingModal from './LoadingModal';
+import DialogStatus from './DialogStatus';
 
 export {
   LeftPanel,
@@ -20,4 +23,7 @@ export {
   EmptyStatus,
   Style,
   BillTemplate,
+  MenuBar,
+  LoadingModal,
+  DialogStatus
 };

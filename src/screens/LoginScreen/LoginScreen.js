@@ -1,10 +1,9 @@
 import React from 'react';
 import { Text, StyleSheet, ImageBackground, KeyboardAvoidingView, View, Image } from 'react-native';
 import { Button, Input } from 'react-native-elements';
-import Spinner from 'react-native-loading-spinner-overlay';
 import { connect } from 'react-redux';
 import { login, loadStore } from '../../actions';
-import { Style } from '../../components';
+import { Style, LoadingModal } from '../../components';
 import { AlertInfo } from '../../utils/Dialog';
 
 type PropsType = {
@@ -154,7 +153,7 @@ class LoginScreen extends React.Component<PropsType, StateType> {
             />
           </View>
         </KeyboardAvoidingView>
-        <Spinner visible={this.props.loading} color={Style.color.lightBlue} />
+        <LoadingModal visible={this.props.loading} />
       </ImageBackground>
     );
   }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, FlatList } from 'react-native';
 import { PieChart } from 'react-native-svg-charts';
 import { SegmentedControls } from 'react-native-radio-buttons';
 import TitleItem from './TitleItem';
@@ -86,7 +86,7 @@ class StoreAnalyse extends React.Component {
       keys.push(item.id);
       data.push({
         key: item.store._id,
-        value,
+        value: value >= 0 ? value : 0,
         svg: { fill: colors[index % colors.length] },
         arc: {
           outerRadius:
@@ -101,14 +101,21 @@ class StoreAnalyse extends React.Component {
 
   renderItem = () => {
     const { stores } = this.props;
-    return stores.map((item, index) => (
-      <TitleItem
-        color={colors[index % colors.length]}
-        data={this.getTitleValue(item)}
-        key={item.store._id}
-        onPress={() => this.onItemPress(item.store._id)}
+    return (
+      <FlatList
+        renderItem={({ item, index }) => (
+          <TitleItem
+            color={colors[index % colors.length]}
+            data={this.getTitleValue(item)}
+            key={item.store._id}
+            onPress={() => this.onItemPress(item.store._id)}
+          />
+        )}
+        data={stores}
+        extraData={this.props.selectedOption}
       />
-    ));
+    );
+    // return stores.map((item, index) => (
   };
 
   render() {
@@ -120,7 +127,7 @@ class StoreAnalyse extends React.Component {
           <View style={{ width: '40%', marginStart: '30%' }}>
             <SegmentedControls
               options={['Lợi nhuận', 'Đã bán', 'Còn lại']}
-              onSelection={this.onSelection}
+              onSelection={option => this.onSelection(option)}
               selectedOption={selectedOption}
             />
           </View>

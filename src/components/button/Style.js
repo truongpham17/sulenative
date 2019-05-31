@@ -9,19 +9,19 @@ const styles = StyleSheet.create({
     padding: 0,
     // borderColor: Style.color.lightBlue,
     borderRadius: 5,
-    backgroundColor: Style.color.lightBlue
+    backgroundColor: Style.color.red
   },
   buttonTextStyle: {
     ...Style.buttonText,
     fontSize: 14,
-    color: iOSColors.white
+    color: Style.color.white
   },
   buttonEditStyle: {
     width: 80,
     height: 40,
     paddingHorizontal: 10,
     borderRadius: 5,
-    backgroundColor: Style.color.lightBlue,
+    backgroundColor: Style.color.blackBlue,
     justifyContent: 'center',
     alignItems: 'center'
   },

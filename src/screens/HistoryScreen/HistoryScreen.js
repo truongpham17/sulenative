@@ -3,13 +3,13 @@ import { View, StyleSheet, Text } from 'react-native';
 import { connect } from 'react-redux';
 import { Header } from 'react-native-elements';
 import RightPanel from './RightPanel/RightPanel';
-import { loadListBill, loadBillDetail, payDebt } from '../../actions';
-import { LeftPanel, Style } from '../../components';
+import { loadListBill, loadBillDetail, payDebt, setDialogStatus } from '../../actions';
+import { LeftPanel, Style, MenuBar, LoadingModal } from '../../components';
 import { getDate } from '../../utils/Date';
 import { formatPrice } from '../../utils/String';
 import MenuIcon from '../../components/MenuIcon';
 import LOAD_NUMBER from '../../utils/System';
-import { AlertInfo, Alert } from '../../utils/Dialog';
+import { Alert } from '../../utils/Dialog';
 
 class HistoryScreen extends React.Component {
   state = {
@@ -17,13 +17,13 @@ class HistoryScreen extends React.Component {
   };
 
   componentDidMount() {
-    const { navigation } = this.props;
-    this.focusListener = navigation.addListener('didFocus', () => this.onLoadBill(null));
+    this.onLoadBill(null);
+    // this.focusListener = navigation.addListener('didFocus', () => this.onLoadBill(null));
   }
 
   componentWillUnmount() {
     // Remove the event listener
-    this.focusListener.remove();
+    // this.focusListener.remove();
   }
 
   onPress = id => {
@@ -31,12 +31,23 @@ class HistoryScreen extends React.Component {
     loadBillDetail(id);
   };
 
+  onSuccess = id => {
+    const { loadBillDetail, setDialogStatus } = this.props;
+    loadBillDetail(id);
+    setDialogStatus({
+      showDialog: true,
+      dialogType: 'success'
+    });
+
+    console.log('success');
+  };
+
   onPayDebt = id => {
-    const { payDebt, loadBillDetail } = this.props;
+    const { payDebt, setDialogStatus } = this.props;
     Alert('Xác nhận trả tiền', '', 'Huỷ', 'Xác nhận', () =>
       payDebt(id, {
-        success: () => loadBillDetail(id),
-        failure: () => AlertInfo('Thất bại! Vui lòng thử lại.')
+        success: () => this.onSuccess(id),
+        failure: () => setDialogStatus({ showDialog: true, dialogType: 'error' })
       })
     );
   };
@@ -84,9 +95,10 @@ class HistoryScreen extends React.Component {
           backgroundColor={Style.color.blackBlue}
         />
         <View style={{ flex: 1, flexDirection: 'row', backgroundColor: Style.color.background }}>
+          <MenuBar navigation={navigation} />
           <View style={{ flex: 3, margin: 10, borderRadius: 10, backgroundColor: 'white' }}>
             <LeftPanel
-              title="Chọn hoá đơn"
+              title="Hoá đơn"
               containerStyle={{ flex: 1 }}
               data={this.extractData()}
               onLongPress={this.onLongPress}
@@ -104,6 +116,7 @@ class HistoryScreen extends React.Component {
           </View>
           <RightPanel containerStyle={styles.rightPanelContainer} onPayDebt={this.onPayDebt} />
         </View>
+        <LoadingModal visible={this.props.loading} />
       </View>
     );
   }
@@ -129,7 +142,8 @@ export default connect(
     listBill: state.sellHistory.listBill,
     currentBill: state.sellHistory.currentBill,
     skip: state.sellHistory.skip,
-    total: state.sellHistory.total
+    total: state.sellHistory.total,
+    loading: state.sellHistory.loading
   }),
-  { loadListBill, loadBillDetail, payDebt }
+  { loadListBill, loadBillDetail, payDebt, setDialogStatus }
 )(HistoryScreen);

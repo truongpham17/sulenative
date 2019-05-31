@@ -1,30 +1,26 @@
 import React from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  AlertIOS,
-  Modal
-} from 'react-native';
+import { FlatList, StyleSheet, Text, View, TextInput, TouchableOpacity, Modal } from 'react-native';
+import { Icon } from 'react-native-elements';
+
 // import { Print } from 'expo';
 import { connect } from 'react-redux';
 import { iOSUIKit } from 'react-native-typography';
+import { BluetoothManager } from 'react-native-bluetooth-escpos-printer';
 
-import { removeProductBill, setOtherCost, submitBill, setPrinterDevice } from '../../actions';
+import {
+  removeProductBill,
+  setOtherCost,
+  submitBill,
+  setPrinterDevice,
+  setPrinterConnect,
+  setDialogStatus
+} from '../../actions';
 import { DetailItem } from './components';
 import { formatPrice } from '../../utils/String';
 import CustomerInfo from './CustomerInfo';
 import { Style } from '../../components';
 
-import {
-  BluetoothManager
-  //   Device
-} from 'react-native-bluetooth-escpos-printer';
-import { AlertInfo, Alert } from '../../utils/Dialog';
-import BillImage from './BillImage';
+import { AlertInfo } from '../../utils/Dialog';
 import { printBill } from '../../utils/Printer';
 import { getDatePrinting } from '../../utils/Date';
 
@@ -38,8 +34,7 @@ class Detail extends React.Component {
     note: '',
     debt: '0',
     modalVisible: false,
-    ids: [],
-    connected: false
+    ids: []
   };
 
   onRemove = id => {
@@ -64,14 +59,15 @@ class Detail extends React.Component {
   };
 
   onSetupPrinterUrl = async url => {
-    const { setPrinterDevice } = this.props;
-    setPrinterDevice({ url });
+    const { setPrinterDevice, setPrinterConnect } = this.props;
     BluetoothManager.connect(url).then(
-      () =>
+      () => {
         this.setState({
-          modalVisible: false,
-          connected: true
-        }),
+          modalVisible: false
+        });
+        setPrinterDevice({ url });
+        setPrinterConnect(true);
+      },
       () => AlertInfo('Không thể kết nối')
     );
   };
@@ -88,23 +84,13 @@ class Detail extends React.Component {
     // check if devices already save printer URL, try to connect to this url
     if (printerURL && printerURL.length > 0) {
       // if connect successfully then start printing, else set up again
-      BluetoothManager.connect(printerURL).then(
-        () => {
-          // this.printBill();
-          this.setState({ connected: true });
-        },
-        () => {
-          this.onPrint();
-        }
-      );
+      BluetoothManager.connect(printerURL).then(() => {
+        this.props.setPrinterConnect(true);
+      });
     }
     // else, try to scan bluetooth
     else {
       // await BluetoothManager.connect('EF7AAB58-92AA-BF87-FC00-E119A7EA6A6E');
-      // console.log('connect successfully!!');
-      // this.setState({
-      //   connected: true
-      // });
       this.setState({ modalVisible: true });
       const devicesScan = await BluetoothManager.scanDevices();
       this.setState({
@@ -116,7 +102,7 @@ class Detail extends React.Component {
   onSubmitBill = async () => {
     const { productBills, totalQuantity, totalPrice, otherCost, submitBill, user } = this.props;
     const { customerName, customerPhone, customerAddress, note, debt } = this.state;
-    // if (!connected) {
+    // if (!this.props.connect) {
     //   this.onSetPrinterConfig();
     //   return;
     // }
@@ -160,14 +146,8 @@ class Detail extends React.Component {
 
     submitBill(data, {
       success: billInfo => {
-        AlertIOS.alert('Thanh toán thành công!!');
-        this.setState({
-          customerName: '',
-          customerAddress: '',
-          customerPhone: '',
-          debt: '0',
-          note: ''
-        });
+        this.showStatusDialog('success');
+
         printBill({
           customerName: data.customer.name,
           customerPhone: data.customer.phone,
@@ -183,7 +163,7 @@ class Detail extends React.Component {
           preCost: totalPrice + totalDiscount - otherCost
         });
       },
-      failure: () => AlertIOS.alert('Thất bại!', 'Vui lòng thử lại')
+      failure: () => this.showStatusDialog('error')
     });
   };
 
@@ -196,7 +176,14 @@ class Detail extends React.Component {
     return data;
   };
 
-  keyExtractor = item => item.id;
+  showStatusDialog = type => {
+    this.props.setDialogStatus({
+      showDialog: true,
+      dialogType: type
+    });
+  };
+
+  keyExtractor = item => `${item.id} - ${item.soldQuantity}`;
 
   renderItem = ({ item }) => (
     <DetailItem
@@ -277,7 +264,17 @@ class Detail extends React.Component {
 
   renderScanningPrinter = () => (
     <View style={{ flex: 1, marginTop: 20, alignItems: 'center' }}>
-      <Text style={Style.blackHeaderTitle}>Vui lòng chọn thiết bị bluetooth</Text>
+      <View style={{ width: '100%' }}>
+        <Icon
+          name="x"
+          type="feather"
+          containerStyle={{ position: 'absolute', left: 10, top: 0 }}
+          onPress={() => this.setState({ modalVisible: false })}
+        />
+        <Text style={[Style.blackHeaderTitle, { alignSelf: 'center' }]}>
+          Vui lòng chọn thiết bị bluetooth
+        </Text>
+      </View>
       <FlatList
         data={this.state.ips}
         renderItem={({ item }) => (
@@ -297,10 +294,8 @@ class Detail extends React.Component {
     </View>
   );
 
-  renderReBill = () => <BillImage callback={() => this.setState({ modalVisible: false })} />;
-
   render() {
-    const { customerName, customerAddress, customerPhone, connected } = this.state;
+    const { customerName, customerAddress, customerPhone } = this.state;
     const { productBills } = this.props;
     return (
       <View style={{ flex: 1 }}>
@@ -311,6 +306,7 @@ class Detail extends React.Component {
           renderItem={this.renderItem}
           keyExtractor={this.keyExtractor}
         />
+
         <CustomerInfo
           onChangeText={this.onChangeText}
           name={customerName}
@@ -332,10 +328,18 @@ export default connect(
     totalQuantity: state.bill.totalQuantity,
     totalDiscount: state.bill.totalDiscount,
     otherCost: state.bill.otherCost,
-    printerURL: state.print.printerURL,
-    user: state.user.info
+    printerURL: state.user.printerURL,
+    user: state.user.info,
+    connect: state.user.printerConnect
   }),
-  { removeProductBill, setOtherCost, submitBill, setPrinterDevice }
+  {
+    removeProductBill,
+    setOtherCost,
+    submitBill,
+    setPrinterDevice,
+    setPrinterConnect,
+    setDialogStatus
+  }
 )(Detail);
 
 const styles = StyleSheet.create({

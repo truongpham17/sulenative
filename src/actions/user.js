@@ -18,6 +18,10 @@ export const UPDATE_USER_REQUEST = 'add-user-request';
 export const UPDATE_USER_SUCCESS = 'add-user-success';
 export const UPDATE_USER_FAILURE = 'add-user-failure';
 
+export const SET_PRINTER_DEVICE = 'set-printer-device';
+
+export const SET_PRINTER_CONNECT = 'set-printer-connect';
+
 export const SELECT_USER = 'select-user';
 
 export function login(data, callback = {}) {
@@ -175,5 +179,19 @@ export function logout(callback = {}) {
   callback.success();
   return {
     type: LOGOUT
+  };
+}
+
+export function setPrinterDevice(data) {
+  return {
+    type: SET_PRINTER_DEVICE,
+    payload: data // url & name & connected
+  };
+}
+
+export function setPrinterConnect(isConnect) {
+  return {
+    type: SET_PRINTER_CONNECT,
+    payload: isConnect // url & name & connected
   };
 }

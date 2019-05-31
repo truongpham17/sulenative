@@ -23,7 +23,7 @@ class DetailItem extends React.PureComponent<PropsType> {
     const price = data.product.exportPrice;
     if (data.soldQuantity > 0) {
       quantity = data.soldQuantity;
-      style = { backgroundColor: Style.color.blackBlue };
+      style = { backgroundColor: Style.color.lightBackground };
       sum = quantity * (data.product.exportPrice - data.discount);
     } else {
       quantity = data.paybackQuantity;

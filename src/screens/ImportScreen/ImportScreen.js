@@ -1,7 +1,5 @@
 import React from 'react';
-import { iOSColors } from 'react-native-typography';
 import { Header } from 'react-native-elements';
-import Spinner from 'react-native-loading-spinner-overlay';
 import { connect } from 'react-redux';
 import { View, Text, AlertIOS } from 'react-native';
 import { CancelButton } from '../SaleScreen/components';
@@ -18,7 +16,7 @@ import {
   loadStoreProductImport,
   removeProductItem
 } from '../../actions';
-import { LeftPanel, Style } from '../../components';
+import { LeftPanel, Style, MenuBar, LoadingModal } from '../../components';
 import RightPanel from './RightPanel';
 import { Store } from '../../models';
 import { getDate } from '../../utils/Date';
@@ -39,12 +37,13 @@ class ImportScreen extends React.Component<PropsType> {
 
   componentDidMount() {
     const { navigation } = this.props;
-    this.focusListener = navigation.addListener('didFocus', this.handleRefresh);
+    // this.handleRefresh();
+    // this.focusListener = navigation.addListener('didFocus', this.handleRefresh);
   }
 
   componentWillUnmount() {
     // Remove the event listener
-    this.focusListener.remove();
+    // this.focusListener.remove();
   }
 
   onLongPress = id => {
@@ -133,10 +132,11 @@ class ImportScreen extends React.Component<PropsType> {
           backgroundColor={Style.color.blackBlue}
         />
         <View style={{ flex: 1, flexDirection: 'row', backgroundColor: Style.color.background }}>
+          <MenuBar navigation={navigation} />
           <View style={{ flex: 3, margin: 10, borderRadius: 10, backgroundColor: 'white' }}>
             <LeftPanel
               containerStyle={{ flex: 1 }}
-              title="Chọn nguồn hàng"
+              title="Nguồn hàng"
               data={this.extractStoreData()}
               onLongPress={this.onLongPress}
               onPress={this.onPress}
@@ -147,10 +147,7 @@ class ImportScreen extends React.Component<PropsType> {
             />
           </View>
           <RightPanel currentStore={currentStore} importProduct={importProduct} />
-          <Spinner
-            visible={this.props.loading || this.props.storeLoading}
-            color={iOSColors.tealBlue}
-          />
+          <LoadingModal visible={this.props.loading || this.props.storeLoading} />
         </View>
       </View>
     );

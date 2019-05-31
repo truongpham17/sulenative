@@ -1,12 +1,10 @@
 import React from 'react';
-import { iOSColors } from 'react-native-typography';
 import { View, StyleSheet, Text } from 'react-native';
 import { connect } from 'react-redux';
-import Spinner from 'react-native-loading-spinner-overlay';
 import { Header } from 'react-native-elements';
-import { MenuIcon, Style, LeftPanel } from '../../components';
+import { MenuIcon, Style, LeftPanel, MenuBar, LoadingModal } from '../../components';
 import RightPanel from './RightPanel';
-import { logout, getUser, selectUser, addUser, updateUser } from '../../actions';
+import { logout, getUser, selectUser, addUser, updateUser, setDialogStatus } from '../../actions';
 import { AlertInfo } from '../../utils/Dialog';
 
 class ProfileScreen extends React.Component {
@@ -16,8 +14,7 @@ class ProfileScreen extends React.Component {
     modalType: ''
   };
   componentDidMount() {
-    const { navigation } = this.props;
-    this.focusListener = navigation.addListener('didFocus', this.getUser);
+    // this.focusListener = navigation.addListener('didFocus', this.getUser);
     setTimeout(() => {
       console.log(this.props.users);
     }, 1000);
@@ -56,7 +53,7 @@ class ProfileScreen extends React.Component {
   };
 
   onAddUser = ({ username, password, fullname, role }) => {
-    const { addUser, users } = this.props;
+    const { addUser, users, setDialogStatus } = this.props;
     const checkDuplicateUser = users.find(item => item.username === username);
     if (checkDuplicateUser) {
       AlertInfo('Tên tài khoản này đã được sử dụng');
@@ -67,14 +64,15 @@ class ProfileScreen extends React.Component {
       {
         success: () => {
           this.getUser();
-          AlertInfo('Thành công', null, () =>
-            this.setState({
-              modalVisible: false
-            })
-          );
+          this.setState({
+            modalVisible: false
+          });
+          setTimeout(() => {
+            setDialogStatus({ showDialog: true, dialogType: 'success' });
+          }, 500);
         },
         failure: () => {
-          AlertInfo('Thất bại!', 'Vui lòng thử lại');
+          AlertInfo('Lỗi!, Vui lòng thử lại');
         }
       }
     );
@@ -86,7 +84,6 @@ class ProfileScreen extends React.Component {
     if (password && password.length < 6) {
       AlertInfo('Mật khẩu phải có ít nhất 6 kí tự!');
     }
-    console.log(role);
     let userActive;
     if (active === null) {
       userActive = currentUser.active;
@@ -147,10 +144,11 @@ class ProfileScreen extends React.Component {
           backgroundColor={Style.color.blackBlue}
         />
         <View style={{ flex: 1, flexDirection: 'row', backgroundColor: Style.color.background }}>
+          <MenuBar navigation={navigation} />
           <View style={{ flex: 3, margin: 10, borderRadius: 10, backgroundColor: 'white' }}>
             <LeftPanel
               containerStyle={{ flex: 1 }}
-              title="Chọn nhân viên"
+              title="Nhân viên"
               data={this.extractStoreData()}
               onLongPress={this.onLongPress}
               onPress={this.onSelectedUser}
@@ -171,10 +169,7 @@ class ProfileScreen extends React.Component {
               onUpdateUser={this.onUpdateUser}
             />
           </View>
-          <Spinner
-            visible={this.props.loading || this.props.storeLoading}
-            color={iOSColors.tealBlue}
-          />
+          <LoadingModal visible={this.props.loading || this.props.storeLoading} />
         </View>
       </View>
     );
@@ -204,5 +199,5 @@ export default connect(
     loading: state.user.loading,
     currentUser: state.user.currentUser
   }),
-  { logout, getUser, selectUser, addUser, updateUser }
+  { logout, getUser, selectUser, addUser, updateUser, setDialogStatus }
 )(ProfileScreen);

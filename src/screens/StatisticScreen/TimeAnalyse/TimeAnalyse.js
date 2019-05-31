@@ -25,6 +25,14 @@ class TimeAnalyse extends React.Component {
     });
   };
 
+  formatTime = time => {
+    const { type } = this.props;
+    if (type === 'date') {
+      return time.substring(0, 5);
+    }
+    return time;
+  };
+
   getValueData() {
     const { data } = this.props;
     return data.map(item => item.total);
@@ -57,7 +65,7 @@ class TimeAnalyse extends React.Component {
           <View style={{ flex: 1, marginLeft: 20 }}>
             <LineChart
               style={{ flex: 1 }}
-              data={this.getValueData(data)}
+              data={this.getValueData()}
               svg={{
                 stroke: 'rgb(134, 65, 244)',
                 strokeWidth: 2
@@ -72,7 +80,7 @@ class TimeAnalyse extends React.Component {
             <XAxis
               style={{ marginHorizontal: -10, height: xAxisHeight }}
               data={data}
-              formatLabel={(value, index) => this.props.data[index].time}
+              formatLabel={(value, index) => this.formatTime(this.props.data[index].time)}
               contentInset={{ left: 40, right: 40 }}
               svg={{ fontSize: 10, fill: 'grey' }}
             />

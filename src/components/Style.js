@@ -3,6 +3,11 @@ import { iOSColors } from 'react-native-typography';
 const BEST_SELLER_IMG = require('../assets/best-seller.png');
 
 export default {
+  image: {
+    success: require('../assets/images/success.json'),
+    erorr: require('../assets/images/error.json'),
+    loading: require('../assets/images/loading.json')
+  },
   fontFamily: {
     bold: 'AvenirNext-Bold',
     medium: 'AvenirNext-Medium',
@@ -19,8 +24,9 @@ export default {
   color: {
     black: '#323854',
     red: '#f4511e',
-    lightBlue: iOSColors.blue,
-    blackBlue: '#323854',
+    lightBlue: '#0BB237',
+    // blackBlue: '#323854',
+    blackBlue: '#D1367F',
     gray: iOSColors.gray,
     white: '#FFFFFF',
     lightGray: iOSColors.customGray,
@@ -30,11 +36,14 @@ export default {
     background: '#e0e1e6',
     darkBackground: '#eff2f5',
     customDark: '#E0E0E0',
-    lightBorder: '#D1C4E9',
-    darkBorder: '#383E59',
+    lightBorder: '#e0e0e0',
+    selectedBorder: '#EA83B4',
+    darkBorder: '#eeeeee',
     blackBackground: '#14141E',
     blackLightBackground: '#212128',
-    disableButton: iOSColors.gray
+    disableButton: iOSColors.gray,
+    lightBackground: '#EA83B4',
+    lightPink: '#FCDCEB'
   },
   lightHeader: {
     fontFamily: 'AvenirNext-Bold',
@@ -52,6 +61,12 @@ export default {
     fontFamily: 'AvenirNext-Bold',
     fontWeight: '500',
     color: '#323854',
+    fontSize: 20
+  },
+  greenBigTitle: {
+    fontFamily: 'AvenirNext-Medium',
+    fontWeight: '400',
+    color: iOSColors.green,
     fontSize: 20
   },
 

@@ -1,4 +1,6 @@
 import { AlertIOS } from 'react-native';
+import React from 'react';
+import { Success } from '../components';
 
 export const Promt = (
   title,
@@ -46,6 +48,8 @@ export const Alert = (title, message, closeLable, submitLabel, onSubmit, onCancl
     ]);
   }, 300);
 };
+
+export const SuccessDialog = () => <Success />;
 
 export const AlertInfo = (title, message, onClose) => {
   setTimeout(() => {

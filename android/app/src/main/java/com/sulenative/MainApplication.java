@@ -3,6 +3,7 @@ package com.sulenative;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.airbnb.android.react.lottie.LottiePackage;
 import fr.greweb.reactnativeviewshot.RNViewShotPackage;
 import cn.jystudio.bluetooth.RNBluetoothEscposPrinterPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
@@ -29,6 +30,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new LottiePackage(),
             new RNViewShotPackage(),
             new RNBluetoothEscposPrinterPackage(),
             new ReanimatedPackage(),

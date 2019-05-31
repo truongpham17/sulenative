@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView
 } from 'react-native';
 import { connect } from 'react-redux';
-import { loadStoreProductImport } from '../../actions';
+import { loadStoreProductImport, setDialogStatus } from '../../actions';
 import RowTable from '../../components/RowTable';
 import ImportItem from './components/ImportItem';
 import { formatPrice } from '../../utils/String';
@@ -172,10 +172,11 @@ class RightPanel extends React.Component<PropsType, StateType> {
             },
             {
               success: () => {
-                AlertIOS.alert('Thêm sản phẩm thành công!!');
+                this.props.setDialogStatus({ showDialog: true, dialogType: 'success' });
+                // AlertIOS.alert('Thêm sản phẩm thành công!!');
                 this.onDeleteState();
               },
-              failure: () => AlertIOS.alert('Nhập sản phẩm thất bại, vui lòng thử lại!')
+              failure: () => this.props.setDialogStatus({ showDialog: false, dialogType: 'error' })
             }
           )
       }
@@ -371,7 +372,7 @@ export default connect(
     total: state.importProduct.total,
     removeAll: state.importProduct.removeAll
   }),
-  { loadStoreProductImport }
+  { loadStoreProductImport, setDialogStatus }
 )(RightPanel);
 
 const styles = StyleSheet.create({
