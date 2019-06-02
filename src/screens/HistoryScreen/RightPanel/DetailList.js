@@ -1,62 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal } from 'react-native';
 import { connect } from 'react-redux';
-import { BluetoothManager } from 'react-native-bluetooth-escpos-printer';
 import { setPrinterConnect, setPrinterDevice } from '../../../actions';
 import { Style } from '../../../components';
 import { SubmitButton } from '../../../components/button';
 import { formatPrice } from '../../../utils/String';
 import { printBill } from '../../../utils/Printer';
 import { getDatePrinting } from '../../../utils/Date';
-import { AlertInfo } from '../../../utils/Dialog';
 
 class DetailList extends React.Component {
-  state = {
-    modalVisible: false,
-    ids: [],
-    connected: false
-  };
-  onSetupPrinterUrl = async url => {
-    const { setPrinterDevice } = this.props;
-    setPrinterDevice({ url });
-    BluetoothManager.connect(url).then(
-      () =>
-        this.setState({
-          modalVisible: false,
-          connected: true
-        }),
-      () => AlertInfo('Không thể kết nối')
-    );
-  };
-
-  onSetPrinterConfig = async () => {
-    const { printerURL } = this.props;
-    // check whether enable bluetooth
-    const isBluetoothEnable = await BluetoothManager.isBluetoothEnabled();
-    if (!isBluetoothEnable) {
-      AlertInfo('Bluetooth chưa được bật', 'Vui lòng bật bluetooth và thử lại');
-      return;
-    }
-
-    // check if devices already save printer URL, try to connect to this url
-    if (printerURL && printerURL.length > 0) {
-      // if connect successfully then start printing, else set up again
-      BluetoothManager.connect(printerURL).then(() => {
-        this.props.setPrinterConnect(true);
-      });
-    } else {
-      this.setState({ modalVisible: true });
-      const devicesScan = await BluetoothManager.scanDevices();
-      this.setState({
-        ips: JSON.parse(devicesScan.found)
-      });
-    }
-  };
 
   printBill = () => {
-    const { billDetail } = this.props;
+    const { billDetail, navigation } = this.props;
     if (!this.props.connect) {
-      this.onSetPrinterConfig();
+      navigation.navigate('SetupPrinter');
       return;
     }
 
@@ -87,7 +44,7 @@ class DetailList extends React.Component {
   };
 
   renderItem = (label, value) => (
-    <View style={{ flex: 1 }}>
+    <View style={{ width: '100%', height: 40 }}>
       <View style={styles.itemContainerStyle}>
         <Text style={[Style.textEmphasize]}>{label}</Text>
         <Text style={[Style.textEmphasize, { fontWeight: 'bold' }]}>{value}</Text>
@@ -130,20 +87,20 @@ class DetailList extends React.Component {
     });
     const isDebt = billDetail.totalPrice - billDetail.totalPaid > 0;
     return (
-      <View style={{ flex: 1 }}>
-        <View style={{ flex: 1 }}>
-          {this.renderItem('Tổng tiền hàng:', formatPrice(total))}
-          {this.renderItem('Giảm giá:', formatPrice(totalDiscount))}
-          {this.renderItem('Phụ phí:', formatPrice(billDetail.otherCost))}
+      <View>
+        <View>
+          {billDetail.otherCost > 0 || totalDiscount > 0 ? this.renderItem('Tổng tiền hàng:', formatPrice(total)) : null}
+          {totalDiscount > 0 ? this.renderItem('Giảm giá:', formatPrice(totalDiscount)) : null}
+          {billDetail.otherCost > 0 ? this.renderItem('Phụ phí:', formatPrice(billDetail.otherCost)) : null}
           {this.renderItem('Tổng:', formatPrice(billDetail.totalPrice))}
-          {this.renderItem('Khách trả:', formatPrice(billDetail.totalPaid))}
-          {this.renderItem(
+          {billDetail.totalPaid < billDetail.totalPrice ? this.renderItem('Khách trả:', formatPrice(billDetail.totalPaid)) : null}
+          {billDetail.totalPrice - billDetail.totalPaid > 0 ? this.renderItem(
             'Khách thiếu',
             formatPrice(billDetail.totalPrice - billDetail.totalPaid)
-          )}
+          ) : null}
         </View>
 
-        <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 10 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, height: 48 }}>
           <SubmitButton
             title="In hoá đơn"
             onPress={() => this.printBill()}
@@ -159,9 +116,6 @@ class DetailList extends React.Component {
             buttonStyle={styles.buttonStyle}
           />
         </View>
-        <Modal animationType="slide" transparent={false} visible={this.state.modalVisible}>
-          {this.renderScanningPrinter()}
-        </Modal>
       </View>
     );
   }

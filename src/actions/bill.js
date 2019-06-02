@@ -23,6 +23,8 @@ export const LOAD_PRODUCT_REQUEST = 'load-product-request';
 export const LOAD_PRODUCT_SUCCESS = 'load-product-success';
 export const LOAD_PRODUCT_FAILURE = 'load-product-failure';
 
+export const ADD_BILL_PRODUCT = 'add-bill-product';
+
 export const LOAD_NEW_STORE = 'load-new-store';
 
 export function setIsSell(data) {
@@ -62,7 +64,7 @@ export function setProductReturn(data: ProductBill) {
 
 // type  = BILL || IMPORT
 export function loadStoreProduct(
-  data = { id: '', skip: 0, limit: LOAD_NUMBER, isContinue: false, shouldRemoveEmpty: false },
+  data = { id: '', skip: 0, limit: LOAD_NUMBER, isContinue: false, shouldRemoveEmpty: false, isDefaultStore: false },
   callback = {}
 ) {
   return async dispatch => {
@@ -82,7 +84,8 @@ export function loadStoreProduct(
             total: result.data.total,
             skip: data.skip,
             id: data.id,
-            isContinue: data.isContinue
+            isContinue: data.isContinue,
+            isDefaultStore: data.isDefaultStore
           }
         });
         if (callback.success) {
@@ -143,7 +146,16 @@ export function setOtherCost(cost) {
   };
 }
 
+
+export function addNewProduct(product) {
+  return {
+    type: ADD_BILL_PRODUCT,
+    payload: product
+  };
+}
+
 export function submitBill(data, callback: {}) {
+  console.log(data);
   return async dispatch => {
     try {
       dispatch({

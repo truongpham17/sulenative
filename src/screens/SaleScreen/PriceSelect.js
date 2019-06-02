@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, Text, AlertIOS, FlatList } from 'react-native';
+import { View, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
-import { Button, SearchBar } from 'react-native-elements';
+import { Button, Icon } from 'react-native-elements';
 import Modal from 'react-native-modal';
 import { PriceItemNew } from './components';
 import { EmptyStatus, Style } from '../../components';
@@ -13,11 +13,13 @@ import {
   setProductReturn,
   setDiscount,
   loadStoreProduct,
-  importProduct
+  importProduct,
+  addNewProduct
 } from '../../actions';
 import LOAD_NUMBER from '../../utils/System';
 import { SubmitButton } from '../../components/button';
 import { AlertInfo } from '../../utils/Dialog';
+import AddNewItem from './components/AddNewItem';
 import { formatPrice } from '../../utils/String';
 
 type PropsType = {
@@ -35,20 +37,16 @@ class PriceSelect extends React.Component<PropsType> {
     importPrice: '0',
     exportPrice: '0',
     quantity: '0',
-    search: '',
-    filter: '',
-    selectedProduct: null
+    selectedProduct: null,
+    modalAddNewVisible: false
   };
-  onQuantityChange = (productBill, value, isSubmit) => {
+  onQuantityChange = (productBill, value) => {
     const { isSell } = this.props;
-    // if (value === 0) return;
 
-    if (isSubmit) {
-      const product = isSell
-        ? { ...productBill, soldQuantity: value, paybackQuantity: 0 }
-        : { ...productBill, paybackQuantity: value, soldQuantity: 0 };
-      this.onSubmit(product);
-    }
+    const product = isSell
+      ? { ...productBill, soldQuantity: value, paybackQuantity: 0 }
+      : { ...productBill, paybackQuantity: value, soldQuantity: 0 };
+    this.onSubmit(product);
   };
 
   onSubmit = (data: ProductBill) => {
@@ -62,11 +60,13 @@ class PriceSelect extends React.Component<PropsType> {
   };
 
   onRefresh = () => {
-    const { loadStoreProduct, currentStore } = this.props;
+    const { loadStoreProduct, currentStore, defaultStore } = this.props;
     loadStoreProduct(
       {
         id: currentStore.id,
-        skip: 0
+        skip: 0,
+        // shouldRemoveEmpty: true,
+isDefaultStore: currentStore.id === defaultStore.id
       },
       {
         success: () => this.setState({ refreshing: false }),
@@ -125,15 +125,22 @@ class PriceSelect extends React.Component<PropsType> {
     return productBills.filter(item => item.id === id).length > 0;
   };
 
-  keyExtractor = item => `${item.id} - ${item.soldQuantity}`;
+  keyExtractor = item => `${item.id}`;
 
   getData = () => {
-    const { currentProductBills } = this.props;
-    const { filter } = this.state;
-    if (!filter) {
-      return currentProductBills;
+    const { currentProductBills, isSell } = this.props;
+    const { search } = this.props;
+    if (!search) {
+      if(isSell) {
+        return currentProductBills.filter(item => item.product.quantity > 0);
+      } 
+        return currentProductBills
+      
     }
-    return currentProductBills.filter(item => item.product.exportPrice === parseInt(filter, 10));
+    if(isSell) {
+      return currentProductBills.filter(item => item.product.exportPrice === parseInt(search, 10) && item.product.quantity > 0);
+    }
+    return currentProductBills.filter(item => item.product.exportPrice === parseInt(search, 10));
   };
 
   renderItem = ({ item }) => (
@@ -171,8 +178,8 @@ class PriceSelect extends React.Component<PropsType> {
         style={styles.contentStyle}
         refreshing={this.state.refreshing}
         onRefresh={this.onRefresh}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="interactive"
+        keyboardShouldPersistTaps="always"
+        keyboardDismissMode="on-drag"
         numColumns={3}
       />
     );
@@ -244,30 +251,46 @@ class PriceSelect extends React.Component<PropsType> {
     );
   };
 
-  renderSearchBar = () => (
-    <View style={{ width: 240 }}>
-      <SearchBar
-        platform="ios"
-        inputContainerStyle={{ height: 30 }}
-        onChangeText={search => this.setState({ search })}
-        onClear={() => this.setState({ filter: '' })}
-        value={this.state.search}
-        placeholder="Giá bán: "
-        inputStyle={Style.normalDarkText}
-        onSubmitEditing={() => this.setState({ filter: this.state.search })}
-      />
-    </View>
-  );
+  onAddProduct = (product) => {
+    const { addNewProduct, currentStore, isSell } = this.props;
+    const id = new Date().toJSON();
+    const data = {
+      product: {
+        importPrice: product.importPrice,
+        exportPrice: product.exportPrice,
+        quantity: product.quantity,
+        soldQuantity: 0,
+        total: product.quantity,
+        store: {
+          id: currentStore.id,
+          name: currentStore.name
+        }
+      },
+      soldQuantity: isSell ? product.quantity : 0,
+      paybackQuantity: isSell ? 0 : product.quantity,
+      discount: 0,
+      id
+    };
+    addNewProduct(data);
+  }
+
+
+  renderAddNewItem = () => (
+      <AddNewItem callBack={(value) => { this.onAddProduct(value); this.setState({ modalAddNewVisible: false }); }} />
+    )
 
   render() {
     const { currentStore } = this.props;
-
     return (
       <View style={{ flex: 1 }}>
-        <View style={styles.titleContainerStyle}>
-          <Text style={Style.blackEmphasizeTitle}>Nguồn hàng: {currentStore.name}</Text>
-          {this.renderSearchBar()}
-        </View>
+        {currentStore.isDefault ? (
+          <View style={styles.floatButton}>
+            <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onPress={() => this.setState({ modalAddNewVisible: true })}>
+              <Icon name="plus" type="feather" color="white" />
+              </TouchableOpacity>
+
+          </View>
+        ) : null}
         {this.renderContent()}
 
         <Modal
@@ -281,6 +304,18 @@ class PriceSelect extends React.Component<PropsType> {
           backdropOpacity={0.4}
         >
           {this.renderModalContent()}
+        </Modal>
+        <Modal
+          isVisible={this.state.modalAddNewVisible}
+          animationIn="fadeIn"
+          animationOut="fadeOut"
+          onBackdropPress={() => {
+            this.setState({ modalAddNewVisible: false });
+          }}
+          hideModalContentWhileAnimating
+          backdropOpacity={0.4}
+        >
+          {this.renderAddNewItem()}
         </Modal>
         <SubmitButton
           title="Xong"
@@ -341,7 +376,21 @@ const styles = StyleSheet.create({
     paddingEnd: 4,
     paddingVertical: 2,
     marginEnd: -4
+  },
+  floatButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: Style.color.lightBlue,
+    zIndex: 4,
+    shadowOffset: { x: 2, y: 2 },
+    shadowColor: Style.color.lightBlue,
+    shadowOpacity: 0.3
   }
+
 });
 
 export default connect(
@@ -353,7 +402,8 @@ export default connect(
     total: state.bill.total,
     skip: state.bill.skip,
     loading: state.bill.loadingBill,
-    firstLoading: state.bill.firstLoading
+    firstLoading: state.bill.firstLoading,
+    defaultStore: state.store.defaultStore
   }),
   {
     setCurrentProductBills,
@@ -362,6 +412,7 @@ export default connect(
     setProductReturn,
     setDiscount,
     loadStoreProduct,
-    importProduct
+    importProduct,
+    addNewProduct
   }
 )(PriceSelect);

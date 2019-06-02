@@ -24,7 +24,7 @@ const icons = [
   { name: 'file-text', size: 24, type: 'feather', color: Style.color.white },
   { name: 'activity', size: 24, type: 'feather', color: Style.color.white },
   { name: 'user', size: 24, type: 'feather', color: Style.color.white },
-  { name: 'log-out', size: 24, type: 'feather', color: Style.color.white }
+  // { name: 'log-out', size: 24, type: 'feather', color: Style.color.white }
 ];
 class MenuBar extends React.PureComponent {
   onPress = index => {
@@ -36,7 +36,7 @@ class MenuBar extends React.PureComponent {
         style={{
           width: 52,
           height: '102%',
-          backgroundColor: '#40444f',
+          backgroundColor: Style.color.blackBlue,
           paddingTop: 15,
           marginTop: -1
         }}

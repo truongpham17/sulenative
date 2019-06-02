@@ -20,9 +20,9 @@ class TabDetail extends React.Component {
 
   onIndexChange = index => {
     const { user } = this.props;
-    if (user.role === 1) {
+    // if (user.role === 1) {
       this.setState({ index });
-    }
+    // }
   };
 
   renderLabel = ({ route, focused }) => (

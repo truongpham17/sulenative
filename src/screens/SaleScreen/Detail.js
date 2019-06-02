@@ -1,11 +1,9 @@
 import React from 'react';
-import { FlatList, StyleSheet, Text, View, TextInput, TouchableOpacity, Modal } from 'react-native';
-import { Icon } from 'react-native-elements';
+import { FlatList, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 
 // import { Print } from 'expo';
 import { connect } from 'react-redux';
 import { iOSUIKit } from 'react-native-typography';
-import { BluetoothManager } from 'react-native-bluetooth-escpos-printer';
 
 import {
   removeProductBill,
@@ -13,14 +11,14 @@ import {
   submitBill,
   setPrinterDevice,
   setPrinterConnect,
-  setDialogStatus
+  setDialogStatus,
+  importProduct
 } from '../../actions';
 import { DetailItem } from './components';
 import { formatPrice } from '../../utils/String';
 import CustomerInfo from './CustomerInfo';
 import { Style } from '../../components';
 
-import { AlertInfo } from '../../utils/Dialog';
 import { printBill } from '../../utils/Printer';
 import { getDatePrinting } from '../../utils/Date';
 
@@ -33,8 +31,6 @@ class Detail extends React.Component {
     customerAddress: '',
     note: '',
     debt: '0',
-    modalVisible: false,
-    ids: []
   };
 
   onRemove = id => {
@@ -58,54 +54,15 @@ class Detail extends React.Component {
     }
   };
 
-  onSetupPrinterUrl = async url => {
-    const { setPrinterDevice, setPrinterConnect } = this.props;
-    BluetoothManager.connect(url).then(
-      () => {
-        this.setState({
-          modalVisible: false
-        });
-        setPrinterDevice({ url });
-        setPrinterConnect(true);
-      },
-      () => AlertInfo('Không thể kết nối')
-    );
-  };
 
-  onSetPrinterConfig = async () => {
-    const { printerURL } = this.props;
-    // check whether enable bluetooth
-    const isBluetoothEnable = await BluetoothManager.isBluetoothEnabled();
-    if (!isBluetoothEnable) {
-      AlertInfo('Bluetooth chưa được bật', 'Vui lòng bật bluetooth và thử lại');
+  onSubmitBill = async () => {
+    const { productBills, totalQuantity, totalPrice, otherCost, submitBill, user, importProduct, productNeedToSave, defaultStore, navigation } = this.props;
+    const { customerName, customerPhone, customerAddress, note, debt } = this.state;
+    if (!this.props.connect) {
+      navigation.navigate('SetupPrinter');
       return;
     }
 
-    // check if devices already save printer URL, try to connect to this url
-    if (printerURL && printerURL.length > 0) {
-      // if connect successfully then start printing, else set up again
-      BluetoothManager.connect(printerURL).then(() => {
-        this.props.setPrinterConnect(true);
-      });
-    }
-    // else, try to scan bluetooth
-    else {
-      // await BluetoothManager.connect('EF7AAB58-92AA-BF87-FC00-E119A7EA6A6E');
-      this.setState({ modalVisible: true });
-      const devicesScan = await BluetoothManager.scanDevices();
-      this.setState({
-        ips: JSON.parse(devicesScan.found)
-      });
-    }
-  };
-
-  onSubmitBill = async () => {
-    const { productBills, totalQuantity, totalPrice, otherCost, submitBill, user } = this.props;
-    const { customerName, customerPhone, customerAddress, note, debt } = this.state;
-    // if (!this.props.connect) {
-    //   this.onSetPrinterConfig();
-    //   return;
-    // }
     const data = {
       productList: [],
       customer: {
@@ -126,15 +83,17 @@ class Detail extends React.Component {
       if (item.soldQuantity > 0) {
         totalDiscount += item.soldQuantity * item.discount;
         data.productList.push({
-          product: item.product.id,
+          product: item.product.id ? item.product.id : { importPrice: item.product.importPrice, exportPrice: item.product.exportPrice },
           quantity: item.soldQuantity,
-          discount: item.discount
+          discount: item.discount,
+          isNew: !item.product.id
         });
       } else {
         data.productList.push({
-          product: item.product.id,
+          product: item.product.id ? item.product.id : { importPrice: item.product.importPrice, exportPrice: item.product.exportPrice },
           quantity: item.paybackQuantity,
-          isReturned: true
+          isReturned: true,
+          isNew: !item.product.id
         });
       }
     });
@@ -144,27 +103,33 @@ class Detail extends React.Component {
       price: item.product.exportPrice
     }));
 
-    submitBill(data, {
-      success: billInfo => {
-        this.showStatusDialog('success');
-
-        printBill({
-          customerName: data.customer.name,
-          customerPhone: data.customer.phone,
-          id: billInfo._id,
-          thungan: user.fullname,
-          date: getDatePrinting(),
-          productList: printBillList,
-          totalQuantity,
-          totalCost: totalPrice,
-          discount: totalDiscount,
-          otherCost,
-          // eslint-disable-next-line no-mixed-operators
-          preCost: totalPrice + totalDiscount - otherCost
-        });
-      },
-      failure: () => this.showStatusDialog('error')
-    });
+    importProduct({
+      storeId: defaultStore.id,
+      productList: productNeedToSave.map(item => ({ quantity: item.product.quantity, exportPrice: item.product.exportPrice, importPrice: item.product.importPrice }))
+    }, { success: () => {
+      submitBill(data, {
+        success: billInfo => {
+          this.showStatusDialog('success');
+          printBill({
+            customerName: data.customer.name,
+            customerPhone: data.customer.phone,
+            id: billInfo._id,
+            thungan: user.fullname,
+            date: getDatePrinting(),
+            productList: printBillList,
+            totalQuantity,
+            totalCost: totalPrice,
+            discount: totalDiscount,
+            otherCost,
+            // eslint-disable-next-line no-mixed-operators
+            preCost: totalPrice + totalDiscount - otherCost,
+            note: this.state.note
+          });
+        },
+        failure: () => this.showStatusDialog('error')
+      });
+    },
+failure: () => this.showStatusDialog('error') });
   };
 
   getTitle = () => {
@@ -177,10 +142,12 @@ class Detail extends React.Component {
   };
 
   showStatusDialog = type => {
-    this.props.setDialogStatus({
-      showDialog: true,
-      dialogType: type
-    });
+    setTimeout(() => {
+      this.props.setDialogStatus({
+        showDialog: true,
+        dialogType: type
+      });
+    }, 500);
   };
 
   keyExtractor = item => `${item.id} - ${item.soldQuantity}`;
@@ -262,37 +229,6 @@ class Detail extends React.Component {
     );
   }
 
-  renderScanningPrinter = () => (
-    <View style={{ flex: 1, marginTop: 20, alignItems: 'center' }}>
-      <View style={{ width: '100%' }}>
-        <Icon
-          name="x"
-          type="feather"
-          containerStyle={{ position: 'absolute', left: 10, top: 0 }}
-          onPress={() => this.setState({ modalVisible: false })}
-        />
-        <Text style={[Style.blackHeaderTitle, { alignSelf: 'center' }]}>
-          Vui lòng chọn thiết bị bluetooth
-        </Text>
-      </View>
-      <FlatList
-        data={this.state.ips}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={{
-              width: 400,
-              height: 48,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-            onPress={() => this.onSetupPrinterUrl(item.address)}
-          >
-            <Text style={Style.normalDarkText}>{item.name || 'UNKNOWN NAME'}</Text>
-          </TouchableOpacity>
-        )}
-      />
-    </View>
-  );
 
   render() {
     const { customerName, customerAddress, customerPhone } = this.state;
@@ -300,6 +236,7 @@ class Detail extends React.Component {
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.titleContainerStyle}>{this.renderTitle(title)}</View>
+
         <FlatList
           contentContainerStyle={{ paddingVertical: 5, paddingHorizontal: 10 }}
           data={productBills}
@@ -313,10 +250,10 @@ class Detail extends React.Component {
           address={customerAddress}
           phone={customerPhone}
         />
-        <Modal animationType="slide" transparent={false} visible={this.state.modalVisible}>
-          {this.renderScanningPrinter()}
-        </Modal>
-        {this.renderFooter()}
+
+      {this.renderFooter()}
+
+
       </View>
     );
   }
@@ -330,7 +267,9 @@ export default connect(
     otherCost: state.bill.otherCost,
     printerURL: state.user.printerURL,
     user: state.user.info,
-    connect: state.user.printerConnect
+    connect: state.user.printerConnect,
+    productNeedToSave: state.bill.productNeedToSave,
+    defaultStore: state.store.defaultStore
   }),
   {
     removeProductBill,
@@ -338,7 +277,8 @@ export default connect(
     submitBill,
     setPrinterDevice,
     setPrinterConnect,
-    setDialogStatus
+    setDialogStatus,
+    importProduct
   }
 )(Detail);
 
@@ -401,7 +341,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 48,
     borderRadius: 5,
-    backgroundColor: Style.color.lightBlue,
+    backgroundColor: Style.color.blackBlue,
     alignItems: 'center',
     justifyContent: 'center'
   },

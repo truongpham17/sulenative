@@ -185,7 +185,6 @@ class StatictisScreen extends React.Component {
           centerComponent={<Text style={iOSUIKit.title3EmphasizedWhite}>Thống kê</Text>}
           backgroundColor={Style.color.blackBlue}
         />
-        <LoadingModal visible={this.props.loading} />
 
         {this.renderModal()}
         <View style={{ flex: 1, flexDirection: 'row' }}>

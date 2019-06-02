@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import NumericInput from 'react-native-numeric-input';
 import { Product, ProductBill } from '../../../models';
 import { Style } from '../../../components';
+import NumericInput from 'react-native-numeric-input';
 import { formatPrice } from '../../../utils/String';
 import { SubmitButton } from '../../../components/button';
 import { AlertInfo, Promt } from '../../../utils/Dialog';
@@ -40,7 +40,8 @@ class PriceItemNew extends React.Component<PropsType> {
   };
 
   onDiscountPress = () => {
-    const { productBill } = this.props;
+    const { productBill, isSell } = this.props;
+    if (!isSell) return;
     if (productBill.soldQuantity === 0) return;
     Promt('Nhập số tiền giảm', null, 'Huỷ', 'Xong', this.onDiscount, null, '', 'numeric');
   };
@@ -79,11 +80,12 @@ class PriceItemNew extends React.Component<PropsType> {
           initValue={value}
           value={value}
           minValue={0}
-          maxValue={product.quantity}
+          maxValue={isSell ? product.quantity : 10000000}
           containerStyle={{ marginVertical: 3, width: '100%' }}
           leftButtonBackgroundColor={color}
           rightButtonBackgroundColor={color}
         />
+
         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
           <SubmitButton
             title="Giảm giá"

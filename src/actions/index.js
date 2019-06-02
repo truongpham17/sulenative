@@ -6,3 +6,4 @@ export * from './sellHistory';
 export * from './import';
 export * from './report';
 export * from './app';
+export * from './customer';

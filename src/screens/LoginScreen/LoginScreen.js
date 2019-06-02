@@ -96,7 +96,7 @@ class LoginScreen extends React.Component<PropsType, StateType> {
             alignItems: 'center'
           }}
           behavior="padding"
-          keyboardVerticalOffset={-280}
+          keyboardVerticalOffset={20}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image source={require('../../assets/icon_1.png')} style={{ width: 40, height: 40 }} />
@@ -153,7 +153,6 @@ class LoginScreen extends React.Component<PropsType, StateType> {
             />
           </View>
         </KeyboardAvoidingView>
-        <LoadingModal visible={this.props.loading} />
       </ImageBackground>
     );
   }
@@ -180,11 +179,11 @@ const styles = StyleSheet.create({
     width: 300,
     height: 48,
     borderRadius: 24,
-    backgroundColor: Style.color.lightBlue
+    backgroundColor: Style.color.blackBlue
   },
   cardStyle: {
     width: 340,
-    height: 400,
+    height: 320,
     alignItems: 'center',
     justifyContent: 'space-around',
     backgroundColor: Style.color.background

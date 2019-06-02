@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { iOSColors } from 'react-native-typography';
 import { Product, ProductBill, Store } from '../../../../models';
 import {
-  loadStoreProduct,
   setPaybackQuantity,
   loadStoreProductDetail,
   returnProduct,
@@ -444,7 +443,6 @@ export default connect(
     skip: state.detail.skipProduct
   }),
   {
-    loadStoreProduct,
     setPaybackQuantity,
     loadStoreProductDetail,
     returnProduct,

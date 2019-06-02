@@ -121,6 +121,7 @@ export function importProduct(data, callback) {
   return async dispatch => {
     try {
       dispatch({ type: IMPORT_PRODUCT_REQUEST });
+      console.log(data);
       const result = await query({
         endpoint: ENDPOINTS.importStore,
         method: METHODS.post,

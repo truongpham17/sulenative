@@ -6,6 +6,7 @@ import { StatictisScreen } from './StatisticScreen';
 import { SupplyScreen } from './SupplyScreen';
 import { AuthScreen } from './AuthScreen';
 import { ProfileScreen } from './ProfileScreen.js';
+import { SetupPrinter } from './SetupPrinter';
 
 export {
   HistoryScreen,
@@ -15,5 +16,6 @@ export {
   StatictisScreen,
   SupplyScreen,
   AuthScreen,
-  ProfileScreen
+  ProfileScreen,
+  SetupPrinter
 };

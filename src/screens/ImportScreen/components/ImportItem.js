@@ -108,16 +108,33 @@ class ImportItem extends React.Component<PropsType> {
           }}
         >
           {/* <Text style={Style.normalDarkText}>{index}</Text> */}
+
+          <TextInput
+            value={isEnable ? data.quantity.toString() : `${data.quantity} cái`}
+            style={styles.inputStyle}
+            keyboardType="numeric"
+            onChangeText={text => this.onChangeText(text, 'quantity')}
+            onSubmitEditing={() => {
+              this.secondTextInput.focus();
+            }}
+            ref={input => {
+              this.firstTextInput = input;
+            }}
+            returnKeyType="next"
+            onFocus={this.onFocus}
+          />
+
+
           <TextInput
             value={isEnable ? data.importPrice.toString() : formatPrice(data.importPrice)}
             style={styles.inputStyle}
             keyboardType="numeric"
             onChangeText={text => this.onChangeText(text, 'importPrice')}
             ref={input => {
-              this.firstTextInput = input;
+              this.secondTextInput = input;
             }}
             onSubmitEditing={() => {
-              this.secondTextInput.focus();
+              this.thirdTextInput.focus();
             }}
             // editable={isEnable}
             returnKeyType="next"
@@ -126,20 +143,27 @@ class ImportItem extends React.Component<PropsType> {
           <TextInput
             value={isEnable ? data.exportPrice.toString() : formatPrice(data.exportPrice)}
             style={styles.inputStyle}
-            keyboardType="numeric"
+            // keyboardType="numeric"
             onChangeText={text => this.onChangeText(text, 'exportPrice')}
             onSubmitEditing={() => {
-              this.thirdTextInput.focus();
+              this.onPress();
+              if (isFocus) {
+                this.firstTextInput.focus();
+              } else {
+                this.setState({
+                  isEnable: false
+                });
+              }
             }}
             ref={input => {
-              this.secondTextInput = input;
+              this.thirdTextInput = input;
             }}
             // editable={isEnable}
             returnKeyType="next"
             onFocus={this.onFocus}
           />
 
-          <TextInput
+          {/* <TextInput
             value={isEnable ? data.quantity.toString() : `${data.quantity} cái`}
             style={styles.inputStyle}
             keyboardType="numeric"
@@ -159,7 +183,7 @@ class ImportItem extends React.Component<PropsType> {
             }}
             returnKeyType="next"
             onFocus={this.onFocus}
-          />
+          /> */}
         </RowTable>
       </Swipeout>
     );

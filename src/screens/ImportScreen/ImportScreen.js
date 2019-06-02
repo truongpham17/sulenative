@@ -12,11 +12,10 @@ import {
   updateStore,
   setCurrentStore,
   importProduct,
-  loadStoreProduct,
   loadStoreProductImport,
   removeProductItem
 } from '../../actions';
-import { LeftPanel, Style, MenuBar, LoadingModal } from '../../components';
+import { LeftPanel, Style, MenuBar } from '../../components';
 import RightPanel from './RightPanel';
 import { Store } from '../../models';
 import { getDate } from '../../utils/Date';
@@ -34,17 +33,6 @@ class ImportScreen extends React.Component<PropsType> {
   state = {
     refreshing: false
   };
-
-  componentDidMount() {
-    const { navigation } = this.props;
-    // this.handleRefresh();
-    // this.focusListener = navigation.addListener('didFocus', this.handleRefresh);
-  }
-
-  componentWillUnmount() {
-    // Remove the event listener
-    // this.focusListener.remove();
-  }
 
   onLongPress = id => {
     this.showDialog('Nhập tên nguồn hàng', text => this.updateStore(id, text));
@@ -146,8 +134,7 @@ class ImportScreen extends React.Component<PropsType> {
               onRefresh={this.onRefresh}
             />
           </View>
-          <RightPanel currentStore={currentStore} importProduct={importProduct} />
-          <LoadingModal visible={this.props.loading || this.props.storeLoading} />
+          <RightPanel currentStore={currentStore} importProduct={importProduct} navigation={this.props.navigation} />
         </View>
       </View>
     );
@@ -170,7 +157,6 @@ export default connect(
     updateStore,
     setCurrentStore,
     importProduct,
-    loadStoreProduct,
     loadStoreProductImport,
     removeProductItem
   }

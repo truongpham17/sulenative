@@ -115,7 +115,7 @@ export default class LeftPanel extends React.Component<PropsType> {
           {onAddStore && (
             <Button
               title="+ Thêm mới"
-              titleStyle={[Style.buttonText]}
+              titleStyle={[Style.buttonText, { color: Style.color.lightPink }]}
               type={'solid'}
               buttonStyle={[styles.buttonStyle]}
               onPress={onAddStore}
@@ -163,6 +163,6 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Style.color.lightBlue
+    backgroundColor: Style.color.blackBlue
   }
 });

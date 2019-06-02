@@ -10,7 +10,7 @@ import EmptyScreen from '../../../components/EmptyStatus';
 
 class RightPanel extends React.Component {
   render() {
-    const { containerStyle, billDetail, onPayDebt } = this.props;
+    const { containerStyle, billDetail, onPayDebt, navigation } = this.props;
     return (
       <View style={[containerStyle]}>
         {billDetail.id ? (
@@ -20,15 +20,15 @@ class RightPanel extends React.Component {
             </View>
             <Text style={Style.smallTextEmphasize}>Sản phẩm</Text>
             <Line color={Style.color.lightBorder} />
-            <View style={{ flex: 2, maxHeight: '30%', marginBottom: 10 }}>
+            {/* <View style={{ flex: 2, maxHeight: '%', marginBottom: 10 }}> */}
               <ListProduct />
-            </View>
+            {/* </View> */}
             <Text style={Style.smallTextEmphasize}>Thông tin</Text>
 
             <Line color={Style.color.lightBorder} />
-            <View style={{ flex: 2 }}>
-              <DetailList onPayDebt={onPayDebt} />
-            </View>
+            {/* <View style={{ flex: 2 }}> */}
+              <DetailList onPayDebt={onPayDebt} navigation={navigation} />
+            {/* </View> */}
           </View>
         ) : (
           <EmptyScreen label="Vui lòng chọn hoá đơn" />

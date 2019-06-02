@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Header } from 'react-native-elements';
 import RightPanel from './RightPanel/RightPanel';
 import { loadListBill, loadBillDetail, payDebt, setDialogStatus } from '../../actions';
-import { LeftPanel, Style, MenuBar, LoadingModal } from '../../components';
+import { LeftPanel, Style, MenuBar } from '../../components';
 import { getDate } from '../../utils/Date';
 import { formatPrice } from '../../utils/String';
 import MenuIcon from '../../components/MenuIcon';
@@ -114,9 +114,8 @@ class HistoryScreen extends React.Component {
               onSubmitSearch={(id, isByName) => this.onLoadBill(id, isByName)}
             />
           </View>
-          <RightPanel containerStyle={styles.rightPanelContainer} onPayDebt={this.onPayDebt} />
+          <RightPanel containerStyle={styles.rightPanelContainer} onPayDebt={this.onPayDebt} navigation={navigation} />
         </View>
-        <LoadingModal visible={this.props.loading} />
       </View>
     );
   }

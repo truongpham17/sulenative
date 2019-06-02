@@ -58,7 +58,7 @@ class Info extends React.PureComponent {
   getPieData = data => {
     const { storeSelect } = this.state;
     return data.map((value, index) => ({
-      value,
+      value: value > 0 ? value : 0,
       svg: {
         fill: colors[index]
       },

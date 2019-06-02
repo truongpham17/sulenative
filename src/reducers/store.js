@@ -27,7 +27,8 @@ const INITIAL_STATE = {
   stores: [],
   loading: false,
   loadingStore: false,
-  firstLoading: false
+  firstLoading: false,
+  defaultStore: Store.map({})
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -58,10 +59,11 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         loadingStore: false,
-        stores: action.payload.map(value => Store.map(value)),
+        stores: [Store.map(defaultStore), ...action.payload.map(value => Store.map(value)).filter(item => item.id !== defaultStore._id)],
         firstLoading: false,
         loading: false,
-        currentStore: (defaultStore && Store.map(defaultStore)) || { id: '' }
+        currentStore: (defaultStore && Store.map(defaultStore)) || { id: '' },
+        defaultStore: Store.map(defaultStore)
       };
     case ADD_STORE_SUCCESS:
       return {

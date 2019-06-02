@@ -18,7 +18,7 @@ class DialogStatus extends React.Component {
             backdropOpacity={0.2}
             onBackdropPress={this.props.onBackdropPress}
           >
-            <View style={{ width: 300, height: 200, alignSelf: 'center' }}>
+            <View style={{ width: 200, height: 200, alignSelf: 'center' }}>
               <View style={{ flex: 1 }}>
                 <LottieView source={Style.image.success} autoPlay loop={false} />
               </View>
@@ -39,7 +39,7 @@ class DialogStatus extends React.Component {
             backdropOpacity={0.2}
             onBackdropPress={this.props.onBackdropPress}
           >
-            <View style={{ width: 300, height: 200, alignSelf: 'center' }}>
+            <View style={{ width: 200, height: 200, alignSelf: 'center' }}>
               <View style={{ flex: 1 }}>
                 <LottieView source={Style.image.erorr} autoPlay loop />
               </View>
@@ -49,7 +49,7 @@ class DialogStatus extends React.Component {
                   { textAlign: 'center', color: iOSColors.red, backgroundColor: 'white' }
                 ]}
               >
-                Thất bại, vui lòng thử lại 😢
+                Thất bại 😢
               </Text>
             </View>
           </Modal>

@@ -62,7 +62,6 @@
 		B173BB1E836C40898C9FA289 /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CCFC12959B24D12B268907D /* libRNSVG.a */; };
 		B26262B76589406CAC6335C7 /* libRNViewShot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 658A6FE93FE04E3F93E73C8D /* libRNViewShot.a */; };
 		B702ECB91C0643DB9F0D2785 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6879F63881104A5AB38C8F7A /* SimpleLineIcons.ttf */; };
-		C01506162291219A00B52366 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 008F07F21AC5B25A0029DE68 /* main.jsbundle */; };
 		C0F4FC2F22A02052004D13D9 /* Lottie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0F4FC2522A0203E004D13D9 /* Lottie.framework */; };
 		C0F4FC3022A02052004D13D9 /* Lottie.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C0F4FC2522A0203E004D13D9 /* Lottie.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C286A082ABCD4E73BB52F7AE /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 119A81E227D449AB8F468AEF /* Ionicons.ttf */; };
@@ -468,7 +467,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = "../node_modules/react-native/Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj"; sourceTree = "<group>"; };
 		00C302B51ABCB90400DB3ED1 /* RCTGeolocation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTGeolocation.xcodeproj; path = "../node_modules/react-native/Libraries/Geolocation/RCTGeolocation.xcodeproj"; sourceTree = "<group>"; };
 		00C302BB1ABCB91800DB3ED1 /* RCTImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTImage.xcodeproj; path = "../node_modules/react-native/Libraries/Image/RCTImage.xcodeproj"; sourceTree = "<group>"; };
@@ -684,7 +682,6 @@
 		13B07FAE1A68108700A75B9A /* sulenative */ = {
 			isa = PBXGroup;
 			children = (
-				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -1509,7 +1506,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C01506162291219A00B52366 /* main.jsbundle in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				3AB62DF4E7494FC6BBAD6379 /* AntDesign.ttf in Resources */,
@@ -1560,7 +1556,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		2D02E4CB1E0B4B27006451C7 /* Bundle React Native Code And Images */ = {
 			isa = PBXShellScriptBuildPhase;

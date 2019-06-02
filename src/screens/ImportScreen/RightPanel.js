@@ -16,6 +16,8 @@ import { formatPrice } from '../../utils/String';
 import { Title, EmptyStatus, Style } from '../../components';
 import { Product, Store } from '../../models';
 import { SubmitButton } from '../../components/button';
+import { printBill } from '../../utils/Printer';
+import { getDatePrinting } from '../../utils/Date';
 import LOAD_NUMBER from '../../utils/System';
 
 type StateType = {
@@ -34,7 +36,7 @@ type PropsType = {
 
 // const title = ['STT', 'Giá nhập', 'Giá bán', 'Số lượng', 'Nhập'];
 
-const title = ['Giá nhập', 'Giá bán', 'Số lượng'];
+const title = ['Số lượng', 'Giá nhập', 'Giá bán'];
 
 class RightPanel extends React.Component<PropsType, StateType> {
   state = {
@@ -139,11 +141,20 @@ class RightPanel extends React.Component<PropsType, StateType> {
 
   onSubmitImport = () => {
     const { quantity, validProducts, debt, note } = this.state;
-    const { importProduct, currentStore } = this.props;
-    let debtAdd = currentStore.debt + parseInt(debt);
+    if (!this.props.connect) {
+      this.props.navigation.navigate('SetupPrinter');
+      return;
+    }
+    const { importProduct, currentStore, user } = this.props;
+    let debtAdd = currentStore.debt + parseInt(debt, 10);
     if (isNaN(debtAdd)) {
       debtAdd = currentStore.debt;
     }
+
+    let totalCost = 0;
+    validProducts.forEach(item => {
+      totalCost += item.quantity * item.importPrice;
+    });
 
     if (quantity === undefined || quantity === 0) {
       AlertIOS.alert('Vui lòng nhập sản phẩm');
@@ -172,9 +183,23 @@ class RightPanel extends React.Component<PropsType, StateType> {
             },
             {
               success: () => {
+                console.log(validProducts);
                 this.props.setDialogStatus({ showDialog: true, dialogType: 'success' });
                 // AlertIOS.alert('Thêm sản phẩm thành công!!');
                 this.onDeleteState();
+                printBill({
+                  customerName: '',
+                  customerPhone: '',
+                  id: '',
+                  thungan: user.fullname,
+                  date: getDatePrinting(),
+                  productList: validProducts.map(item => ({ price: item.importPrice, quantity: item.quantity, total: item.quantity * item.importPrice })),
+                  totalQuantity: '0',
+                  totalCost,
+                  discount: '0',
+                  otherCost: '0',
+                  isImport: true
+                });
               },
               failure: () => this.props.setDialogStatus({ showDialog: false, dialogType: 'error' })
             }
@@ -247,24 +272,24 @@ class RightPanel extends React.Component<PropsType, StateType> {
   );
 
   renderDetailItem = (title, info) => (
-    <RowTable
-      itemContainerStyle={{ alignItems: 'flex-start' }}
-      flexArray={[2, 1]}
-      containerStyle={{ flex: 1 }}
-    >
-      <Text style={Style.normalDarkText}>{title}</Text>
-      <Text
-        style={[
-          Style.textEmphasize,
-          {
-            textAlign: 'right',
-            width: '100%'
-          }
-        ]}
-      >
-        {info}
-      </Text>
-    </RowTable>
+
+      <View style={{ width: '100%', height: 60, flexDirection: 'row' }}>
+        <Text style={[Style.normalDarkText]}>{title}</Text>
+        <Text
+          style={[
+            Style.textEmphasize,
+            {
+              textAlign: 'right',
+              flex: 1
+            }
+          ]}
+        >
+          {info}
+        </Text>
+
+        </View>
+
+
   );
 
   renderAction() {
@@ -354,8 +379,8 @@ class RightPanel extends React.Component<PropsType, StateType> {
         </KeyboardAvoidingView>
         <KeyboardAvoidingView
           style={styles.footerStyle}
-          behavior="padding"
-          keyboardVerticalOffset={-80}
+          behavior="position"
+          // keyboardVerticalOffset={-80}
         >
           {this.renderDetail()}
         </KeyboardAvoidingView>
@@ -370,7 +395,9 @@ export default connect(
     currentStore: state.store.currentStore,
     skip: state.importProduct.skip,
     total: state.importProduct.total,
-    removeAll: state.importProduct.removeAll
+    removeAll: state.importProduct.removeAll,
+    user: state.user.info,
+    connect: state.user.printerConnect,
   }),
   { loadStoreProductImport, setDialogStatus }
 )(RightPanel);
@@ -397,14 +424,13 @@ const styles = StyleSheet.create({
   detailContainer: {
     flex: 1,
     backgroundColor: Style.color.white,
-    borderWidth: 1,
-    borderColor: Style.color.lightBorder,
     padding: 8,
     marginBottom: 10,
     maxHeight: '70%'
   },
   footerStyle: {
-    flex: 2
+    flex: 2,
+    backgroundColor: Style.color.white
   },
   buttonStyle: {
     borderRadius: 8,

@@ -1,8 +1,12 @@
 import React from 'react';
-import { View } from 'react-native';
-import { createSwitchNavigator, createAppContainer, createDrawerNavigator } from 'react-navigation';
+import { View, NativeEventEmitter } from 'react-native';
+import { createSwitchNavigator, createAppContainer, createDrawerNavigator, createStackNavigator, } from 'react-navigation';
 import { connect } from 'react-redux';
-import { setDialogStatus } from './actions';
+import { BluetoothManager } from 'react-native-bluetooth-escpos-printer';
+import { AlertInfo, Alert } from './utils/Dialog';
+import { setDialogStatus, setPrinterConnect, setLoading, setPrinterDevice } from './actions';
+import { LoadingModal, DialogStatus } from './components';
+import NavigationService from './NavigationService';
 import {
   HistoryScreen,
   ImportScreen,
@@ -11,10 +15,10 @@ import {
   StatictisScreen,
   SupplyScreen,
   AuthScreen,
-  ProfileScreen
+  ProfileScreen,
+  SetupPrinter
 } from './screens';
 import { PanelNavigator } from './components/PanelNavigator';
-import { DialogStatus } from './components';
 
 const MainNavigation = createDrawerNavigator(
   {
@@ -31,11 +35,19 @@ const MainNavigation = createDrawerNavigator(
   }
 );
 
+const StackNavigation = createStackNavigator({
+  MainNavigation,
+  SetupPrinter
+
+}, {
+  headerMode: 'none'
+});
+
 const AppNavigation = createSwitchNavigator(
   {
     AuthScreen,
     LoginScreen,
-    MainNavigation
+    StackNavigation
   },
   {
     initialRouteName: 'AuthScreen'
@@ -45,6 +57,53 @@ const AppNavigation = createSwitchNavigator(
 const MainApp = createAppContainer(AppNavigation);
 
 class Application extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.listener = [];
+  }
+
+
+  componentDidMount = async () => {
+    const { setPrinterConnect, setDialogStatus } = this.props;
+    const bluetoothManagerEmitter = new NativeEventEmitter(BluetoothManager);
+    setPrinterConnect(false);
+    // setPrinterDevice({ url: '123' });
+
+    // add listener
+    this.listener.push(bluetoothManagerEmitter.addListener(BluetoothManager.EVENT_DEVICE_ALREADY_PAIRED,
+      () => {
+        console.log('already pair');
+        setPrinterConnect(true);
+      }));
+
+    this.listener.push(bluetoothManagerEmitter.addListener(BluetoothManager.EVENT_CONNECTION_LOST, () => {
+      Alert('Mất kết nối với máy in', 'Vào cài đặt?', 'Đóng', 'Cài đặt', () => NavigationService.navigate('SetupPrinter'));
+      setPrinterConnect(false);
+      setLoading(false);
+      setDialogStatus({ showDialog: false });
+      console.log('disconnected!');
+  }));
+
+    this.listener.push(bluetoothManagerEmitter.addListener(BluetoothManager.EVENT_CONNECTED, (rps) => {
+      setPrinterConnect(true);
+      console.log('connected!!');
+      setLoading(false);
+      setPrinterDevice({ url: rps.address });
+      setDialogStatus({ showDialog: false });
+      NavigationService.navigate('MainNavigation');
+      setTimeout(() => {
+      AlertInfo('Kết nối với máy in thành công!');
+      }, 100);
+    }));
+}
+
+  componentWillUnmount() {
+    for (let i = 0; i < this.listener.length; i++) {
+      this.listener[i].remove();
+    }
+  }
+
   render() {
     return (
       <View style={{ flex: 1 }}>
@@ -53,7 +112,12 @@ class Application extends React.Component {
           type={this.props.dialogType}
           onBackdropPress={() => this.props.setDialogStatus({ showDialog: false })}
         />
-        <MainApp />
+        <LoadingModal visible={this.props.loading} />
+        <MainApp
+          ref={navigatorRef => {
+            NavigationService.setTopLevelNavigator(navigatorRef);
+          }}
+        />
       </View>
     );
   }
@@ -62,7 +126,9 @@ class Application extends React.Component {
 export default connect(
   state => ({
     showDialog: state.app.showDialog,
-    dialogType: state.app.dialogType
+    dialogType: state.app.dialogType,
+    loading: state.app.loading,
+    printerURL: state.user.printerURL,
   }),
-  { setDialogStatus }
+  { setDialogStatus, setPrinterConnect }
 )(Application);

@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#7986cb',
+    backgroundColor: Style.color.blackBlue,
     flexDirection: 'row'
   },
   paypackContainer: {

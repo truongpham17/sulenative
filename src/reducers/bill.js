@@ -11,7 +11,8 @@ import {
   LOAD_PRODUCT_REQUEST,
   LOAD_PRODUCT_SUCCESS,
   LOAD_NEW_STORE,
-  SET_OTHER_COST
+  SET_OTHER_COST,
+  ADD_BILL_PRODUCT
 } from '../actions';
 import LOAD_NUMBER from '../utils/System';
 
@@ -28,7 +29,8 @@ const INITIAL_STATE = {
   totalPrice: 0,
   totalQuantity: 0,
   totalDiscount: 0,
-  otherCost: '0'
+  otherCost: '0',
+  productNeedToSave: []
 };
 
 function calculateTotalValue(products, otherCost) {
@@ -106,13 +108,12 @@ export default (state = INITIAL_STATE, action) => {
 
       return {
         ...state,
-        productBills,
         currentProductBills,
+        productBills: productBills.filter(item => item.soldQuantity > 0 || item.paybackQuantity > 0),
         ...data
       };
 
     case SET_PRODUCT_RETURN:
-      console.log(action.payload);
       updateProduct = state.productBills.find(
         item => item.id === action.payload.id && item.soldQuantity === 0
       );
@@ -136,7 +137,7 @@ export default (state = INITIAL_STATE, action) => {
       data = calculateTotalValue(productBills, state.otherCost);
       return {
         ...state,
-        productBills,
+        productBills: productBills.filter(item => item.paybackQuantity > 0 || item.soldQuantity > 0),
         ...data,
         currentProductBills
       };
@@ -144,10 +145,11 @@ export default (state = INITIAL_STATE, action) => {
       productBills = state.productBills.filter(item => item.id !== action.payload);
 
       currentProductBills = state.currentProductBills.map(item => {
-        if (item === action.payload.id) {
+        if (item.id === action.payload) {
           return {
             ...item,
-            soldQuantity: action.payload.paybackQuantity
+            soldQuantity: 0,
+            paybackQuantity: 0
           };
         }
         return item;
@@ -186,7 +188,8 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         productBills: [],
         ...data,
-        otherCost: '0'
+        otherCost: '0',
+        currentProductBills: []
       };
     case SUBMIT_BILL_SUCCESS:
       data = calculateTotalValue([], 0);
@@ -213,16 +216,6 @@ export default (state = INITIAL_STATE, action) => {
         firstLoading: false
       };
     case LOAD_PRODUCT_SUCCESS:
-      // // products already bought
-      // products = state.productBills.filter(
-      //   item =>
-      //     item.product.store.id === action.payload.id &&
-      //     (item.soldQuantity > 0 || item.paybackQuantity > 0)
-      // );
-
-      // // id of products already bought
-      // productIds = products.map(item => item.id);
-
       // add new products
       if (action.payload.isContinue) {
         return {
@@ -249,26 +242,30 @@ export default (state = INITIAL_STATE, action) => {
 
         return { ...item, soldQuantity: existProductSell, paybackQuantity: existProductPay };
       });
-      // // soldout product
-      // soldoutProducts = action.payload.products.filter(
-      //   item => item.product.quantity === 0 && !productIds.includes(item.id)
-      // );
-      // soldoutProducts.forEach(item => {
-      //   productIds.push(item.id);
-      // });
+
+      currentProductBills = action.payload.isDefaultStore ? [...state.productNeedToSave, ...productBills] : productBills;
+
       return {
         ...state,
-        currentProductBills:
-          // ...state.currentProductBills, // product already bought,
-          // action.payload.products.filter(item => !ids.includes(item.id))
-          productBills, // product have quantity
-        // .filter(item => !productIds.includes(item.id))
-        // ...soldoutProducts // product sold out
+        currentProductBills, // product have quantity
         total: action.payload.total,
         skip: action.payload.skip + LOAD_NUMBER,
         loadingBill: false,
         firstLoading: false,
         loading: false
+      };
+
+      case ADD_BILL_PRODUCT:
+          productBills = [action.payload, ...state.productBills];
+          currentProductBills = [action.payload, ...state.currentProductBills];
+          data = calculateTotalValue(productBills, state.otherCost);
+
+      return {
+        ...state,
+        currentProductBills,
+        productBills,
+        productNeedToSave: [action.payload, ...state.productNeedToSave],
+        ...data
       };
 
     case LOAD_NEW_STORE:

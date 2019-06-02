@@ -144,7 +144,6 @@ class SupplyScreen extends React.Component<PropsType> {
           >
             <RightPanel />
           </View>
-          <LoadingModal visible={this.props.loading} />
         </View>
       </View>
     );

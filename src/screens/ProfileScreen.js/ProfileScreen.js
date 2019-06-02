@@ -169,7 +169,6 @@ class ProfileScreen extends React.Component {
               onUpdateUser={this.onUpdateUser}
             />
           </View>
-          <LoadingModal visible={this.props.loading || this.props.storeLoading} />
         </View>
       </View>
     );

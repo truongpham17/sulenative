@@ -5,11 +5,9 @@ import {
   KeyboardAvoidingView,
   Text,
   StatusBar,
-  DeviceEventEmitter
 } from 'react-native';
 import { connect } from 'react-redux';
 import { Header } from 'react-native-elements';
-import { BluetoothManager } from 'react-native-bluetooth-escpos-printer';
 
 import { CancelButton } from './components';
 import StoreSelect from './StoreSelect';
@@ -26,37 +24,30 @@ import {
   setPrinterConnect
 } from '../../actions';
 import MenuIcon from '../../components/MenuIcon';
-import { Style, MenuBar, LoadingModal } from '../../components';
+import { Style, MenuBar } from '../../components';
 import LOAD_NUMBER from '../../utils/System';
 
 class SaleScreen extends React.Component {
-  state = {
-    zIndex: 3
-  };
   componentDidMount() {
-    const { loadStore, setPrinterConnect } = this.props;
+    const { loadStore } = this.props;
 
     setTimeout(() => {
-      loadStore({ success: id => this.onStoreItemPress(id) });
+      loadStore();
     }, 100);
-
-    DeviceEventEmitter.addListener(BluetoothManager.EVENT_CONNECTION_LOST, () => {
-      setPrinterConnect(false);
-    });
   }
 
-  componentWillUnmount() {
-    // Remove the event listener
-    // this.focusListener.remove();
-    DeviceEventEmitter.removeListener(BluetoothManager.EVENT_CONNECTION_LOST);
-  }
 
   onStoreItemPress = id => {
-    const { setCurrentStore, loadStoreProduct } = this.props;
-    this.setState({ zIndex: 1 });
+    const { setCurrentStore, loadStoreProduct, defaultStore } = this.props;
     setCurrentStore(id);
+
+
+    setTimeout(() => {
+      loadStoreProduct({ id, skip: 0, limit: LOAD_NUMBER, isDefaultStore: id === defaultStore.id
+      // , shouldRemoveEmpty: true
+      });
+    }, 100);
     // loadNewStore();
-    loadStoreProduct({ id, skip: 0, limit: LOAD_NUMBER, shouldRemoveEmpty: true });
   };
 
   handleRefresh = () => {
@@ -86,34 +77,13 @@ class SaleScreen extends React.Component {
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <MenuBar navigation={navigation} />
           <KeyboardAvoidingView style={styles.mainContainer} behavior="padding">
-            <View style={styles.storeViewContainer}>
-              <View
-                style={{
-                  flex: 1,
-                  zIndex: this.state.zIndex,
-                  backgroundColor: Style.color.background
-                }}
-              >
-                <StoreSelect onStorePress={this.onStoreItemPress} />
-              </View>
-              <View style={styles.priceContainer}>
-                <PriceSelect onSubmit={() => this.setState({ zIndex: 3 })} />
-              </View>
-            </View>
-            <View style={{ flex: 3, flexDirection: 'row', marginStart: 10 }}>
-              {/* <View style={styles.priceContainer}>
-                <PriceSelect />
-              </View> */}
-
-              <View style={styles.detailContainer}>
-                <View style={{ flex: 1 }}>
-                  <Detail />
-                </View>
-              </View>
+            <StoreSelect onStorePress={this.onStoreItemPress} />
+            <View style={styles.detailContainer} behavior="padding">
+              <Detail navigation={navigation} />
             </View>
           </KeyboardAvoidingView>
+
         </View>
-        <LoadingModal visible={this.props.loading || this.props.storeLoading} />
       </View>
     );
   }
@@ -126,12 +96,16 @@ const styles = StyleSheet.create({
     backgroundColor: Style.color.background,
     padding: 10
   },
+store: {
+    flex: 1,
+    backgroundColor: Style.color.white
+  },
   storeViewContainer: {
-    flex: 5,
+    flex: 6,
     backgroundColor: Style.color.white,
     borderRadius: 10,
     marginBottom: 10,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   priceContainer: {
     flex: 1,
@@ -144,10 +118,11 @@ const styles = StyleSheet.create({
     bottom: 0
   },
   detailContainer: {
-    flex: 6,
+    flex: 3,
     backgroundColor: Style.color.white,
     borderRadius: 10,
-    marginBottom: 10
+    marginBottom: 10,
+    marginStart: 10
   }
 });
 
@@ -158,7 +133,8 @@ export default connect(
     currentStore: state.store.currentStore,
     loading: state.bill.loading,
     showDialog: state.app.showDialog,
-    dialogType: state.app.dialogType
+    dialogType: state.app.dialogType,
+    defaultStore: state.store.defaultStore
   }),
   {
     logout,
