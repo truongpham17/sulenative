@@ -72,7 +72,8 @@ class DetailInfo extends React.Component<PropsType> {
   };
 
   onCreateBill = data => {
-    this.onRefreshData();
+    console.log(data);
+    // this.onRefreshData();
   };
 
   onRefreshData = () => {
@@ -104,13 +105,12 @@ class DetailInfo extends React.Component<PropsType> {
     });
   };
 
-  onReturnProduct = isAll => {
+  onReturnProduct = () => {
     const { products, returnProduct } = this.props;
     const checkHaveReturnProduct = products.find(item => item.paybackQuantity > 0);
     const data = !checkHaveReturnProduct
       ? this.getReturnProductData(products, true)
       : this.getReturnProductData(products.filter(item => item.paybackQuantity > 0));
-    console.log(data);
     if (data.totalQuantity === 0) {
       return;
     }
@@ -125,23 +125,24 @@ class DetailInfo extends React.Component<PropsType> {
           returnProduct(data, {
             success: () => {
               setTimeout(() => {
-                AlertIOS.alert('Trả hàng thành công! In hoá đơn?', null, [
-                  {
-                    text: 'Không',
-                    style: 'cancel',
-                    onPress: () => this.onRefreshData()
-                  },
-                  {
-                    text: 'In hoá đơn',
-                    onPress: () => this.onCreateBill(data)
-                  }
-                ]);
-              }, 100);
+                AlertInfo('Trả hàng thành công!');
+                // AlertIOS.alert('Trả hàng thành công! In hoá đơn?', null, [
+                //   {
+                //     text: 'Không',
+                //     style: 'cancel',
+                //     onPress: () => this.onRefreshData()
+                //   },
+                //   {
+                //     text: 'In hoá đơn',
+                //     onPress: () => this.onCreateBill(data)
+                //   }
+                // ]);
+              }, 1000);
             },
             failure: () =>
               setTimeout(() => {
                 AlertIOS.alert('Trả hàng thất bại, vui lòng thử lại!');
-              }, 100)
+              }, 1000)
           })
       }
     ]);
@@ -176,34 +177,6 @@ class DetailInfo extends React.Component<PropsType> {
       quantity: currentStore.productQuantity,
       totalSoldMoney: currentStore.totalSoldMoney
     };
-    // const { products } = this.props;
-    // let totalQuantity = 0;
-    // let soldQuantity = 0;
-    // let totalImportPrice = 0;
-    // let totalSoldMoney = 0;
-    // let quantity = 0;
-    // if (products.length === 0) {
-    //   return {
-    //     totalQuantity,
-    //     totalImportPrice,
-    //     soldQuantity,
-    //     quantity
-    //   };
-    // }
-    // products.forEach(item => {
-    //   totalQuantity += item.product.total;
-    //   totalImportPrice += item.product.total * item.product.importPrice;
-    //   soldQuantity += item.product.total - item.product.quantity;
-    //   quantity += item.product.quantity;
-    //   totalSoldMoney += (item.product.total - item.product.quantity) * item.product.exportPrice;
-    // });
-    // return {
-    //   totalQuantity,
-    //   totalImportPrice,
-    //   soldQuantity,
-    //   quantity,
-    //   totalSoldMoney
-    // };
   };
 
   updateStore = text => {
@@ -228,8 +201,12 @@ class DetailInfo extends React.Component<PropsType> {
     updateStore(
       { id: currentStore.id, name: currentStore.name, debt: currentStore.debt - value },
       {
-        success: () => AlertInfo('Thành công!'),
-        failure: () => AlertInfo('Lỗi!', 'Vui lòng thử lại!')
+        success: () => setTimeout(() => {
+          AlertInfo('Thành công!');
+        }, 1000),
+        failure: () => setTimeout(() => {
+          AlertInfo('Lỗi!', 'Vui lòng thử lại!');
+        }, 1000)
       }
     );
   };
@@ -268,9 +245,6 @@ class DetailInfo extends React.Component<PropsType> {
     const { products } = this.props;
     const data = products.find(item => item.id === selectedId);
     if (!data) {
-      // this.setState({
-      //   modalVisible: false
-      // });
       return <View />;
     }
     return (

@@ -31,7 +31,7 @@ export class Bill {
     }
 
     if (data.customer) {
-      bill.customer = Customer.map(data.customer);
+      bill.customer = data.customer;
     }
     if (data.createdBy) {
       bill.createdBy = data.createdBy;

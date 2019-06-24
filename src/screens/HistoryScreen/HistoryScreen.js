@@ -9,7 +9,6 @@ import { getDate } from '../../utils/Date';
 import { formatPrice } from '../../utils/String';
 import MenuIcon from '../../components/MenuIcon';
 import LOAD_NUMBER from '../../utils/System';
-import { Alert } from '../../utils/Dialog';
 
 class HistoryScreen extends React.Component {
   state = {
@@ -42,16 +41,6 @@ class HistoryScreen extends React.Component {
     console.log('success');
   };
 
-  onPayDebt = id => {
-    const { payDebt, setDialogStatus } = this.props;
-    Alert('Xác nhận trả tiền', '', 'Huỷ', 'Xác nhận', () =>
-      payDebt(id, {
-        success: () => this.onSuccess(id),
-        failure: () => setDialogStatus({ showDialog: true, dialogType: 'error' })
-      })
-    );
-  };
-
   onLongPress = () => {};
 
   onEndReached = () => {
@@ -78,7 +67,7 @@ class HistoryScreen extends React.Component {
       name: item.id,
       date: getDate(item.createdAt),
       info1: `Tổng: ${formatPrice(item.totalPrice)}`,
-      info2: item.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Ghi nợ',
+      info2: item.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Mua thiếu',
       id: item.id
     }));
   };
@@ -114,7 +103,7 @@ class HistoryScreen extends React.Component {
               onSubmitSearch={(id, isByName) => this.onLoadBill(id, isByName)}
             />
           </View>
-          <RightPanel containerStyle={styles.rightPanelContainer} onPayDebt={this.onPayDebt} navigation={navigation} />
+          <RightPanel containerStyle={styles.rightPanelContainer} navigation={navigation} />
         </View>
       </View>
     );

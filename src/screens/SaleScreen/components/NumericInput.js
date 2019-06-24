@@ -38,7 +38,6 @@ class NumericInput extends React.Component {
   }
   onChange = (text) => {
     if (!this.state.onFocus) return;
-    console.log('onChange');
     // if (isNaN(text) && text !== '0' && text !== '') return;
     if (text === '') {
       this.setState({
@@ -55,7 +54,6 @@ class NumericInput extends React.Component {
   onSubmit = () => {
     const { value } = this.state;
 
-    console.log('submit value: ', value);
     if (!value || isNaN(value)) {
       AlertInfo('Vui lòng nhập thông tin chính xác');
       return;

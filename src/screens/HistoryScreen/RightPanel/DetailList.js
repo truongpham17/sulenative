@@ -12,10 +12,10 @@ class DetailList extends React.Component {
 
   printBill = () => {
     const { billDetail, navigation } = this.props;
-    if (!this.props.connect) {
-      navigation.navigate('SetupPrinter');
-      return;
-    }
+    // if (!this.props.connect) {
+    //   navigation.navigate('SetupPrinter');
+    //   return;
+    // }
 
     let totalCostWithoutDiscount = 0;
 
@@ -26,8 +26,8 @@ class DetailList extends React.Component {
     });
 
     printBill({
-      customerName: billDetail.customer.name,
-      customerPhone: billDetail.customer.phone,
+      customerName: billDetail.customer && billDetail.customer.username,
+      customerPhone: billDetail.customer && billDetail.customer.phone,
       id: billDetail.id,
       thungan: billDetail.createdBy.fullname,
       date: getDatePrinting(billDetail.createAt),
@@ -37,8 +37,8 @@ class DetailList extends React.Component {
       })),
       totalQuantity: billDetail.totalQuantity,
       totalCost: billDetail.totalPrice,
-      discount: totalCostWithoutDiscount - billDetail.totalPrice + billDetail.otherCost,
-      otherCost: billDetail.otherCost,
+      discount: totalCostWithoutDiscount - billDetail.totalPrice,
+      otherCost: 0,
       preCost: totalCostWithoutDiscount
     });
   };
@@ -54,30 +54,8 @@ class DetailList extends React.Component {
     </View>
   );
 
-  renderScanningPrinter = () => (
-    <View style={{ flex: 1, marginTop: 20, alignItems: 'center' }}>
-      <Text style={Style.blackHeaderTitle}>Vui lòng chọn thiết bị bluetooth</Text>
-      <FlatList
-        data={this.state.ips}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={{
-              width: 400,
-              height: 48,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-            onPress={() => this.onSetupPrinterUrl(item.address)}
-          >
-            <Text style={Style.normalDarkText}>{item.name || 'UNKNOWN NAME'}</Text>
-          </TouchableOpacity>
-        )}
-      />
-    </View>
-  );
-
   render() {
-    const { billDetail, onPayDebt } = this.props;
+    const { billDetail } = this.props;
     let totalDiscount = 0;
     let total = 0;
     billDetail.productList.forEach(item => {
@@ -111,7 +89,7 @@ class DetailList extends React.Component {
           <SubmitButton
             title="Trả tiền thiếu"
             disable={!isDebt}
-            onPress={() => onPayDebt(billDetail.id)}
+            onPress={() => this.props.navigation.navigate('PayDebt')}
             textStyle={{ fontSize: 16, color: isDebt ? Style.color.lightBlue : Style.color.white }}
             buttonStyle={styles.buttonStyle}
           />

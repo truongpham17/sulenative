@@ -6,14 +6,13 @@ import MenuIcon from '../../components/MenuIcon';
 import {
   loadStore,
   updateStore,
-  setCurrentStore,
   setProductDetail,
   loadStoreInfo,
   addStore,
   loadStoreProductDetail,
   loadStoreHistoryDetail
 } from '../../actions';
-import { LeftPanel, Style, MenuBar, LoadingModal } from '../../components';
+import { LeftPanel, Style, MenuBar } from '../../components';
 import RightPanel from './RightPanel/RightPanel';
 import { getDate } from '../../utils/Date';
 import { Store } from '../../models';
@@ -29,7 +28,6 @@ class SupplyScreen extends React.Component<PropsType> {
   };
 
   componentDidMount() {
-    const { navigation } = this.props;
     // this.focusListener = navigation.addListener('didFocus', this.handleRefresh);
   }
 
@@ -44,7 +42,6 @@ class SupplyScreen extends React.Component<PropsType> {
 
   onPress = id => {
     const { loadStoreInfo, loadStoreProductDetail, loadStoreHistoryDetail } = this.props;
-    // setCurrentStore(id);
     loadStoreInfo(id);
     loadStoreProductDetail({ id, skip: 0 });
     loadStoreHistoryDetail({ id, skip: 0 });
@@ -154,10 +151,8 @@ export default connect(
   state => ({
     currentStore: state.store.currentStore,
     stores: state.store.stores,
-    loading: state.detail.loading
   }),
   {
-    setCurrentStore,
     loadStore,
     updateStore,
     setProductDetail,

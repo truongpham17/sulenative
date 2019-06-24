@@ -1,7 +1,7 @@
 import React from 'react';
 import { Header } from 'react-native-elements';
 import { connect } from 'react-redux';
-import { View, Text, AlertIOS } from 'react-native';
+import { View, Text, AlertIOS, StyleSheet } from 'react-native';
 import { CancelButton } from '../SaleScreen/components';
 import MenuIcon from '../../components/MenuIcon';
 
@@ -13,9 +13,10 @@ import {
   setCurrentStore,
   importProduct,
   loadStoreProductImport,
-  removeProductItem
+  removeProductItem,
+  addProductImport
 } from '../../actions';
-import { LeftPanel, Style, MenuBar } from '../../components';
+import { Style, MenuBar, Calculator, StoreHeader } from '../../components';
 import RightPanel from './RightPanel';
 import { Store } from '../../models';
 import { getDate } from '../../utils/Date';
@@ -52,6 +53,11 @@ class ImportScreen extends React.Component<PropsType> {
       failure: () => this.setState({ refreshing: false })
     });
   };
+
+  onSubmitItem = (data: {quantity: Number, importPrice: Number, exportPrice: Number, discount: Number}) => {
+    const { addProductImport } = this.props;
+      addProductImport(data);
+  }
 
   handleRefresh = () => {
     const { currentStore } = this.props;
@@ -109,7 +115,6 @@ class ImportScreen extends React.Component<PropsType> {
 
   render() {
     const { currentStore, importProduct, navigation } = this.props;
-    const { refreshing } = this.state;
     return (
       <View style={{ flex: 1 }}>
         <MenuIcon navigation={navigation} />
@@ -119,27 +124,61 @@ class ImportScreen extends React.Component<PropsType> {
           rightComponent={<CancelButton title="Xoá" onPress={this.removeAllItem} />}
           backgroundColor={Style.color.blackBlue}
         />
-        <View style={{ flex: 1, flexDirection: 'row', backgroundColor: Style.color.background }}>
+
+      <View style={{ flex: 1, flexDirection: 'row' }}>
           <MenuBar navigation={navigation} />
-          <View style={{ flex: 3, margin: 10, borderRadius: 10, backgroundColor: 'white' }}>
-            <LeftPanel
-              containerStyle={{ flex: 1 }}
-              title="Nguồn hàng"
-              data={this.extractStoreData()}
-              onLongPress={this.onLongPress}
-              onPress={this.onPress}
-              activeId={currentStore ? currentStore.id : ''}
-              onAddStore={() => this.showDialog('Nhập tên nguồn hàng', this.addStore)}
-              refreshing={refreshing}
-              onRefresh={this.onRefresh}
-            />
+          <View style={styles.mainContainer} behavior="padding">
+            <View style={{ flex: 4 }}>
+              <StoreHeader haveExportType={false} removeDefaultStore />
+              <Calculator haveImportPrice onSubmitItem={data => this.onSubmitItem(data)} />
+            </View>
+            <View style={styles.detailContainer} >
+              <RightPanel currentStore={currentStore} importProduct={importProduct} navigation={this.props.navigation} />
+            </View>
           </View>
-          <RightPanel currentStore={currentStore} importProduct={importProduct} navigation={this.props.navigation} />
-        </View>
+
+      </View>
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: Style.color.background,
+    padding: 10
+  },
+store: {
+    flex: 1,
+    backgroundColor: Style.color.white
+  },
+  storeViewContainer: {
+    flex: 6,
+    backgroundColor: Style.color.white,
+    borderRadius: 10,
+    marginBottom: 10,
+    overflow: 'hidden',
+  },
+  priceContainer: {
+    flex: 1,
+    position: 'absolute',
+    zIndex: 2,
+    backgroundColor: Style.color.white,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0
+  },
+  detailContainer: {
+    flex: 3,
+    backgroundColor: Style.color.white,
+    borderRadius: 10,
+    marginBottom: 10,
+    marginStart: 10,
+  }
+});
 
 export default connect(
   state => ({
@@ -158,6 +197,7 @@ export default connect(
     setCurrentStore,
     importProduct,
     loadStoreProductImport,
-    removeProductItem
+    removeProductItem,
+    addProductImport
   }
 )(ImportScreen);

@@ -11,6 +11,9 @@ import BillTemplate from './BillTemplate';
 import MenuBar from './MenuBar';
 import LoadingModal from './LoadingModal';
 import DialogStatus from './DialogStatus';
+import Calculator from './Calculator';
+import StoreHeader from './StoreHeader';
+import DetailItem from './DetailItem';
 
 export {
   LeftPanel,
@@ -25,5 +28,8 @@ export {
   BillTemplate,
   MenuBar,
   LoadingModal,
-  DialogStatus
+  DialogStatus,
+  Calculator,
+   StoreHeader,
+   DetailItem
 };

@@ -16,7 +16,8 @@ import {
   SupplyScreen,
   AuthScreen,
   ProfileScreen,
-  SetupPrinter
+  SetupPrinter,
+  PayDebt
 } from './screens';
 import { PanelNavigator } from './components/PanelNavigator';
 
@@ -27,7 +28,8 @@ const MainNavigation = createDrawerNavigator(
     SupplyScreen,
     HistoryScreen,
     ProfileScreen,
-    StatictisScreen
+    StatictisScreen,
+    PayDebt
   },
   {
     contentComponent: PanelNavigator,

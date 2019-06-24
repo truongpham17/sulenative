@@ -41,7 +41,6 @@ class RightPanel extends React.Component {
   onUpdateUser = () => {
     const { onUpdateUser } = this.props;
     const { role, fullname, password, repassword, active } = this.state;
-    console.log(role);
     if (password && password.length < 6) {
       AlertInfo('Mật khẩu phải có ít nhất 6 kí tự!');
       return;

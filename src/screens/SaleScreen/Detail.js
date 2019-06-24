@@ -7,22 +7,21 @@ import { iOSUIKit } from 'react-native-typography';
 
 import {
   removeProductBill,
-  setOtherCost,
   submitBill,
   setPrinterDevice,
   setPrinterConnect,
   setDialogStatus,
   importProduct
 } from '../../actions';
-import { DetailItem } from './components';
 import { formatPrice } from '../../utils/String';
-import CustomerInfo from './CustomerInfo';
-import { Style } from '../../components';
+import { Style, DetailItem } from '../../components';
 
 import { printBill } from '../../utils/Printer';
+import { AlertInfo } from '../../utils/Dialog';
 import { getDatePrinting } from '../../utils/Date';
 
-const title = ['Nguồn', 'Đơn giá', 'SL', 'Tổng'];
+const title = ['Nguồn', '', 'Số lượng', 'Đơn giá', 'Tổng'];
+
 
 class Detail extends React.Component {
   state = {
@@ -33,9 +32,9 @@ class Detail extends React.Component {
     debt: '0',
   };
 
-  onRemove = id => {
+  onRemove = index => {
     const { removeProductBill } = this.props;
-    removeProductBill(id);
+    removeProductBill(index);
   };
 
   onChangeText = (text, type) => {
@@ -56,87 +55,75 @@ class Detail extends React.Component {
 
 
   onSubmitBill = async () => {
-    const { productBills, totalQuantity, totalPrice, otherCost, submitBill, user, importProduct, productNeedToSave, defaultStore, navigation } = this.props;
-    const { customerName, customerPhone, customerAddress, note, debt } = this.state;
-    if (!this.props.connect) {
-      navigation.navigate('SetupPrinter');
+    const { bills, totalQuantity, totalPrice, user, totalDiscount, submitBill, customer } = this.props;
+    const { note, debt } = this.state;
+
+    // for testing only, product will use this function
+    // if (!this.props.connect) {
+    //   navigation.navigate('SetupPrinter');
+    //   return;
+    // }
+
+    const realDebt = Number.isInteger(parseInt(debt, 10)) ? parseInt(debt, 10) : 0;
+    console.log(realDebt);
+    console.log(debt);
+    if (realDebt > 0 && (!customer.username || customer.username.length === 0)) {
+      AlertInfo('Vui lòng nhập khách hàng để ghi nợ');
       return;
     }
 
-    const data = {
-      productList: [],
-      customer: {
-        name: customerName,
-        phone: customerPhone,
-        address: customerAddress
-      },
-      note,
-      totalQuantity,
-      totalPrice,
-      totalPaid: parseInt(totalPrice, 10) - parseInt(debt, 10) + parseInt(otherCost, 10),
-      otherCost,
-      createdBy: user._id
-    };
+    if (bills.length === 0) {
+      AlertInfo('Vui lòng chọn sản phẩm');
+      return;
+    }
 
-    let totalDiscount = 0;
-    productBills.forEach(item => {
-      if (item.soldQuantity > 0) {
-        totalDiscount += item.soldQuantity * item.discount;
-        data.productList.push({
-          product: item.product.id ? item.product.id : { importPrice: item.product.importPrice, exportPrice: item.product.exportPrice },
-          quantity: item.soldQuantity,
-          discount: item.discount,
-          isNew: !item.product.id
-        });
-      } else {
-        data.productList.push({
-          product: item.product.id ? item.product.id : { importPrice: item.product.importPrice, exportPrice: item.product.exportPrice },
-          quantity: item.paybackQuantity,
-          isReturned: true,
-          isNew: !item.product.id
-        });
-      }
-    });
 
-    const printBillList = productBills.map(item => ({
-      quantity: item.soldQuantity > 0 ? item.soldQuantity : -item.paybackQuantity,
-      price: item.product.exportPrice
+    const productList = bills.map(item => ({
+      quantity: item.quantity,
+      exportPrice: item.exportPrice,
+      importPrice: item.importPrice,
+      store: item.store,
+      discount: item.discount || 0,
+      isReturned: !item.isSell
     }));
 
-    importProduct({
-      storeId: defaultStore.id,
-      productList: productNeedToSave.map(item => ({ quantity: item.product.quantity, exportPrice: item.product.exportPrice, importPrice: item.product.importPrice }))
-    }, { success: () => {
-      submitBill(data, {
-        success: billInfo => {
-          this.showStatusDialog('success');
-          printBill({
-            customerName: data.customer.name,
-            customerPhone: data.customer.phone,
-            id: billInfo._id,
-            thungan: user.fullname,
-            date: getDatePrinting(),
-            productList: printBillList,
-            totalQuantity,
-            totalCost: totalPrice,
-            discount: totalDiscount,
-            otherCost,
-            // eslint-disable-next-line no-mixed-operators
-            preCost: totalPrice + totalDiscount - otherCost,
-            note: this.state.note
-          });
-        },
-        failure: () => this.showStatusDialog('error')
-      });
-    },
-failure: () => this.showStatusDialog('error') });
+    const data = {
+      productList,
+      customer,
+      debt: Number.isInteger(parseInt(debt, 10)) ? parseInt(debt, 10) : 0
+    };
+
+    submitBill(data, {
+      success: (billInfo) => {
+        this.showStatusDialog('success');
+        printBill({
+          customerName: data.customer && data.customer.username,
+          customerPhone: data.customer && data.customer.phone,
+          id: billInfo._id,
+          thungan: user.fullname,
+          date: getDatePrinting(),
+          productList: bills.map(item => ({
+            quantity: item.quantity * (item.isSell ? 1 : -1),
+            price: item.exportPrice
+          })),
+          totalQuantity,
+          totalCost: totalPrice,
+          discount: totalDiscount,
+          otherCost: 0,
+          // eslint-disable-next-line no-mixed-operators
+          preCost: totalPrice + totalDiscount,
+          note
+        });
+      },
+      failure: () => this.showStatusDialog('error')
+    });
   };
 
   getTitle = () => {
-    const { productBills } = this.props;
+    const { bills } = this.props;
     const data = [
-      ...productBills.filter(item => item.soldQuantity > 0),
-      ...productBills.filter(item => item.paybackQuantity > 0)
+      ...bills.filter(item => item.soldQuantity > 0),
+      ...bills.filter(item => item.paybackQuantity > 0)
     ];
     return data;
   };
@@ -150,20 +137,21 @@ failure: () => this.showStatusDialog('error') });
     }, 500);
   };
 
-  keyExtractor = item => `${item.id} - ${item.soldQuantity}`;
+  keyExtractor = (item, index) => `${index}-${item.exportPrice}-${item.quantity}`;
 
-  renderItem = ({ item }) => (
+  renderItem = ({ item, index }) => (
     <DetailItem
       data={item}
       containerStyle={styles.itemStyle}
       textStyle={iOSUIKit.body}
       onRemove={this.onRemove}
+      index={index}
     />
   );
 
   renderTitle(data) {
     return data.map((value, index) => (
-      <Text style={[Style.blackTitle, { textAlign: 'left' }]} key={index}>
+      <Text style={[Style.blackTitle, { textAlign: 'center', flex: 1 }]} key={index}>
         {value}
       </Text>
     ));
@@ -171,21 +159,10 @@ failure: () => this.showStatusDialog('error') });
 
   renderFooter() {
     const { note, debt } = this.state;
-    const { otherCost, totalDiscount, totalPrice, totalQuantity, setOtherCost } = this.props;
+    const { totalDiscount, totalPrice, totalQuantity } = this.props;
     return (
       <View style={styles.footerContainerStyle}>
-        <View style={styles.footerStyle}>
-          <Text style={[styles.textSumStyle, { textAlign: 'left' }]}>Phụ phí:</Text>
-          <TextInput
-            style={styles.textInputStyle}
-            placeholderTextColor={Style.color.placeholder}
-            value={otherCost}
-            onChangeText={text => setOtherCost(text)}
-            keyboardType="number-pad"
-            placeholder="0"
-            textAlign="right"
-          />
-        </View>
+
         <View style={styles.footerStyle}>
           <Text style={[styles.textSumStyle, { textAlign: 'left' }]}>Ghi nợ:</Text>
           <TextInput
@@ -231,25 +208,26 @@ failure: () => this.showStatusDialog('error') });
 
 
   render() {
-    const { customerName, customerAddress, customerPhone } = this.state;
-    const { productBills } = this.props;
+    const { bills, customer } = this.props;
+    console.log(customer);
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.titleContainerStyle}>{this.renderTitle(title)}</View>
 
         <FlatList
           contentContainerStyle={{ paddingVertical: 5, paddingHorizontal: 10 }}
-          data={productBills}
+          data={bills}
           renderItem={this.renderItem}
           keyExtractor={this.keyExtractor}
         />
 
-        <CustomerInfo
-          onChangeText={this.onChangeText}
-          name={customerName}
-          address={customerAddress}
-          phone={customerPhone}
-        />
+        <TouchableOpacity
+          onPress={() => this.props.onShowUser()}
+          style={[styles.selectUserContainer, { paddingVertical: 15 }]}
+          behavior="padding"
+        >
+          <Text style={[Style.buttonText, { fontSize: 16 }]}>{customer.username ? `Khách hàng: ${customer.username}` : '+ Nhập khách hàng'}</Text>
+        </TouchableOpacity>
 
       {this.renderFooter()}
 
@@ -260,20 +238,19 @@ failure: () => this.showStatusDialog('error') });
 }
 export default connect(
   state => ({
-    productBills: state.bill.productBills,
+    bills: state.bill.bills,
     totalPrice: state.bill.totalPrice,
     totalQuantity: state.bill.totalQuantity,
     totalDiscount: state.bill.totalDiscount,
-    otherCost: state.bill.otherCost,
     printerURL: state.user.printerURL,
     user: state.user.info,
     connect: state.user.printerConnect,
     productNeedToSave: state.bill.productNeedToSave,
-    defaultStore: state.store.defaultStore
+    defaultStore: state.store.defaultStore,
+    customer: state.bill.customer
   }),
   {
     removeProductBill,
-    setOtherCost,
     submitBill,
     setPrinterDevice,
     setPrinterConnect,
@@ -365,5 +342,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingStart: 8,
     marginBottom: 8
+  },
+  selectUserContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Style.color.blackBlue
   }
 });

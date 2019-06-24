@@ -24,6 +24,10 @@ export const SET_PRINTER_CONNECT = 'set-printer-connect';
 
 export const SELECT_USER = 'select-user';
 
+export const GET_USER_INFO_REQUEST = 'get-user-info-request';
+export const GET_USER_INFO_SUCCESS = 'get-user-info-success';
+export const GET_USER_INFO_FAILURE = 'get-user-info-failure';
+
 export function login(data, callback = {}) {
   return async dispatch => {
     try {
@@ -86,9 +90,36 @@ export function getUser(callback) {
   };
 }
 
+export function getUserInfo(id, callback) {
+  return async dispatch => {
+    try {
+      dispatch({
+        type: GET_USER_INFO_REQUEST
+      });
+      const result = await query({ endpoint: `/user/${id}` });
+      if (result.status === 200) {
+        dispatch({
+          type: GET_USER_INFO_SUCCESS,
+          payload: result.data
+        });
+        callback.success();
+      } else {
+        callback.failure();
+        dispatch({
+          type: GET_USER_INFO_FAILURE
+        });
+      }
+    } catch (error) {
+      callback.failure();
+      dispatch({
+        type: GET_USER_INFO_FAILURE
+      });
+    }
+  };
+}
+
 export function addUser(data, callback) {
   return async dispatch => {
-    console.log(data);
     try {
       const { username, password, fullname, role, active } = data;
       dispatch({
@@ -128,8 +159,6 @@ export function addUser(data, callback) {
 
 export function updateUser(id, data, callback = {}) {
   return async dispatch => {
-    console.log(data);
-    console.log('come here!!!');
     try {
       dispatch({
         type: UPDATE_USER_REQUEST
@@ -140,7 +169,6 @@ export function updateUser(id, data, callback = {}) {
         method: METHODS.patch
       });
       if (result.status === 200) {
-        console.log(result.data);
         if (callback.success) {
           callback.success();
         }

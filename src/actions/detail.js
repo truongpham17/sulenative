@@ -124,7 +124,7 @@ export function loadStoreHistoryDetail(
 export function loadStoreInfo(id, callback = {}) {
   return async dispatch => {
     try {
-      dispatch({ type: LOAD_STORE_INFO_REQUEST });
+      dispatch({ type: LOAD_STORE_INFO_REQUEST, payload: id });
       const result = await query({
         endpoint: `${ENDPOINTS.store}/${id}`
       });
@@ -145,6 +145,7 @@ export function loadStoreInfo(id, callback = {}) {
         }
       }
     } catch (err) {
+      console.log(err);
       dispatch({ type: LOAD_STORE_INFO_FAILURE, payload: err });
       if (callback.failure) {
         callback.failure();
@@ -203,7 +204,6 @@ export function returnProduct(data, callback = {}) {
 }
 
 export function updateExportPrice(data, callback) {
-  console.log(data);
   return async dispatch => {
     try {
       dispatch({ type: UPDATE_PRICE_REQUEST });

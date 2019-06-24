@@ -24,7 +24,7 @@ class StatictisScreen extends React.Component {
     selectedStartMonth: undefined,
     selectedEndMonth: undefined,
     storeSelectedId: '',
-    type: 'Lợi nhuận' // 'Lợi nhuận', 'Đã bán', 'Còn lại'
+    type: 'Thu nhập' // 'Lợi nhuận', 'Đã bán', 'Còn lại'
   };
 
   componentDidMount() {
@@ -55,7 +55,6 @@ class StatictisScreen extends React.Component {
   };
 
   onSelection = item => {
-    console.log(item);
     this.setState({
       type: item
     });

@@ -7,6 +7,7 @@ export const SET_IS_SELL = 'set-type';
 export const SET_SELL_QUANTITY = 'set-product-quantity';
 export const SET_CURRENT_PRODUCT_BILLS = 'set-current-product-bill';
 export const SET_PRODUCT_BILL = 'set-product-bill';
+export const ADD_PRODUCT_BILL = 'add-product-bill';
 export const SET_PRODUCT_RETURN = 'set-product-return';
 
 export const SET_OTHER_COST = 'set-other-cost';
@@ -27,6 +28,8 @@ export const ADD_BILL_PRODUCT = 'add-bill-product';
 
 export const LOAD_NEW_STORE = 'load-new-store';
 
+export const SET_CUSTOMER = 'set-customer';
+
 export function setIsSell(data) {
   return {
     type: SET_IS_SELL,
@@ -34,12 +37,6 @@ export function setIsSell(data) {
   };
 }
 
-export function setQuantity(data: { id: string, value: number }) {
-  return {
-    type: SET_SELL_QUANTITY,
-    payload: data
-  };
-}
 
 export function setCurrentProductBills(data) {
   return {
@@ -48,16 +45,9 @@ export function setCurrentProductBills(data) {
   };
 }
 
-export function setProductBill(data: ProductBill) {
+export function addProductBill(data: {store: {storeId: string, storeName: string}, quantity: Number, exportPrice: Number, isSell: Boolean, importPrice: Number, discount: Number}) {
   return {
-    type: SET_PRODUCT_BILL,
-    payload: data
-  };
-}
-
-export function setProductReturn(data: ProductBill) {
-  return {
-    type: SET_PRODUCT_RETURN,
+    type: ADD_PRODUCT_BILL,
     payload: data
   };
 }
@@ -106,14 +96,14 @@ export function loadStoreProduct(
   };
 }
 
-export function removeProductBill(id: string) {
+export function removeProductBill(index: Number) {
   return {
     type: REMOVE_PRODUCT_BILL,
-    payload: id
+    payload: index
   };
 }
 
-export function setDiscount(data: { id: string, value: number }) {
+export function setDiscount(data: { index: Number, value: Number }) {
   return {
     type: SET_DISCOUNT,
     payload: data
@@ -155,7 +145,6 @@ export function addNewProduct(product) {
 }
 
 export function submitBill(data, callback: {}) {
-  console.log(data);
   return async dispatch => {
     try {
       dispatch({
@@ -166,12 +155,10 @@ export function submitBill(data, callback: {}) {
         data,
         method: METHODS.post
       });
-      console.log(result.status);
       if (result.status === 201) {
         if (callback.success) {
           callback.success(result.data);
         }
-        console.log(result.data);
         dispatch({
           type: SUBMIT_BILL_SUCCESS,
           payload: result.data
@@ -194,5 +181,12 @@ export function submitBill(data, callback: {}) {
         payload: err
       });
     }
+  };
+}
+
+export function setCustomer(customer) {
+  return {
+    type: SET_CUSTOMER,
+    payload: customer
   };
 }

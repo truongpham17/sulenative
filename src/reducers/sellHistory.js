@@ -43,7 +43,6 @@ export default (state = INITIAL_STATE, action) => {
         loading: false
       };
     case PAY_DEBT_SUCCESS:
-      console.log(action.payload);
       return {
         ...state,
         listBill: state.listBill.map(item => {

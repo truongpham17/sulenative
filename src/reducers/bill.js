@@ -1,8 +1,5 @@
 import {
   SET_IS_SELL,
-  SET_SELL_QUANTITY,
-  SET_PRODUCT_BILL,
-  SET_PRODUCT_RETURN,
   REMOVE_PRODUCT_BILL,
   SET_DISCOUNT,
   CLOSE_BILL,
@@ -12,54 +9,49 @@ import {
   LOAD_PRODUCT_SUCCESS,
   LOAD_NEW_STORE,
   SET_OTHER_COST,
-  ADD_BILL_PRODUCT
+  ADD_BILL_PRODUCT,
+  ADD_PRODUCT_BILL,
+  SET_CUSTOMER
 } from '../actions';
 import LOAD_NUMBER from '../utils/System';
 
 const INITIAL_STATE = {
   isSell: true,
-  currentProductBills: [],
-  productBills: [],
   loading: false,
   error: '',
   total: 0,
-  loadingBill: false,
-  firstLoading: true,
-  skip: 0,
   totalPrice: 0,
   totalQuantity: 0,
   totalDiscount: 0,
   otherCost: '0',
-  productNeedToSave: []
+  bills: [],
+  customer: {}
 };
 
-function calculateTotalValue(products, otherCost) {
+function calculateTotalValue(bills) {
   let totalPrice = 0;
   let totalQuantity = 0;
   let totalDiscount = 0;
-  products.forEach(item => {
-    if (item.soldQuantity > 0) {
-      totalPrice += item.soldQuantity * (item.product.exportPrice - item.discount);
-      totalQuantity += item.soldQuantity;
-    } else {
-      totalPrice -= item.paybackQuantity * item.product.exportPrice;
+  bills.forEach(item => {
+    const isSell = item.isSell ? 1 : -1;
+    if (item.discount) {
+      totalDiscount += (item.discount || 0) * item.quantity; // remember to parse to int before add to reducer
     }
-    totalDiscount += item.discount * item.soldQuantity;
+    totalPrice += item.quantity * item.exportPrice * isSell;
+    totalQuantity += item.isSell ? item.quantity : 0;
   });
-  if (!!otherCost && otherCost.length > 0) {
-    totalPrice += parseInt(otherCost, 10);
-  }
   return {
-    totalPrice,
+    totalPrice: totalPrice - totalDiscount,
+    // minus discount
     totalQuantity,
     totalDiscount
   };
 }
 
 export default (state = INITIAL_STATE, action) => {
-  let updateProduct;
   let productBills = [];
   let data = {};
+  let bills = [];
   let currentProductBills = [];
 
   switch (action.type) {
@@ -68,112 +60,33 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         isSell: action.payload
       };
-    case SET_SELL_QUANTITY:
+    case ADD_PRODUCT_BILL:
+      bills = [...state.bills, action.payload];
+      data = calculateTotalValue(bills);
       return {
         ...state,
-        currentProductBills: state.currentProductBills.map(item => {
-          if (item.id === action.payload.id) {
-            if (state.isSell) {
-              return { ...item, soldQuantity: action.payload.value };
-            }
-            return { ...item, paybackQuantity: action.payload.value };
+        bills,
+        ...data
+      };
+
+    case REMOVE_PRODUCT_BILL:
+      bills = state.bills;
+      bills.splice(action.payload, 1);
+      data = calculateTotalValue(bills);
+      return {
+        ...state,
+       bills: [...bills],
+       ...data
+      };
+    case SET_DISCOUNT:
+      return {
+        ...state,
+        bills: state.bills.map((item, idx) => {
+          if (idx === action.payload.index) {
+            return { ...item, discount: action.payload.value };
           }
           return item;
         })
-      };
-    case SET_PRODUCT_BILL:
-      updateProduct = state.productBills.find(
-        item => item.id === action.payload.id && item.paybackQuantity === 0
-      );
-
-      currentProductBills = state.currentProductBills.map(item => {
-        if (item.id === action.payload.id) {
-          return {
-            ...item,
-            soldQuantity: action.payload.soldQuantity
-          };
-        }
-        return item;
-      });
-
-      productBills = updateProduct
-        ? state.productBills.map(item => {
-            if (item.id === action.payload.id && item.paybackQuantity === 0) {
-              return { ...action.payload, paybackQuantity: 0 };
-            }
-            return item;
-          })
-        : [...state.productBills, { ...action.payload, paybackQuantity: 0 }];
-      data = calculateTotalValue(productBills, state.otherCost);
-
-      return {
-        ...state,
-        currentProductBills,
-        productBills: productBills.filter(item => item.soldQuantity > 0 || item.paybackQuantity > 0),
-        ...data
-      };
-
-    case SET_PRODUCT_RETURN:
-      updateProduct = state.productBills.find(
-        item => item.id === action.payload.id && item.soldQuantity === 0
-      );
-      currentProductBills = state.currentProductBills.map(item => {
-        if (item.id === action.payload.id) {
-          return {
-            ...item,
-            paybackQuantity: action.payload.paybackQuantity
-          };
-        }
-        return item;
-      });
-      productBills = updateProduct
-        ? state.productBills.map(item => {
-            if (item.id === action.payload.id && item.soldQuantity === 0) {
-              return { ...action.payload, soldQuantity: 0 };
-            }
-            return item;
-          })
-        : [...state.productBills, { ...action.payload, soldQuantity: 0 }];
-      data = calculateTotalValue(productBills, state.otherCost);
-      return {
-        ...state,
-        productBills: productBills.filter(item => item.paybackQuantity > 0 || item.soldQuantity > 0),
-        ...data,
-        currentProductBills
-      };
-    case REMOVE_PRODUCT_BILL:
-      productBills = state.productBills.filter(item => item.id !== action.payload);
-
-      currentProductBills = state.currentProductBills.map(item => {
-        if (item.id === action.payload) {
-          return {
-            ...item,
-            soldQuantity: 0,
-            paybackQuantity: 0
-          };
-        }
-        return item;
-      });
-
-      data = calculateTotalValue(productBills, state.otherCost);
-      return {
-        ...state,
-        productBills,
-        currentProductBills,
-        ...data
-      };
-    case SET_DISCOUNT:
-      productBills = state.productBills.map(item => {
-        if (item.id === action.payload.id) {
-          return { ...item, discount: action.payload.value };
-        }
-        return item;
-      });
-      data = calculateTotalValue(productBills, state.otherCost);
-      return {
-        ...state,
-        productBills,
-        ...data
       };
     case SET_OTHER_COST:
       data = calculateTotalValue(state.productBills, action.payload);
@@ -186,7 +99,7 @@ export default (state = INITIAL_STATE, action) => {
       data = calculateTotalValue([], 0);
       return {
         ...state,
-        productBills: [],
+        bills: [],
         ...data,
         otherCost: '0',
         currentProductBills: []
@@ -276,6 +189,8 @@ export default (state = INITIAL_STATE, action) => {
         currentProductBills: [],
         firstLoading: true
       };
+    case SET_CUSTOMER:
+      return { ...state, customer: action.payload };
     default:
       return state;
   }

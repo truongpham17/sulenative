@@ -8,7 +8,6 @@ import { formatPrice } from '../../../utils/String';
 class BasicInfo extends React.Component {
   render() {
     const { billDetail, currentBill } = this.props;
-    console.log(currentBill);
     const data = currentBill.customer || {};
     let text = '';
     let textStyle = {};
@@ -16,7 +15,7 @@ class BasicInfo extends React.Component {
       text = 'Đã thanh toán';
       textStyle = styles.specificText;
     } else {
-      text = 'Còn thiếu';
+      text = 'Mua thiếu';
       textStyle = styles.specificTextError;
     }
     return (
@@ -24,7 +23,7 @@ class BasicInfo extends React.Component {
         <View style={styles.nameContainer}>
           <View>
             <Text style={[Style.blackEmphasizeTitle, { fontSize: 20 }]}>
-              {data.name || 'Không có tên'}
+              {data.username || 'Không có tên'}
             </Text>
             <Text style={[Style.smallPlaceholderText]}>{data.phone || 'Không có số'}</Text>
           </View>

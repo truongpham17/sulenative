@@ -13,7 +13,8 @@ import {
   ADD_USER_SUCCESS,
   ADD_USER_REQUEST,
   ADD_STORE_FAILURE,
-  SET_PRINTER_DEVICE
+  SET_PRINTER_DEVICE,
+  GET_USER_INFO_SUCCESS
 } from '../actions';
 
 const INITIAL_STATE = {
@@ -104,6 +105,11 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         printerConnect: action.payload
+      };
+    case GET_USER_INFO_SUCCESS:
+      return {
+        ...state,
+        info: { ...state.info, role: action.payload.role, active: action.payload.active, fullname: action.payload.fullname }
       };
     default:
       return state;

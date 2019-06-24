@@ -12,6 +12,7 @@ const itemKey = [
   'HistoryScreen',
   'StatictisScreen',
   'ProfileScreen',
+  'PayDebt',
   'Logout'
 ];
 
@@ -91,10 +92,17 @@ class Panel extends React.Component {
           activeItem={activeItemKey}
         />
          ) : null}
+         <Item
+          title="Quản lý nợ"
+          icon={{ name: 'credit-card', size: 24, type: 'feather' }}
+          itemKey={itemKey[6]}
+          onPress={this.onPress}
+          activeItem={activeItemKey}
+         />
         <Item
           title="Đăng xuất"
           icon={{ name: 'log-out', size: 24, type: 'feather' }}
-          itemKey={itemKey[6]}
+          itemKey={itemKey[7]}
           onPress={this.onLogout}
           activeItem={activeItemKey}
         />

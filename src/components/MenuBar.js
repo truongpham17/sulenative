@@ -14,6 +14,7 @@ const itemKey = [
   'HistoryScreen',
   'StatictisScreen',
   'ProfileScreen',
+  'PayDebt',
   'Logout'
 ];
 
@@ -24,6 +25,7 @@ const icons = [
   { name: 'file-text', size: 24, type: 'feather', color: Style.color.white },
   { name: 'activity', size: 24, type: 'feather', color: Style.color.white },
   { name: 'user', size: 24, type: 'feather', color: Style.color.white },
+  { name: 'credit-card', size: 24, type: 'feather', color: Style.color.white }
   // { name: 'log-out', size: 24, type: 'feather', color: Style.color.white }
 ];
 class MenuBar extends React.PureComponent {

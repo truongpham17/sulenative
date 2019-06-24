@@ -1,15 +1,26 @@
 import React from 'react';
-import { FlatList, StyleSheet, Text, View, TextInput, KeyboardAvoidingView } from 'react-native';
+import { FlatList, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 
+// import { Print } from 'expo';
 import { connect } from 'react-redux';
 import { iOSUIKit } from 'react-native-typography';
-import { formatPrice } from '../../utils/String';
-import { setNote, setDebt, importProduct, setDialogStatus, easeImportData } from '../../actions';
-import { AlertInfo } from '../../utils/Dialog';
-import { Style, DetailItem, RowTable } from '../../components';
-import { SubmitButton } from '../../components/button';
 
-const title = ['Số lượng', 'Giá nhập', 'Giá bán', 'Tổng'];
+import {
+  removeProductBill,
+  setOtherCost,
+  submitBill,
+  setPrinterDevice,
+  setPrinterConnect,
+  setDialogStatus,
+  importProduct
+} from '../../actions';
+import { formatPrice } from '../../utils/String';
+import { Style, DetailItem } from '../../components';
+
+import { printBill } from '../../utils/Printer';
+import { getDatePrinting } from '../../utils/Date';
+
+const title = ['Nguồn', '', 'Số lượng', 'Đơn giá', 'Tổng'];
 
 
 class Detail extends React.Component {
@@ -20,38 +31,13 @@ class Detail extends React.Component {
     removeProductBill(index);
   };
 
-  onSubmitImport = () => {
-    const { products, note, debt, currentStore, importProduct } = this.props;
-    if (currentStore.id.length === 0 || currentStore.isDefault) {
-      AlertInfo('Vui lòng chọn nhà cung cấp');
-      return;
-    }
-    if (products.length === 0) {
-      AlertInfo('Vui lòng nhập sản phẩm');
-      return;
-    }
-    importProduct({
-      storeId: currentStore.id,
-      note: `${note} `,
-      productList: products,
-      debt,
-      shoudSaveAsHistory: true
-    }, {
-      success: () => {
-        this.showStatusDialog('success');
-        this.props.easeImportData();
-      },
-      failure: () => this.showStatusDialog('error')
-    });
-  }
-
   showStatusDialog = type => {
     setTimeout(() => {
       this.props.setDialogStatus({
         showDialog: true,
         dialogType: type
       });
-    }, 1000);
+    }, 500);
   };
 
   keyExtractor = (item, index) => `${index}-${item.exportPrice}-${item.quantity}`;
@@ -63,56 +49,44 @@ class Detail extends React.Component {
       textStyle={iOSUIKit.body}
       onRemove={this.onRemove}
       index={index}
-      haveSource={false}
-      haveImportPrice
     />
   );
 
   renderTitle(data) {
     return data.map((value, index) => (
-      <Text style={[Style.blackTitle, { textAlign: 'center', flex: 1 }]} key={index}>
+      <Text style={[Style.blackTitle, { textAlign: 'left' }]} key={index}>
         {value}
       </Text>
     ));
   }
 
-  renderDetailItem = (title, info) => (
-    <RowTable
-      itemContainerStyle={{ alignItems: 'flex-start' }}
-      flexArray={[2, 1]}
-      containerStyle={{ flex: 1 }}
-    >
-      <Text style={Style.normalDarkText}>{title}</Text>
-      <Text style={[Style.textEmphasize, { textAlign: 'right', width: '100%' }]}>
-        {info}
-      </Text>
-    </RowTable>
-  );
-
-
   renderDetail() {
-    const { currentStore, totalQuantity, totalPrice, debt, note, setNote, setDebt } = this.props;
+    const { currentStore } = this.props;
+    const { quantity, exportPrice, importPrice } = this.state;
     return (
       <View style={styles.detailContainer}>
         <Text style={styles.textStyle}>Thông tin</Text>
-        {this.renderDetailItem('Tổng số lượng nhập: ', `${totalQuantity} cái`)}
-        {this.renderDetailItem('Tổng tiền nhập: ', formatPrice(totalPrice))}
+        {this.renderDetailItem('Tên nguồn hàng: ', currentStore.name)}
+        {this.renderDetailItem('Tổng số lượng nhập: ', `${quantity || 0} cái`)}
+        {this.renderDetailItem('Tổng tiền nhập: ', formatPrice(importPrice))}
+        {this.renderDetailItem('Tông tiền có thể bán: ', formatPrice(exportPrice))}
         {this.renderDetailItem('Tiền nợ nguồn hàng: ', formatPrice(currentStore.debt))}
-        <RowTable flexArray={[0, 1]} itemContainerStyle={{ alignItems: 'flex-end' }} containerStyle={{ flex: 1 }}>
+
+        <RowTable flexArray={[0, 1]} itemContainerStyle={{ alignItems: 'flex-end' }}>
           <Text style={Style.normalDarkText}>Ghi thêm nợ</Text>
           <TextInput
             style={styles.textInputStyle}
             keyboardType="number-pad"
-            onChangeText={text => setDebt(text)}
-            value={`${debt}`}
+            onChangeText={this.onChangeDebt}
+            value={this.state.debt}
             textAlign="right"
           />
         </RowTable>
         <TextInput
           placeholder="Ghi chú"
           style={styles.noteInputStyle}
-          onChangeText={text => setNote(text)}
-          value={note}
+          onChangeText={text => this.setState({ note: text })}
+          value={this.state.note}
         />
         <SubmitButton
           title="Xác nhận"
@@ -126,36 +100,44 @@ class Detail extends React.Component {
 
 
   render() {
-    const { products } = this.props;
+    const { bills } = this.props;
     return (
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+      <View style={{ flex: 1 }}>
         <View style={styles.titleContainerStyle}>{this.renderTitle(title)}</View>
-        <View style={{ flex: 1 }}>
-          <FlatList
-            contentContainerStyle={{ paddingVertical: 5, paddingHorizontal: 10 }}
-            data={products}
-            renderItem={this.renderItem}
-            keyExtractor={this.keyExtractor}
-          />
-        </View>
+        <FlatList
+          contentContainerStyle={{ paddingVertical: 5, paddingHorizontal: 10 }}
+          data={bills}
+          renderItem={this.renderItem}
+          keyExtractor={this.keyExtractor}
+        />
 
-        {this.renderDetail()}
-      </KeyboardAvoidingView>
+
+      </View>
     );
   }
 }
 export default connect(
   state => ({
-    products: state.importProduct.products,
-    currentStore: state.store.currentStore,
-    totalQuantity: state.importProduct.totalQuantity,
-    totalPrice: state.importProduct.totalPrice,
-    debt: state.importProduct.debt,
-    note: state.importProduct.note
-  }), {
-    setNote, setDebt, importProduct, setDialogStatus, easeImportData
+    bills: state.bill.bills,
+    totalPrice: state.bill.totalPrice,
+    totalQuantity: state.bill.totalQuantity,
+    totalDiscount: state.bill.totalDiscount,
+    otherCost: state.bill.otherCost,
+    printerURL: state.user.printerURL,
+    user: state.user.info,
+    connect: state.user.printerConnect,
+    productNeedToSave: state.bill.productNeedToSave,
+    defaultStore: state.store.defaultStore
+  }),
+  {
+    removeProductBill,
+    setOtherCost,
+    submitBill,
+    setPrinterDevice,
+    setPrinterConnect,
+    setDialogStatus,
+    importProduct
   }
-
 )(Detail);
 
 const styles = StyleSheet.create({
@@ -165,6 +147,7 @@ const styles = StyleSheet.create({
     borderRadius: 8
   },
   textStyle: {
+    flex: 1,
     fontSize: 18,
     textAlign: 'center'
   },
@@ -240,13 +223,5 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingStart: 8,
     marginBottom: 8
-  },
-  detailContainer: {
-    backgroundColor: Style.color.white,
-    borderWidth: 1,
-    borderColor: Style.color.lightBorder,
-    padding: 8,
-    marginBottom: 10,
-    height: 300
-  },
+  }
 });

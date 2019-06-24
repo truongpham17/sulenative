@@ -142,8 +142,9 @@ export default {
   },
   noteText: {
     fontFamily: 'AvenirNext-Regular',
-    fontSize: 10,
-    color: '#f4511e'
+    fontSize: 14,
+    color: 'red',
+
   },
   bestSeller: BEST_SELLER_IMG
 };

@@ -1,60 +1,55 @@
 import React from 'react';
-import { iOSColors } from 'react-native-typography';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Swipeout from 'react-native-swipeout';
 import { Icon } from 'react-native-elements';
-import { ProductBill } from '../../../models';
-import { formatPrice } from '../../../utils/String';
-import { Style } from '../../../components';
+import { formatPrice } from '../utils/String';
+import { Style } from '.';
 
 type PropsType = {
-  data: ProductBill,
+  data: {store: {storeId: string, storeName: string}, quantity: Number, exportPrice: Number, isSell: Boolean},
   containerStyle: {},
-  textStyle: {}
+  textStyle: {},
+  index: Number,
+  haveSource?: boolean,
+  haveImportPrice? :Boolean
 };
 
 class DetailItem extends React.PureComponent<PropsType> {
+  static defaultProps = {
+    haveSource: true,
+    haveImportPrice: false
+
+  }
   renderTextItem() {
-    const { data } = this.props;
-    let quantity;
-    let style;
-    let sum;
-    // const price = data.product.exportPrice - data.discount;
-    const price = data.product.exportPrice;
-    if (data.soldQuantity > 0) {
-      quantity = data.soldQuantity;
-      style = { backgroundColor: Style.color.lightBackground };
-      sum = quantity * (data.product.exportPrice - data.discount);
-    } else {
-      quantity = data.paybackQuantity;
-      style = { backgroundColor: iOSColors.gray };
-      sum = -quantity * data.product.exportPrice;
-    }
+    const { data, haveSource, haveImportPrice } = this.props; // object: {store: {storeId, storeName}, quantity, exportPrice, isSell, discount};
+    const sum = haveImportPrice ? data.importPrice * data.quantity : (data.exportPrice - (data.discount || 0)) * data.quantity;
     return (
-      <View style={[styles.containerStyle, style]}>
+      <View style={[styles.containerStyle, data.isSell ? styles.returnStyle : {}]}>
+        {haveSource && (
         <View style={{ flexDirection: 'row', flex: 2, alignItems: 'center' }}>
           <Icon
             type="feather"
-            name={data.soldQuantity > 0 ? 'upload' : 'download'}
+            name={data.isSell ? 'upload' : 'download'}
             size={18}
             color="white"
           />
-          <Text style={[styles.textBigStyle]}>{data.product.store.name}</Text>
-        </View>
+          <Text style={[styles.textBigStyle]}>{data.store.storeName}</Text>
+        </View>)}
+        <Text style={[styles.textStyle]}>{data.quantity} cái</Text>
+        {haveImportPrice && <Text style={styles.textStyle}>{formatPrice(data.importPrice)}</Text>}
         <Text style={[styles.textStyle]}>
-          {formatPrice(price)}
-          {data.discount > 0 ? <Text style={Style.noteText}>(-{data.discount})</Text> : ''}
+          {formatPrice(data.exportPrice)}
+          {data.discount > 0 && haveSource && <Text style={Style.noteText}>{' '}(-{data.discount})</Text> }
         </Text>
-        <Text style={[styles.textStyle]}>{quantity}</Text>
         <Text style={[styles.textStyle]}>{formatPrice(sum)}</Text>
       </View>
     );
   }
 
   renderRemoveButton() {
-    const { data } = this.props;
+    const { index } = this.props;
     return (
-      <TouchableOpacity style={styles.buttonStyle} onPress={() => this.props.onRemove(data.id)}>
+      <TouchableOpacity style={styles.buttonStyle} onPress={() => this.props.onRemove(index)}>
         <Icon name="delete" type="antdesign" size={24} />
       </TouchableOpacity>
     );
@@ -86,7 +81,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    marginVertical: 5
+    marginVertical: 5,
+    backgroundColor: Style.color.gray
+  },
+  returnStyle: {
+    backgroundColor: Style.color.lightBlue,
   },
   buttonStyle: {
     flex: 1,

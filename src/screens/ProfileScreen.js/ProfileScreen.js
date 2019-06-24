@@ -13,12 +13,6 @@ class ProfileScreen extends React.Component {
     modalVisible: false,
     modalType: ''
   };
-  componentDidMount() {
-    // this.focusListener = navigation.addListener('didFocus', this.getUser);
-    setTimeout(() => {
-      console.log(this.props.users);
-    }, 1000);
-  }
 
   onLogout = () => {
     const { logout, navigation } = this.props;

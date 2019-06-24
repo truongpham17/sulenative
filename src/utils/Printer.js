@@ -8,7 +8,7 @@ import { BluetoothEscposPrinter } from 'react-native-bluetooth-escpos-printer';
       thungan: string,
       date: dd/MM/YYYY
       productList: {
-          price, quantity, total
+          price, quantity : quantity can be - or +
       },
       totalQuantity: string,
       totalCost: string // format to string {1.000},
@@ -38,8 +38,8 @@ const printBill = async data => {
   await BluetoothEscposPrinter.printText('DUNG LIEN\r\n', {
     encoding: 'GBK',
     codepage: 0,
-    widthtimes: 1,
-    heigthtimes: 1,
+    widthtimes: 2,
+    heigthtimes: 2,
     fonttype: 1
   });
   await BluetoothEscposPrinter.printText('DC: 44 Le Minh Xuan - P.8 - Q.TB - TP.HCM\r\n', CONFIG_NORMAL);
@@ -68,9 +68,12 @@ const printBill = async data => {
   await BluetoothEscposPrinter.printText(`  Nhan vien: ${data.thungan}\r\n\r\n`, {});
   const columnWidths = [6, 16, 10, 16];
 
-  await BluetoothEscposPrinter.printText('-----------------------------------------\r\n', {});
+  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
 
   await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
+ await BluetoothEscposPrinter.printerUnderLine(1);
+    await BluetoothEscposPrinter.printText('                                     \r\n\r\n', CONFIG_NORMAL);
+    await BluetoothEscposPrinter.printerUnderLine(0);
 
   await BluetoothEscposPrinter.printColumn(
     columnWidths,
@@ -94,12 +97,16 @@ const printBill = async data => {
 
 
   let totalCount = 0;
+  let totalQuantity = 0;
+  let buyNumberProduct = 0;
   let isHavePayBack = false;
   for (let i = 0; i < data.productList.length; i++) {
     const item = data.productList[i];
     if (parseInt(item.quantity, 10) > 0) {
       const total = item.price * item.quantity;
+      buyNumberProduct++;
       totalCount += total;
+      totalQuantity += item.quantity;
       await BluetoothEscposPrinter.printColumn(
         columnWidths,
         [
@@ -116,17 +123,10 @@ const printBill = async data => {
     }
   }
 
-  await BluetoothEscposPrinter.printColumn(
-    columnWidths,
-    [
-      BluetoothEscposPrinter.ALIGN.RIGHT,
-      BluetoothEscposPrinter.ALIGN.CENTER,
-      BluetoothEscposPrinter.ALIGN.CENTER,
-      BluetoothEscposPrinter.ALIGN.CENTER
-    ],
-    ['', '', '', '-----------'],
-    {}
-  );
+  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
+  await BluetoothEscposPrinter.printerUnderLine(1);
+     await BluetoothEscposPrinter.printText('                                     \r\n\r\n', CONFIG_NORMAL);
+     await BluetoothEscposPrinter.printerUnderLine(0);
 
 
     await BluetoothEscposPrinter.printColumn(
@@ -137,7 +137,7 @@ const printBill = async data => {
         BluetoothEscposPrinter.ALIGN.CENTER,
         BluetoothEscposPrinter.ALIGN.CENTER
       ],
-      ['', '', '', `${totalCount}.000 VND`],
+      ['', '', `${totalQuantity} cái`, `${totalCount}.000 VND`],
       {}
     );
 
@@ -149,10 +149,12 @@ const printBill = async data => {
       await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
 
       totalCount = 0;
+      totalQuantity = 0;
 
       for (let i = 0; i < data.productList.length; i++) {
         const item = data.productList[i];
         if (parseInt(item.quantity, 10) < 0) {
+          totalQuantity += item.quantity;
           const total = item.price * item.quantity;
           totalCount += total;
           await BluetoothEscposPrinter.printColumn(
@@ -163,24 +165,16 @@ const printBill = async data => {
               BluetoothEscposPrinter.ALIGN.CENTER,
               BluetoothEscposPrinter.ALIGN.CENTER
             ],
-            [`${i + 1} `, `${item.price}.000 VND`, `${-item.quantity} cai`, `${total}.000 VND`],
+            [`${i + 1 - buyNumberProduct} `, `${item.price}.000 VND`, `${-item.quantity} cai`, `${total}.000 VND`],
             {}
           );
         }
       }
 
-      await BluetoothEscposPrinter.printColumn(
-        columnWidths,
-        [
-          BluetoothEscposPrinter.ALIGN.RIGHT,
-          BluetoothEscposPrinter.ALIGN.CENTER,
-          BluetoothEscposPrinter.ALIGN.CENTER,
-          BluetoothEscposPrinter.ALIGN.CENTER
-        ],
-        ['', '', '', '-----------'],
-        {}
-      );
-
+      await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
+      await BluetoothEscposPrinter.printerUnderLine(1);
+         await BluetoothEscposPrinter.printText('                                     \r\n\r\n', CONFIG_NORMAL);
+         await BluetoothEscposPrinter.printerUnderLine(0);
 
       await BluetoothEscposPrinter.printColumn(
         [16, 6, 10, 16],
@@ -190,16 +184,14 @@ const printBill = async data => {
           BluetoothEscposPrinter.ALIGN.CENTER,
           BluetoothEscposPrinter.ALIGN.CENTER
         ],
-        ['', '', '', `${totalCount}.000 VND`],
+        ['', '', `${totalQuantity}`, `${totalCount}.000 VND`],
         {}
       );
     }
 
 
     await BluetoothEscposPrinter.printerUnderLine(1);
-
-
-    await BluetoothEscposPrinter.printText('-----------------------------------------\r\n', CONFIG_NORMAL);
+    await BluetoothEscposPrinter.printText('                                     \r\n\r\n', CONFIG_NORMAL);
     await BluetoothEscposPrinter.printerUnderLine(0);
 
   // await BluetoothEscposPrinter.printText('-----------------------------------------\r\n', {});
@@ -219,19 +211,7 @@ const printBill = async data => {
 
   const discount = data.discount > 0 ? `${data.discount}.000 VND` : '0 VND';
   const otherCost = data.otherCost > 0 ? `${data.otherCost}.000 VND` : '0 VND';
-  // await BluetoothEscposPrinter.printColumn(
-  //   [16, 20],
-  //   [BluetoothEscposPrinter.ALIGN.LEFT, BluetoothEscposPrinter.ALIGN.RIGHT],
-  //   ['Tong so luong', `${data.totalQuantity} cai`],
-  //   {}
-  // );
 
-  // await BluetoothEscposPrinter.printColumn(
-  //   [16, 20],
-  //   [BluetoothEscposPrinter.ALIGN.LEFT, BluetoothEscposPrinter.ALIGN.RIGHT],
-  //   ['Thanh tien', `${data.preCost}.000 VND`],
-  //   {}
-  // );
 
   if (parseInt(data.discount, 10) > 0) {
     await BluetoothEscposPrinter.printColumn(
@@ -276,8 +256,9 @@ const printBill = async data => {
   }
 
   await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
-
-  await BluetoothEscposPrinter.printText('-----------------------------------------\r\n', {});
+ await BluetoothEscposPrinter.printerUnderLine(1);
+    await BluetoothEscposPrinter.printText('                                     \r\n\r\n', CONFIG_NORMAL);
+    await BluetoothEscposPrinter.printerUnderLine(0);
   await BluetoothEscposPrinter.printText('LUU Y: Khi doi tra hang nho mang theo hoa don\r\n', {});
   await BluetoothEscposPrinter.printText('HEN GAP LAI QUY KHACH!\r\n', {});
   await BluetoothEscposPrinter.printText('-----------------------------------------\r\n', {});

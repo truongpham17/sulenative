@@ -72,7 +72,6 @@ class PriceItemNew extends React.Component<PropsType> {
         </View>
         <NumericInput
           onChange={value => {
-            console.log(value);
             onQuantityChange(productBill, value, true);
           }}
           totalHeight={30}

@@ -35,7 +35,7 @@ class StoreDetail extends React.PureComponent {
           {this.renderItem('Tổng sản phẩm nhập', `${data.store.totalImportProduct || 0} sản phẩm`)}
           {this.renderItem('Đã bán', `${this.getProductSell()} sản phẩm`)}
           {this.renderItem('Còn lại', `${data.store.productQuantity || 0} sản phẩm`)}
-          {this.renderItem('Tổng lợi nhuận', formatPrice(data.total || 0))}
+          {this.renderItem('Tổng thu nhập', formatPrice(data.total || 0))}
         </View>
       </View>
     );

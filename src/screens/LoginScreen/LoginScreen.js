@@ -69,7 +69,6 @@ class LoginScreen extends React.Component<PropsType, StateType> {
         loadStore({ success: () => navigation.navigate('MainNavigation') });
       },
       failure: isInactive => {
-        console.log(isInactive);
         if (!isInactive) {
           this.setState({
             passwordError: 'Tên tài khoản hoặc mật khẩu chưa đúng',

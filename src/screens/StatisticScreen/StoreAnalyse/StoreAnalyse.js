@@ -47,7 +47,7 @@ class StoreAnalyse extends React.Component {
     const { selectedOption } = this.props;
     let value = '';
     switch (selectedOption) {
-      case 'Lợi nhuận':
+      case 'Thu nhập':
         value = `${item.store.name} - ${formatPrice(item.total)}`;
         break;
       case 'Còn lại':
@@ -71,7 +71,7 @@ class StoreAnalyse extends React.Component {
       const percentage = 100;
       let value = 0;
       switch (selectedOption) {
-        case 'Lợi nhuận':
+        case 'Thu nhập':
           value = item.total;
           break;
         case 'Còn lại':
@@ -126,7 +126,7 @@ class StoreAnalyse extends React.Component {
           <Text style={Style.textEmphasize}>Theo nguồn hàng</Text>
           <View style={{ width: '40%', marginStart: '30%' }}>
             <SegmentedControls
-              options={['Lợi nhuận', 'Đã bán', 'Còn lại']}
+              options={['Thu nhập', 'Đã bán', 'Còn lại']}
               onSelection={option => this.onSelection(option)}
               selectedOption={selectedOption}
             />

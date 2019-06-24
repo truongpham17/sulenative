@@ -19,7 +19,7 @@ class Total extends React.PureComponent {
       <View style={[styles.containerStyle, containerStyle]}>
         <View style={styles.verticalIndicatorStyle} />
         <View style={styles.contentStyle}>
-          {this.renderItem('Tổng lợi nhuận', formatPrice(totalSoldMoney))}
+          {this.renderItem('Tổng thu nhập', formatPrice(totalSoldMoney))}
           {this.renderItem('Tổng hoá đơn bán được', `${billCount} hoá đơn`)}
         </View>
       </View>

@@ -25,7 +25,7 @@ class Info extends React.PureComponent {
         label = 'Tiền bán';
         break;
       case 2:
-        label = 'Lợi nhuận';
+        label = 'Thu nhập';
         break;
       case 3:
         label = 'Tiền nợ';

@@ -7,6 +7,7 @@ import { SupplyScreen } from './SupplyScreen';
 import { AuthScreen } from './AuthScreen';
 import { ProfileScreen } from './ProfileScreen.js';
 import { SetupPrinter } from './SetupPrinter';
+import { PayDebt } from './PayDebt';
 
 export {
   HistoryScreen,
@@ -17,5 +18,6 @@ export {
   SupplyScreen,
   AuthScreen,
   ProfileScreen,
-  SetupPrinter
+  SetupPrinter,
+  PayDebt
 };

@@ -24,6 +24,10 @@ export const LOAD_HISTORY_REQUEST = 'load-history-request';
 export const LOAD_HISTORY_SUCCESS = 'load-history-success';
 export const LOAD_HISTORY_FAILURE = 'load-history-failure';
 
+export const LOAD_DEBT_STORE_REQUEST = 'load-debt-store-request';
+export const LOAD_DEBT_STORE_SUCCESS = 'load-debt-store-success';
+export const LOAD_DEBT_STORE_FAILURE = 'load-debt-store-failure';
+
 export function addStore(data, callback = {}) {
   return async dispatch => {
     try {
@@ -81,6 +85,22 @@ export function loadStore(callback = {}) {
   };
 }
 
+export function loadDebtStore() {
+  return async dispatch => {
+    try {
+      dispatch({ type: LOAD_DEBT_STORE_REQUEST });
+      const result = await query({ endpoint: `${ENDPOINTS.store}?isDebt=true` });
+      if (result.status === 200) {
+        dispatch({ type: LOAD_DEBT_STORE_SUCCESS, payload: result.data.list });
+      } else {
+        dispatch({ type: LOAD_DEBT_STORE_FAILURE });
+      }
+    } catch (err) {
+      dispatch({ type: LOAD_DEBT_STORE_FAILURE, payload: err });
+    }
+  };
+}
+
 export function updateStore(data: { id: string, name: string, debt: string }, callback = {}) {
   return async dispatch => {
     try {
@@ -121,7 +141,6 @@ export function importProduct(data, callback) {
   return async dispatch => {
     try {
       dispatch({ type: IMPORT_PRODUCT_REQUEST });
-      console.log(data);
       const result = await query({
         endpoint: ENDPOINTS.importStore,
         method: METHODS.post,
