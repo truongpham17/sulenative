@@ -3198,6 +3198,11 @@ html-encoding-sniffer@^1.0.2:
   dependencies:
     whatwg-encoding "^1.0.1"
 
+html-to-image@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/html-to-image/-/html-to-image-0.1.1.tgz#0db51267b4bbd1bc682a07d8dae44bc431ec6acd"
+  integrity sha512-UAjpXmokENeOyzfLwL0+zQ502lXyg6pkzVUmRjtljOH9dR/YdEYQhWrQ/O14hmH5/1L7jv1aOupU4Zi3Y8+iow==
+
 http-errors@~1.7.2:
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/http-errors/-/http-errors-1.7.2.tgz#4f5029cf13239f31036e5b2e55292bcfbcc85c8f"
@@ -5783,6 +5788,13 @@ react-native-calendars@^1.27.0:
     lodash.isequal "^4.5.0"
     prop-types "^15.5.10"
     xdate "^0.8.0"
+
+react-native-camera@^2.11.0:
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-2.11.0.tgz#480de13f0ac192e950c406d8ca0157cf4bb5f41a"
+  integrity sha512-ay8te4nvL5mGzRjb2QMTOyJX+JfaIW/9oFjFVIkXOB9DzFipfeVTPMdwNx9GMpdmQ0muSXkuF16pa7K/1QLHlQ==
+  dependencies:
+    prop-types "^15.6.2"
 
 react-native-elements@^1.1.0:
   version "1.1.0"

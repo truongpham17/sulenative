@@ -55,14 +55,14 @@ class Detail extends React.Component {
 
 
   onSubmitBill = async () => {
-    const { bills, totalQuantity, totalPrice, user, totalDiscount, submitBill, customer } = this.props;
+    const { bills, totalQuantity, totalPrice, user, totalDiscount, submitBill, customer, navigation } = this.props;
     const { note, debt } = this.state;
 
     // for testing only, product will use this function
-    // if (!this.props.connect) {
-    //   navigation.navigate('SetupPrinter');
-    //   return;
-    // }
+    if (!this.props.connect) {
+      navigation.navigate('SetupPrinter');
+      return;
+    }
 
     const realDebt = Number.isInteger(parseInt(debt, 10)) ? parseInt(debt, 10) : 0;
     console.log(realDebt);
@@ -229,7 +229,7 @@ class Detail extends React.Component {
           <Text style={[Style.buttonText, { fontSize: 16 }]}>{customer.username ? `Khách hàng: ${customer.username}` : '+ Nhập khách hàng'}</Text>
         </TouchableOpacity>
 
-      {this.renderFooter()}
+        {this.renderFooter()}
 
 
       </View>

@@ -8,6 +8,7 @@ import { AuthScreen } from './AuthScreen';
 import { ProfileScreen } from './ProfileScreen.js';
 import { SetupPrinter } from './SetupPrinter';
 import { PayDebt } from './PayDebt';
+import { ScanningBarCode } from './Camera';
 
 export {
   HistoryScreen,
@@ -19,5 +20,6 @@ export {
   AuthScreen,
   ProfileScreen,
   SetupPrinter,
-  PayDebt
+  PayDebt,
+  ScanningBarCode
 };
