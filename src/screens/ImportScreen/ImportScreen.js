@@ -54,9 +54,9 @@ class ImportScreen extends React.Component<PropsType> {
     });
   };
 
-  onSubmitItem = (data: {quantity: Number, importPrice: Number, exportPrice: Number, discount: Number}) => {
+  onSubmitItem = (data: { quantity: Number, importPrice: Number, exportPrice: Number, discount: Number }) => {
     const { addProductImport } = this.props;
-      addProductImport(data);
+    addProductImport(data);
   }
 
   handleRefresh = () => {
@@ -125,9 +125,9 @@ class ImportScreen extends React.Component<PropsType> {
           backgroundColor={Style.color.blackBlue}
         />
 
-      <View style={{ flex: 1, flexDirection: 'row' }}>
+        <View style={{ flex: 1, flexDirection: 'row' }}>
           <MenuBar navigation={navigation} />
-          <View style={styles.mainContainer} behavior="padding">
+          <View style={styles.mainContainer}>
             <View style={{ flex: 4 }}>
               <StoreHeader haveExportType={false} removeDefaultStore />
               <Calculator haveImportPrice onSubmitItem={data => this.onSubmitItem(data)} />
@@ -137,7 +137,7 @@ class ImportScreen extends React.Component<PropsType> {
             </View>
           </View>
 
-      </View>
+        </View>
       </View>
     );
   }
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     backgroundColor: Style.color.background,
     padding: 10
   },
-store: {
+  store: {
     flex: 1,
     backgroundColor: Style.color.white
   },

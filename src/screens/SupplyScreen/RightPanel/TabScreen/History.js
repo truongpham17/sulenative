@@ -4,9 +4,11 @@ import { iOSColors } from 'react-native-typography';
 import { connect } from 'react-redux';
 import RowTable from '../../../../components/RowTable';
 import { loadStoreHistoryDetail } from '../../../../actions';
+import { printBill } from '../../../../utils/Printer';
 import { Title, Style, Footer } from '../../../../components';
-import { getDate } from '../../../../utils/Date';
+import { getDate, getDatePrinting } from '../../../../utils/Date';
 import { formatPrice } from '../../../../utils/String';
+import { Alert } from '../../../../utils/Dialog';
 import EmptyScreen from '../../../../components/EmptyStatus';
 import LOAD_NUMBER from '../../../../utils/System';
 
@@ -25,8 +27,40 @@ class History extends React.Component {
 
   keyExtractor = item => item.date;
 
+  alertPrint = (productList, date) => {
+    Alert("In hoá đơn?", "", "Đóng", "In hoá đơn", () => this.printBill(productList, date))
+  }
+
+  printBill = (productList, date) => {
+    const { user, currentStore } = this.props;
+    let totalQuantity = 0;
+    let totalCost = 0;
+    productList.forEach(item => {
+      totalQuantity += parseInt(item.quantity, 10);
+      totalCost += parseInt(item.product.importPrice, 10) * parseInt(item.quantity, 10);
+    });
+
+
+    printBill({
+      customerName: currentStore.name,
+      thungan: user.fullname,
+      date: getDatePrinting(date),
+      productList: productList.map(item => ({
+        quantity: item.quantity,
+        price: item.product.importPrice
+      })),
+      totalQuantity,
+      totalCost,
+      discount: 0,
+      otherCost: 0,
+      // eslint-disable-next-line no-mixed-operators
+      preCost: totalCost,
+      type: 'import'
+    });
+  }
+
   renderItem = ({ item, index }) => (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={() => this.alertPrint(item.productList, item.date)}>
       <RowTable>
         <Text style={Style.normalDarkText}>{index + 1}</Text>
         <Text style={Style.normalDarkText}>{getDate(item.date)}</Text>
@@ -86,7 +120,8 @@ export default connect(
     skip: state.detail.skipHistory,
     total: state.detail.totalHistory,
     totalQuantity: state.detail.totalQuantity,
-    totalPrice: state.detail.totalPrice
+    totalPrice: state.detail.totalPrice,
+    user: state.user.info,
   }),
   { loadStoreHistoryDetail }
 )(History);

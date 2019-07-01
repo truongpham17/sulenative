@@ -12,8 +12,11 @@ import {
   updateStore,
   loadStoreInfo,
   setCurrentStore,
-  updateExportPrice
+  updateExportPrice,
+  setDialogStatus
 } from '../../../../actions';
+import { printBill } from '../../../../utils/Printer';
+import { getDatePrinting } from '../../../../utils/Date';
 import { formatPrice } from '../../../../utils/String';
 import DetailItem from '../../components/DetailItem';
 import { SubmitButton } from '../../../../components/button';
@@ -57,7 +60,7 @@ class DetailInfo extends React.Component<PropsType> {
     const { updateExportPrice } = this.props;
     updateExportPrice(
       { id: product.id, exportPrice },
-      { success: () => {}, failure: () => AlertInfo('Thất bại!') }
+      { success: () => { }, failure: () => AlertInfo('Thất bại!') }
     );
   };
 
@@ -69,11 +72,6 @@ class DetailInfo extends React.Component<PropsType> {
       skip: skip === 0 ? LOAD_NUMBER : skip,
       isContinue: true
     });
-  };
-
-  onCreateBill = data => {
-    console.log(data);
-    // this.onRefreshData();
   };
 
   onRefreshData = () => {
@@ -106,7 +104,7 @@ class DetailInfo extends React.Component<PropsType> {
   };
 
   onReturnProduct = () => {
-    const { products, returnProduct } = this.props;
+    const { products, returnProduct, setDialogStatus } = this.props;
     const checkHaveReturnProduct = products.find(item => item.paybackQuantity > 0);
     const data = !checkHaveReturnProduct
       ? this.getReturnProductData(products, true)
@@ -125,30 +123,25 @@ class DetailInfo extends React.Component<PropsType> {
           returnProduct(data, {
             success: () => {
               setTimeout(() => {
-                AlertInfo('Trả hàng thành công!');
-                // AlertIOS.alert('Trả hàng thành công! In hoá đơn?', null, [
-                //   {
-                //     text: 'Không',
-                //     style: 'cancel',
-                //     onPress: () => this.onRefreshData()
-                //   },
-                //   {
-                //     text: 'In hoá đơn',
-                //     onPress: () => this.onCreateBill(data)
-                //   }
-                // ]);
+                setDialogStatus({
+                  showDialog: true,
+                  dialogType: 'success'
+                });
               }, 1000);
+              this.printBill(data.productList);
             },
             failure: () =>
-              setTimeout(() => {
-                AlertIOS.alert('Trả hàng thất bại, vui lòng thử lại!');
-              }, 1000)
+              setDialogStatus({
+                showDialog: true,
+                dialogType: 'failure'
+              })
           })
       }
     ]);
   };
 
   getReturnProductData(products, isAll) {
+    console.log(products);
     const data = {
       note: '',
       totalPrice: 0,
@@ -160,7 +153,8 @@ class DetailInfo extends React.Component<PropsType> {
       const quantity = isAll ? item.product.quantity : item.paybackQuantity;
       data.productList.push({
         product: item.id,
-        quantity
+        quantity,
+        importPrice: item.product.importPrice
       });
       data.totalQuantity += quantity;
       data.totalPrice += quantity * item.product.importPrice;
@@ -178,6 +172,34 @@ class DetailInfo extends React.Component<PropsType> {
       totalSoldMoney: currentStore.totalSoldMoney
     };
   };
+
+  printBill = (productList) => {
+    const { user, currentStore } = this.props;
+    console.log(productList);
+    let totalQuantity = 0;
+    let totalCost = 0;
+    productList.forEach(item => {
+      totalQuantity += parseInt(item.quantity, 10);
+      totalCost += parseInt(item.importPrice, 10) * parseInt(item.quantity, 10);
+    });
+
+    printBill({
+      customerName: currentStore.name,
+      thungan: user.fullname,
+      date: getDatePrinting(),
+      productList: productList.map(item => ({
+        quantity: item.quantity,
+        price: item.importPrice
+      })),
+      totalQuantity,
+      totalCost,
+      discount: 0,
+      otherCost: 0,
+      // eslint-disable-next-line no-mixed-operators
+      preCost: totalCost,
+      type: 'import'
+    });
+  }
 
   updateStore = text => {
     const { currentStore, updateStore } = this.props;
@@ -414,7 +436,8 @@ export default connect(
     pageIndex: state.store.pageIndex,
     currentStore: state.store.currentStore,
     total: state.detail.totalProduct,
-    skip: state.detail.skipProduct
+    skip: state.detail.skipProduct,
+    user: state.user.info,
   }),
   {
     setPaybackQuantity,
@@ -424,6 +447,7 @@ export default connect(
     updateStore,
     loadStoreInfo,
     setCurrentStore,
-    updateExportPrice
+    updateExportPrice,
+    setDialogStatus
   }
 )(DetailInfo);

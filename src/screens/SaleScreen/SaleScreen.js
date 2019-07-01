@@ -92,6 +92,9 @@ class SaleScreen extends React.Component {
   render() {
     const { navigation, currentStore, isSell } = this.props;
     return (
+      /*
+          
+      */
       <View style={{ flex: 1 }}>
         <StatusBar barStyle="light-content" />
 
@@ -113,7 +116,7 @@ class SaleScreen extends React.Component {
         />
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <MenuBar navigation={navigation} />
-          <KeyboardAvoidingView style={styles.mainContainer} behavior="padding">
+          <View style={styles.mainContainer} >
             <View style={{ flex: 4 }}>
               <StoreHeader />
               <Calculator onSubmitItem={data => this.onSubmitItem(data)} haveImportPrice={currentStore.isDefault && isSell} haveDiscount={isSell} />
@@ -121,9 +124,10 @@ class SaleScreen extends React.Component {
             <View style={styles.detailContainer}>
               <Detail navigation={navigation} onShowUser={() => this.setState({ selectUserModalVisible: true })} />
             </View>
-          </KeyboardAvoidingView>
+          </View>
 
         </View>
+        {/* <SubmitButton onPress={() => navigation.navigate('ScanningBarCode')} title="click here" /> */}
       </View>
     );
   }

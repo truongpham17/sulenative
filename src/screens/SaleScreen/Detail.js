@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 
 // import { Print } from 'expo';
 import { connect } from 'react-redux';
@@ -211,7 +211,7 @@ class Detail extends React.Component {
     const { bills, customer } = this.props;
     console.log(customer);
     return (
-      <View style={{ flex: 1 }}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <View style={styles.titleContainerStyle}>{this.renderTitle(title)}</View>
 
         <FlatList
@@ -232,7 +232,7 @@ class Detail extends React.Component {
         {this.renderFooter()}
 
 
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }

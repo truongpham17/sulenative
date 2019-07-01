@@ -13,6 +13,8 @@
 		00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302DC1ABCB9D200DB3ED1 /* libRCTNetwork.a */; };
 		00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302E41ABCB9EE00DB3ED1 /* libRCTVibration.a */; };
 		00E356F31AD99517003FC87E /* sulenativeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* sulenativeTests.m */; };
+		01763CD122C8F62B003E498A /* libRNCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 01763CC822C8F3B1003E498A /* libRNCamera.a */; };
+		01763CD322C90189003E498A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 01763CD222C90189003E498A /* GoogleService-Info.plist */; };
 		03A78A4CBDA14D2A851618A2 /* libRNGestureHandler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BEF36DD3F46F49D2856E3F05 /* libRNGestureHandler.a */; };
 		0BC5BAEC9C3E460693E4D912 /* libRNBluetoothEscposPrinter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BA4B6D6BF1A4F02B1F35852 /* libRNBluetoothEscposPrinter.a */; };
 		0DCA22322BE94AE8933AFB3D /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EDFA889FDE9C40EE94CFF35C /* Foundation.ttf */; };
@@ -43,6 +45,7 @@
 		313987B5D23E4CB6BCD2C54C /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 66384188484A4E2E95DE6B9F /* Entypo.ttf */; };
 		36045E5C1E8344C193AE3379 /* libRNReanimated.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D6E60B0CF42E5A67B2A4B /* libRNReanimated.a */; };
 		36F277815E924DDB97CCC6F3 /* libRNSVG-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3273E549C600455FBD0EAF9A /* libRNSVG-tvOS.a */; };
+		39E43B508C6441FB2C5B2F84 /* Pods_sulenative.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC289B488A97236B30C593C7 /* Pods_sulenative.framework */; };
 		3AB62DF4E7494FC6BBAD6379 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 208373DA8CE0414C86D16FFD /* AntDesign.ttf */; };
 		3C46E2D4634A41DCBB74A0E6 /* libLottieReactNative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB2E62419D2F460785A9F183 /* libLottieReactNative.a */; };
 		4F37251EB3424E0DB10E20C5 /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3ADFE798E63F426684871625 /* EvilIcons.ttf */; };
@@ -113,6 +116,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
 			remoteInfo = sulenative;
+		};
+		01763CC722C8F3B1003E498A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01763C9922C8F0FD003E498A /* RNCamera.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4107012F1ACB723B00C6AA39;
+			remoteInfo = RNCamera;
 		};
 		139105C01AF99BAD00B5F7CC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -475,6 +485,8 @@
 		00E356EE1AD99517003FC87E /* sulenativeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = sulenativeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* sulenativeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = sulenativeTests.m; sourceTree = "<group>"; };
+		01763C9922C8F0FD003E498A /* RNCamera.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCamera.xcodeproj; path = "../node_modules/react-native-camera/ios/RNCamera.xcodeproj"; sourceTree = "<group>"; };
+		01763CD222C90189003E498A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		05E046A1378D4C1E992AFDBC /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
 		0CCFC12959B24D12B268907D /* libRNSVG.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSVG.a; sourceTree = "<group>"; };
 		0FD7CAD808DB4905B06AC7BA /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
@@ -493,6 +505,7 @@
 		15387A74C5664AFB809D0247 /* libLottie.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libLottie.a; sourceTree = "<group>"; };
 		208373DA8CE0414C86D16FFD /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
 		22CAAD451AF544FB843B58C4 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
+		26A60520C4BD8BBFC03E7172 /* Pods-sulenative.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sulenative.release.xcconfig"; path = "Target Support Files/Pods-sulenative/Pods-sulenative.release.xcconfig"; sourceTree = "<group>"; };
 		290F239AE88E43C48B2C704C /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
 		2B0D9B06A1264E93AFAC8821 /* RNBluetoothEscposPrinter.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNBluetoothEscposPrinter.xcodeproj; path = "../node_modules/react-native-bluetooth-escpos-printer/ios/RNBluetoothEscposPrinter.xcodeproj"; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* sulenative-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "sulenative-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -519,7 +532,9 @@
 		A4B0050514C949BB9908C2A4 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
 		BA9821ECF17E4A2DA6A1B804 /* RNGestureHandler.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNGestureHandler.xcodeproj; path = "../node_modules/react-native-gesture-handler/ios/RNGestureHandler.xcodeproj"; sourceTree = "<group>"; };
+		BC289B488A97236B30C593C7 /* Pods_sulenative.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_sulenative.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BEF36DD3F46F49D2856E3F05 /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGestureHandler.a; sourceTree = "<group>"; };
+		CC60511FAD038C5F70B410BA /* Pods-sulenative.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sulenative.debug.xcconfig"; path = "Target Support Files/Pods-sulenative/Pods-sulenative.debug.xcconfig"; sourceTree = "<group>"; };
 		CD00ADC991A54C0DBF1205AC /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		CE29556415B44F96A31C4080 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
 		CE2D6E60B0CF42E5A67B2A4B /* libRNReanimated.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNReanimated.a; sourceTree = "<group>"; };
@@ -544,6 +559,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01763CD122C8F62B003E498A /* libRNCamera.a in Frameworks */,
 				ED297163215061F000B7C4FE /* JavaScriptCore.framework in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
 				11D1A2F320CAFA9E000508D9 /* libRCTAnimation.a in Frameworks */,
@@ -567,6 +583,7 @@
 				639B1FC3D5D64729AC2056FA /* Lottie.framework in Frameworks */,
 				E7A8555FE9C44AEFAB1FC935 /* libLottie.a in Frameworks */,
 				3C46E2D4634A41DCBB74A0E6 /* libLottieReactNative.a in Frameworks */,
+				39E43B508C6441FB2C5B2F84 /* Pods_sulenative.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -659,6 +676,14 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		01763C9A22C8F0FD003E498A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				01763CC822C8F3B1003E498A /* libRNCamera.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		139105B71AF99BAD00B5F7CC /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -683,6 +708,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
+				01763CD222C90189003E498A /* GoogleService-Info.plist */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -729,8 +755,19 @@
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
+				BC289B488A97236B30C593C7 /* Pods_sulenative.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3A1DC10D3BFCFEB97475CFFD /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				CC60511FAD038C5F70B410BA /* Pods-sulenative.debug.xcconfig */,
+				26A60520C4BD8BBFC03E7172 /* Pods-sulenative.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		5E91572E1DD0AC6500FF2AA8 /* Products */ = {
@@ -776,6 +813,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				01763C9922C8F0FD003E498A /* RNCamera.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -819,6 +857,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				7098B095D68D4B72A54A5DEB /* Resources */,
 				C000603B2289CB1200F960F9 /* Recovered References */,
+				3A1DC10D3BFCFEB97475CFFD /* Pods */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -951,11 +990,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "sulenative" */;
 			buildPhases = (
+				64FFC0D0C129A02C5445DAD1 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				C0F4FC3322A02053004D13D9 /* Embed Frameworks */,
+				6578199F05AB3998911CCF50 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1104,6 +1145,10 @@
 					ProjectRef = 2B0D9B06A1264E93AFAC8821 /* RNBluetoothEscposPrinter.xcodeproj */;
 				},
 				{
+					ProductGroup = 01763C9A22C8F0FD003E498A /* Products */;
+					ProjectRef = 01763C9922C8F0FD003E498A /* RNCamera.xcodeproj */;
+				},
+				{
 					ProductGroup = C000606B2289CB1400F960F9 /* Products */;
 					ProjectRef = BA9821ECF17E4A2DA6A1B804 /* RNGestureHandler.xcodeproj */;
 				},
@@ -1168,6 +1213,13 @@
 			fileType = archive.ar;
 			path = libRCTVibration.a;
 			remoteRef = 00C302E31ABCB9EE00DB3ED1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		01763CC822C8F3B1003E498A /* libRNCamera.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNCamera.a;
+			remoteRef = 01763CC722C8F3B1003E498A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		139105C11AF99BAD00B5F7CC /* libRCTSettings.a */ = {
@@ -1517,6 +1569,7 @@
 				72134FE6BBA5455A89A0663B /* FontAwesome5_Regular.ttf in Resources */,
 				5ED9ABA5C49E4D4EB7DC1CEE /* FontAwesome5_Solid.ttf in Resources */,
 				0DCA22322BE94AE8933AFB3D /* Foundation.ttf in Resources */,
+				01763CD322C90189003E498A /* GoogleService-Info.plist in Resources */,
 				C286A082ABCD4E73BB52F7AE /* Ionicons.ttf in Resources */,
 				7CB8638F04AD45F7B7E635F1 /* MaterialCommunityIcons.ttf in Resources */,
 				1FB145A329834353B3DCCF93 /* MaterialIcons.ttf in Resources */,
@@ -1571,6 +1624,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+		};
+		64FFC0D0C129A02C5445DAD1 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-sulenative-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6578199F05AB3998911CCF50 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-sulenative/Pods-sulenative-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-sulenative/Pods-sulenative-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1735,6 +1830,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC60511FAD038C5F70B410BA /* Pods-sulenative.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 7;
@@ -1766,6 +1862,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 26A60520C4BD8BBFC03E7172 /* Pods-sulenative.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 7;

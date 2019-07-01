@@ -10,7 +10,7 @@ const ROW_1 = [7, 8, 9];
 const ROW_2 = [4, 5, 6];
 const ROW_3 = [1, 2, 3];
 const ROW_4 = ['null', 0, '.'];
-const ROW_FUNCTION = ['delete', 'next', 'enter'];
+const ROW_FUNCTION = ['remove', 'delete', 'next', 'enter'];
 const DATA = [ROW_1, ROW_2, ROW_3, ROW_4];
 
 type PropsType = {
@@ -79,7 +79,7 @@ class Calculator extends React.Component<PropsType> {
     }
 
     if (item === 'delete') {
-      if (valueLength > 1) {
+      if (valueLength >= 1) {
         this.setState({ value: { ...value, [type]: valueIndex.substring(0, valueLength - 1) } });
       } else if (type === 'discount') {
         this.setState({
@@ -88,19 +88,19 @@ class Calculator extends React.Component<PropsType> {
           value: { ...value, [type]: '' }
         });
       } else if (type === 'exportPrice' && haveImportPrice) {
-          this.setState({
-            type: 'importPrice',
-            renderExport: false,
-            value: { ...value, [type]: '' }
-          });
-        } else {
-          this.setState({
-            type: 'quantity',
-            renderExport: false,
-            renderImport: false,
-            value: { ...value, [type]: '' }
-          });
-        }
+        this.setState({
+          type: 'importPrice',
+          renderExport: false,
+          value: { ...value, [type]: '' }
+        });
+      } else {
+        this.setState({
+          type: 'quantity',
+          renderExport: false,
+          renderImport: false,
+          value: { ...value, [type]: '' }
+        });
+      }
       return;
     }
 
@@ -140,6 +140,9 @@ class Calculator extends React.Component<PropsType> {
         this.onSubmitItem(result);
       }
       return;
+    }
+    if (item === 'remove') {
+      this.setState(INITIAL_STATE);
     }
   }
 
@@ -184,8 +187,8 @@ class Calculator extends React.Component<PropsType> {
         {this.renderValue(value.discount)}
       </View>
     )
-;
-}
+      ;
+  }
 
 
   renderItem = ({ item }) => {
@@ -193,32 +196,36 @@ class Calculator extends React.Component<PropsType> {
     if (isNaN(item)) {
       switch (item) {
         case 'null': return <View style={styles.itemStyle} />;
-        case 'delete':value = (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Icon name="arrow-left" size={24} color={Style.color.black} type="feather" />
-        <Text style={[styles.textStyle, { marginTop: 12 }]}>Xoá</Text>
-      </View>); break;
-      case 'enter': value = (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Icon name="corner-down-left" size={28} color={Style.color.black} type="feather" />
-        <Text style={[styles.textStyle, { marginTop: 12 }]}>ENTER</Text>
-      </View>); break;
-      case 'next': value = (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Icon name="arrow-right" size={24} color={Style.color.black} type="feather" />
-      <Text style={[styles.textStyle, { marginTop: 12 }]}>Tiếp</Text>
-    </View>); break;
-      default: value = null;
+        case 'remove': value = (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="x" size={24} color={Style.color.black} type="feather" />
+          <Text style={[styles.textStyle, { marginTop: 12 }]}>Huỷ</Text>
+        </View>); break;
+        case 'delete': value = (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="arrow-left" size={24} color={Style.color.black} type="feather" />
+          <Text style={[styles.textStyle, { marginTop: 12 }]}>Xoá</Text>
+        </View>); break;
+        case 'enter': value = (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="corner-down-left" size={28} color={Style.color.black} type="feather" />
+          <Text style={[styles.textStyle, { marginTop: 12 }]}>ENTER</Text>
+        </View>); break;
+        case 'next': value = (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="arrow-right" size={24} color={Style.color.black} type="feather" />
+          <Text style={[styles.textStyle, { marginTop: 12 }]}>Tiếp</Text>
+        </View>); break;
+        default: value = null;
       }
     }
     return (
-      <TouchableOpacity style={[styles.itemStyle, { flex: item === 'enter' ? 2 : 1 }]} onPress={() => this.onItemPress(item)}>
-      {value || <Text style={[{ textAlign: 'center' }, Style.bigTextEmphasize]}>{item}</Text>}
-    </TouchableOpacity>
+      <TouchableOpacity style={[styles.itemStyle, { flex: 1 }]} onPress={() => this.onItemPress(item)}>
+        {value || <Text style={[{ textAlign: 'center' }, Style.bigTextEmphasize]}>{item}</Text>}
+      </TouchableOpacity>
     );
   }
 
   renderRow = () => DATA.map(row => (<View style={{ flex: 1, flexDirection: 'row' }}>
-        {row.map(item => this.renderItem({ item, flex: 1 }))}
-    </View>)
-    );
+    {row.map(item => this.renderItem({ item, flex: 1 }))}
+  </View>)
+  );
 
   renderFunction = () => ROW_FUNCTION.map(item => this.renderItem({ item }))
 
@@ -244,39 +251,39 @@ export default Calculator;
 
 
 const styles = StyleSheet.create(
-{
-  itemStyle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    margin: 4,
-    borderColor: Style.color.gray,
-    shadowOffset: { x: 0, y: 2 },
-    shadowColor: Style.color.gray,
-    borderWidth: 1,
-    backgroundColor: Style.color.white
-  },
-  textStyle: {
-    alignItems: 'center',
-    ...Style.bigTextEmphasize
-  },
-  textCalculatorContainer: {
-    height: 48,
-    backgroundColor: Style.color.white,
-    marginHorizontal: 4,
-    marginBottom: 6,
-    borderRadius: 4,
-    marginEnd: 8,
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-    overflow: 'hidden'
-  },
-  textCalculator: {
-    ...Style.normalLightText,
-    borderRadius: 4,
-    overflow: 'hidden',
-    backgroundColor: Style.color.blackBlue,
-    paddingHorizontal: 4
+  {
+    itemStyle: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      flex: 1,
+      margin: 4,
+      borderColor: Style.color.gray,
+      shadowOffset: { x: 0, y: 2 },
+      shadowColor: Style.color.gray,
+      borderWidth: 1,
+      backgroundColor: Style.color.white
+    },
+    textStyle: {
+      alignItems: 'center',
+      ...Style.bigTextEmphasize
+    },
+    textCalculatorContainer: {
+      height: 48,
+      backgroundColor: Style.color.white,
+      marginHorizontal: 4,
+      marginBottom: 6,
+      borderRadius: 4,
+      marginEnd: 8,
+      justifyContent: 'flex-end',
+      flexDirection: 'row',
+      overflow: 'hidden'
+    },
+    textCalculator: {
+      ...Style.normalLightText,
+      borderRadius: 4,
+      overflow: 'hidden',
+      backgroundColor: Style.color.blackBlue,
+      paddingHorizontal: 4
+    }
   }
-}
 );

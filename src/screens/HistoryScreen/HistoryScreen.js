@@ -9,6 +9,7 @@ import { getDate } from '../../utils/Date';
 import { formatPrice } from '../../utils/String';
 import MenuIcon from '../../components/MenuIcon';
 import LOAD_NUMBER from '../../utils/System';
+import { CancelButton } from '../SaleScreen/components';
 
 class HistoryScreen extends React.Component {
   state = {
@@ -41,13 +42,18 @@ class HistoryScreen extends React.Component {
     console.log('success');
   };
 
-  onLongPress = () => {};
+  onLongPress = () => { };
 
   onEndReached = () => {
     const { skip, total, loadListBill } = this.props;
     if (Math.max(skip, LOAD_NUMBER) >= total) return;
     loadListBill({ skip: skip === 0 ? LOAD_NUMBER : skip, isContinue: true });
   };
+
+  onScanningBill = () => {
+    const { navigation } = this.props;
+    navigation.navigate('ScanningBarCode', { onScanningSuccess: (id) => this.onPress((`0000${id}`).slice(-5)) });
+  }
 
   onLoadBill = (search, isSearchByName) => {
     const { loadListBill } = this.props;
@@ -82,6 +88,7 @@ class HistoryScreen extends React.Component {
           placement="center"
           centerComponent={<Text style={Style.lightHeaderTitle}>Thông tin hoá đơn</Text>}
           backgroundColor={Style.color.blackBlue}
+          rightComponent={<CancelButton title="Scan hoá đơn" onPress={() => this.onScanningBill()} />}
         />
         <View style={{ flex: 1, flexDirection: 'row', backgroundColor: Style.color.background }}>
           <MenuBar navigation={navigation} />
