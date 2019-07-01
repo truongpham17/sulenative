@@ -17,7 +17,8 @@ import {
   AuthScreen,
   ProfileScreen,
   SetupPrinter,
-  PayDebt
+  PayDebt,
+  ScanningBarCode
 } from './screens';
 import { PanelNavigator } from './components/PanelNavigator';
 
@@ -39,11 +40,11 @@ const MainNavigation = createDrawerNavigator(
 
 const StackNavigation = createStackNavigator({
   MainNavigation,
-  SetupPrinter
-
+  SetupPrinter,
+  ScanningBarCode
 }, {
-  headerMode: 'none'
-});
+    headerMode: 'none'
+  });
 
 const AppNavigation = createSwitchNavigator(
   {
@@ -70,7 +71,6 @@ class Application extends React.Component {
     const { setPrinterConnect, setDialogStatus } = this.props;
     const bluetoothManagerEmitter = new NativeEventEmitter(BluetoothManager);
     setPrinterConnect(false);
-    // setPrinterDevice({ url: '123' });
 
     // add listener
     this.listener.push(bluetoothManagerEmitter.addListener(BluetoothManager.EVENT_DEVICE_ALREADY_PAIRED,
@@ -85,7 +85,7 @@ class Application extends React.Component {
       setLoading(false);
       setDialogStatus({ showDialog: false });
       console.log('disconnected!');
-  }));
+    }));
 
     this.listener.push(bluetoothManagerEmitter.addListener(BluetoothManager.EVENT_CONNECTED, (rps) => {
       setPrinterConnect(true);
@@ -95,10 +95,10 @@ class Application extends React.Component {
       setDialogStatus({ showDialog: false });
       NavigationService.navigate('MainNavigation');
       setTimeout(() => {
-      AlertInfo('Kết nối với máy in thành công!');
+        AlertInfo('Kết nối với máy in thành công!');
       }, 100);
     }));
-}
+  }
 
   componentWillUnmount() {
     for (let i = 0; i < this.listener.length; i++) {

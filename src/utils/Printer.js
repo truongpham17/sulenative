@@ -1,5 +1,5 @@
 import { BluetoothEscposPrinter } from 'react-native-bluetooth-escpos-printer';
-
+import { header, menu, goodBye, menu2 } from './PrinterImage';
 /*
 
   data: {
@@ -14,9 +14,24 @@ import { BluetoothEscposPrinter } from 'react-native-bluetooth-escpos-printer';
       totalCost: string // format to string {1.000},
       discount: number,
       preCost,
-      isImport
+      isImport,
+      type: 'import'
   }
   */
+
+const longDash = '──────────────────────\r\n';
+const shortDash = '───────────  \r\n';
+const specialConfig = [21, 1, 6, 16];
+function formatPrice(price) {
+  const p = `${price}`;
+  if ((p.substr(0, 1) === '-' && p.length <= 4) || (p.substr(0, 0) !== '-' && p.length <= 3)) {
+    return `${p}.000 VND`;
+  }
+  return `${p.substring(0, p.length - 3)}.${p.substring(p.length - 3, p.length)}.000 VND`;
+}
+function formatQuantity(quantity) {
+  return `${quantity} cai`;
+}
 
 
 const printBill = async data => {
@@ -35,45 +50,52 @@ const printBill = async data => {
   await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
   await BluetoothEscposPrinter.setBlob(0);
 
-  await BluetoothEscposPrinter.printText('DUNG LIEN\r\n', {
-    encoding: 'GBK',
-    codepage: 0,
-    widthtimes: 2,
-    heigthtimes: 2,
-    fonttype: 1
-  });
+
+  try {
+    await BluetoothEscposPrinter.printPic(header, { width: 480 });
+    await BluetoothEscposPrinter.printText('\r\n', {});
+  } catch (error) {
+  }
+
   await BluetoothEscposPrinter.printText('DC: 44 Le Minh Xuan - P.8 - Q.TB - TP.HCM\r\n', CONFIG_NORMAL);
   await BluetoothEscposPrinter.printText('DT: 0905.182225 - 0909.841215\r\n', CONFIG_NORMAL);
   await BluetoothEscposPrinter.printText('CHK: D.T.KIM LIEN - NH.Agribank: 6360205343197\r\n', CONFIG_NORMAL);
   await BluetoothEscposPrinter.printText('CHK: D.T.KIM LIEN - NH.Sacombank: 060041625891\r\n', CONFIG_NORMAL);
 
-  await BluetoothEscposPrinter.printText('-----------------------------------------\r\n', {});
+  await BluetoothEscposPrinter.printText(longDash, {});
+
+  try {
+    await BluetoothEscposPrinter.printPic(menu2, { width: 400 });
+    await BluetoothEscposPrinter.printText('\r\n', {});
+  } catch (error) {
+  }
+
+  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.RIGHT);
+  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.RIGHT);
+  await BluetoothEscposPrinter.printText(`  Thoi gian: ${data.date}\r\n`, {});
+  if (data.customerName || data.customerPhone) {
+    let text = '';
+    if (data.customerName) {
+      if (data.customerPhone) {
+        text = `Khach hang: ${data.customerName}`;
+      } else {
+        text = `Khach hang: ${data.customerName}\r\n`;
+      }
+    }
+    if (data.customerPhone) {
+      text.concat(`- DT: ${data.customerPhone}\r\n`);
+    }
+    await BluetoothEscposPrinter.printText(text, CONFIG_NORMAL);
+  }
+
+  await BluetoothEscposPrinter.printText(`Nhan vien: ${data.thungan}\r\n`, {});
 
 
-  await BluetoothEscposPrinter.printText('HOA DON\r\n', {
-    encoding: 'GBK',
-    codepage: 0,
-    widthtimes: 1,
-    heigthtimes: 1,
-    fonttype: 1
-  });
-
-
-  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.LEFT);
-  await BluetoothEscposPrinter.printText(`  ID: ${data.id} - Thoi gian: ${data.date}\r\n`, {});
-  await BluetoothEscposPrinter.printText(
-    `  Khach hang: ${data.customerName || ''} - DT: ${data.customerPhone}\r\n`,
-    CONFIG_NORMAL
-  );
-  await BluetoothEscposPrinter.printText(`  Nhan vien: ${data.thungan}\r\n\r\n`, {});
   const columnWidths = [6, 16, 10, 16];
 
   await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
+  await BluetoothEscposPrinter.printText(longDash, {});
 
-  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
- await BluetoothEscposPrinter.printerUnderLine(1);
-    await BluetoothEscposPrinter.printText('                                     \r\n\r\n', CONFIG_NORMAL);
-    await BluetoothEscposPrinter.printerUnderLine(0);
 
   await BluetoothEscposPrinter.printColumn(
     columnWidths,
@@ -87,11 +109,8 @@ const printBill = async data => {
     {}
   );
 
-  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.LEFT);
   await BluetoothEscposPrinter.printText('\r\n', {});
-
-
-  await BluetoothEscposPrinter.printText(data.isImport ? '  Nhap hang\r\n\r\n' : '  Mua hang\r\n\r\n', CONFIG_NORMAL);
+  // await BluetoothEscposPrinter.printText(data.isImport ? '  Nhap hang\r\n' : '  Mua hang\r\n', CONFIG_NORMAL);
 
   await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
 
@@ -115,7 +134,7 @@ const printBill = async data => {
           BluetoothEscposPrinter.ALIGN.CENTER,
           BluetoothEscposPrinter.ALIGN.CENTER
         ],
-        [`${i + 1} `, `${item.price}.000 VND`, `${item.quantity} cai`, `${total}.000 VND`],
+        [`${i + 1} `, formatPrice(item.price), formatQuantity(item.quantity), formatPrice(total)],
         {}
       );
     } else {
@@ -123,118 +142,111 @@ const printBill = async data => {
     }
   }
 
-  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
-  await BluetoothEscposPrinter.printerUnderLine(1);
-     await BluetoothEscposPrinter.printText('                                     \r\n\r\n', CONFIG_NORMAL);
-     await BluetoothEscposPrinter.printerUnderLine(0);
-
-
+  if (isHavePayBack) {
+    await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.RIGHT);
+    await BluetoothEscposPrinter.printText(shortDash, {});
+    await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
     await BluetoothEscposPrinter.printColumn(
       [16, 6, 10, 16],
       [
-        BluetoothEscposPrinter.ALIGN.LEFT,
+        BluetoothEscposPrinter.ALIGN.CENTER,
         BluetoothEscposPrinter.ALIGN.CENTER,
         BluetoothEscposPrinter.ALIGN.CENTER,
         BluetoothEscposPrinter.ALIGN.CENTER
       ],
-      ['', '', `${totalQuantity} cái`, `${totalCount}.000 VND`],
+      [data.type === 'import' ? 'Nhap hang' : 'Mua hang', '', formatQuantity(totalQuantity), formatPrice(totalCount)],
       {}
     );
 
     // await BluetoothEscposPrinter.printText('\r\n', {});
+    // await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.LEFT);
+    // await BluetoothEscposPrinter.printText('  Tra hang\r\n\r\n', CONFIG_NORMAL);
+    // await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
+    await BluetoothEscposPrinter.printText('\r\n\r\n', CONFIG_NORMAL);
+    totalCount = 0;
+    totalQuantity = 0;
 
-    if (isHavePayBack) {
-      await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.LEFT);
-      await BluetoothEscposPrinter.printText('  Tra hang\r\n\r\n', CONFIG_NORMAL);
-      await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
-
-      totalCount = 0;
-      totalQuantity = 0;
-
-      for (let i = 0; i < data.productList.length; i++) {
-        const item = data.productList[i];
-        if (parseInt(item.quantity, 10) < 0) {
-          totalQuantity += item.quantity;
-          const total = item.price * item.quantity;
-          totalCount += total;
-          await BluetoothEscposPrinter.printColumn(
-            columnWidths,
-            [
-              BluetoothEscposPrinter.ALIGN.RIGHT,
-              BluetoothEscposPrinter.ALIGN.CENTER,
-              BluetoothEscposPrinter.ALIGN.CENTER,
-              BluetoothEscposPrinter.ALIGN.CENTER
-            ],
-            [`${i + 1 - buyNumberProduct} `, `${item.price}.000 VND`, `${-item.quantity} cai`, `${total}.000 VND`],
-            {}
-          );
-        }
+    for (let i = 0; i < data.productList.length; i++) {
+      const item = data.productList[i];
+      if (parseInt(item.quantity, 10) < 0) {
+        totalQuantity += item.quantity;
+        const total = item.price * item.quantity;
+        totalCount += total;
+        await BluetoothEscposPrinter.printColumn(
+          columnWidths,
+          [
+            BluetoothEscposPrinter.ALIGN.RIGHT,
+            BluetoothEscposPrinter.ALIGN.CENTER,
+            BluetoothEscposPrinter.ALIGN.CENTER,
+            BluetoothEscposPrinter.ALIGN.CENTER
+          ],
+          [`${i + 2 - buyNumberProduct} `, formatPrice(item.price), formatQuantity(-item.quantity), formatPrice(-total)],
+          {}
+        );
       }
-
-      await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
-      await BluetoothEscposPrinter.printerUnderLine(1);
-         await BluetoothEscposPrinter.printText('                                     \r\n\r\n', CONFIG_NORMAL);
-         await BluetoothEscposPrinter.printerUnderLine(0);
-
-      await BluetoothEscposPrinter.printColumn(
-        [16, 6, 10, 16],
-        [
-          BluetoothEscposPrinter.ALIGN.LEFT,
-          BluetoothEscposPrinter.ALIGN.CENTER,
-          BluetoothEscposPrinter.ALIGN.CENTER,
-          BluetoothEscposPrinter.ALIGN.CENTER
-        ],
-        ['', '', `${totalQuantity}`, `${totalCount}.000 VND`],
-        {}
-      );
     }
 
+    await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.RIGHT);
+    await BluetoothEscposPrinter.printText(shortDash, {});
+    await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
 
-    await BluetoothEscposPrinter.printerUnderLine(1);
-    await BluetoothEscposPrinter.printText('                                     \r\n\r\n', CONFIG_NORMAL);
-    await BluetoothEscposPrinter.printerUnderLine(0);
-
-  // await BluetoothEscposPrinter.printText('-----------------------------------------\r\n', {});
-
-  await BluetoothEscposPrinter.printColumn(
-      [21, 1, 10, 16],
+    await BluetoothEscposPrinter.printColumn(
+      [16, 6, 10, 16],
       [
-        BluetoothEscposPrinter.ALIGN.LEFT,
+        BluetoothEscposPrinter.ALIGN.CENTER,
         BluetoothEscposPrinter.ALIGN.CENTER,
         BluetoothEscposPrinter.ALIGN.CENTER,
         BluetoothEscposPrinter.ALIGN.CENTER
       ],
-      ['   Tong cong: ', '', '', `${data.totalCost}.000 VND`],
+      ['Tra hang', '', formatQuantity(totalQuantity), formatPrice(totalCount)],
       {}
     );
+  }
 
 
-  const discount = data.discount > 0 ? `${data.discount}.000 VND` : '0 VND';
-  const otherCost = data.otherCost > 0 ? `${data.otherCost}.000 VND` : '0 VND';
+  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
+  await BluetoothEscposPrinter.printText(longDash, {});
+
+
+  await BluetoothEscposPrinter.printColumn(
+    [21, 1, 6, 16],
+    [
+      BluetoothEscposPrinter.ALIGN.LEFT,
+      BluetoothEscposPrinter.ALIGN.CENTER,
+      BluetoothEscposPrinter.ALIGN.CENTER,
+      BluetoothEscposPrinter.ALIGN.RIGHT
+    ],
+    ['   Tong cong: ', '', '', formatPrice(data.preCost)],
+    {}
+  );
+
+
+  const discount = data.discount > 0 ? formatPrice(data.discount) : '0 VND';
+  const otherCost = data.otherCost > 0 ? formatPrice(data.otherCost) : '0 VND';
 
 
   if (parseInt(data.discount, 10) > 0) {
     await BluetoothEscposPrinter.printColumn(
-      [21, 1, 10, 16],
+      specialConfig,
       [
         BluetoothEscposPrinter.ALIGN.LEFT,
         BluetoothEscposPrinter.ALIGN.CENTER,
         BluetoothEscposPrinter.ALIGN.CENTER,
-        BluetoothEscposPrinter.ALIGN.CENTER
+        BluetoothEscposPrinter.ALIGN.RIGHT
       ],
-      ['   Giam gia: ', '', '', -discount],
+      ['   Giam gia: ', '', '', `-${discount}`],
       {}
     );
   }
 
   if (parseInt(data.otherCost, 10) > 0) {
     await BluetoothEscposPrinter.printColumn(
-      [21, 1, 10, 16],
+      specialConfig,
       [
         BluetoothEscposPrinter.ALIGN.LEFT,
         BluetoothEscposPrinter.ALIGN.CENTER,
         BluetoothEscposPrinter.ALIGN.CENTER,
-        BluetoothEscposPrinter.ALIGN.CENTER
+        BluetoothEscposPrinter.ALIGN.RIGHT
       ],
       ['   Chi phi khac: ', '', '', `+${otherCost}`],
       {}
@@ -243,26 +255,33 @@ const printBill = async data => {
 
   if (parseInt(data.discount, 10) > 0 || parseInt(data.otherCost, 10) > 0) {
     await BluetoothEscposPrinter.printColumn(
-      [21, 1, 10, 16],
+      specialConfig,
       [
         BluetoothEscposPrinter.ALIGN.LEFT,
         BluetoothEscposPrinter.ALIGN.CENTER,
         BluetoothEscposPrinter.ALIGN.CENTER,
-        BluetoothEscposPrinter.ALIGN.CENTER
+        BluetoothEscposPrinter.ALIGN.RIGHT
       ],
-      ['   Tong thanh tien ', '', '', `${data.totalCost}.000 VND`],
+      ['   Tong thanh tien ', '', '', formatPrice(data.totalCost)],
       {}
     );
   }
 
   await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
- await BluetoothEscposPrinter.printerUnderLine(1);
-    await BluetoothEscposPrinter.printText('                                     \r\n\r\n', CONFIG_NORMAL);
-    await BluetoothEscposPrinter.printerUnderLine(0);
-  await BluetoothEscposPrinter.printText('LUU Y: Khi doi tra hang nho mang theo hoa don\r\n', {});
-  await BluetoothEscposPrinter.printText('HEN GAP LAI QUY KHACH!\r\n', {});
-  await BluetoothEscposPrinter.printText('-----------------------------------------\r\n', {});
-  await BluetoothEscposPrinter.printText('\r\n\r\n\r\n\r\n', {});
+  await BluetoothEscposPrinter.printText(longDash, {});
+  try {
+    await BluetoothEscposPrinter.printPic(goodBye, { width: 520 });
+    await BluetoothEscposPrinter.printText('\r\n', {});
+  } catch (error) {
+  }
+  await BluetoothEscposPrinter.printText(longDash, {});
+  await BluetoothEscposPrinter.printText('\r\n', {});
+
+  if (data.id) {
+    const fakeId = !isNaN(data.id) ? parseInt(data.id, 10) * 123579 : data.id;
+    await BluetoothEscposPrinter.printBarCode(fakeId, BluetoothEscposPrinter.BARCODETYPE.CODE128, 3, 120, 0, 2);
+  }
+  await BluetoothEscposPrinter.printText('\r\n\r\n\r\n', {});
 };
 
 export { printBill };

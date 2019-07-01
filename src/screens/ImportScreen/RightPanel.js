@@ -6,6 +6,8 @@ import { iOSUIKit } from 'react-native-typography';
 import { formatPrice } from '../../utils/String';
 import { setNote, setDebt, importProduct, setDialogStatus, easeImportData } from '../../actions';
 import { AlertInfo } from '../../utils/Dialog';
+import { printBill } from '../../utils/Printer';
+import { getDatePrinting } from '../../utils/Date';
 import { Style, DetailItem, RowTable } from '../../components';
 import { SubmitButton } from '../../components/button';
 
@@ -37,11 +39,42 @@ class Detail extends React.Component {
       debt,
       shoudSaveAsHistory: true
     }, {
-      success: () => {
-        this.showStatusDialog('success');
-        this.props.easeImportData();
-      },
-      failure: () => this.showStatusDialog('error')
+        success: () => {
+          console.log('print bill success part 1');
+          this.showStatusDialog('success');
+          this.printBill(products);
+          this.props.easeImportData();
+        },
+        failure: () => this.showStatusDialog('error')
+      });
+  }
+
+  printBill = (productList) => {
+    const { user, currentStore } = this.props;
+    console.log('print bill success!!');
+    console.log(productList);
+    let totalQuantity = 0;
+    let totalCost = 0;
+    productList.forEach(item => {
+      totalQuantity += parseInt(item.quantity, 10);
+      totalCost += parseInt(item.importPrice, 10);
+    });
+
+    printBill({
+      customerName: currentStore.name,
+      thungan: user.fullname,
+      date: getDatePrinting(),
+      productList: productList.map(item => ({
+        quantity: item.quantity,
+        price: item.importPrice
+      })),
+      totalQuantity,
+      totalCost,
+      discount: 0,
+      otherCost: 0,
+      // eslint-disable-next-line no-mixed-operators
+      preCost: totalCost,
+      type: 'import'
     });
   }
 
@@ -151,7 +184,8 @@ export default connect(
     totalQuantity: state.importProduct.totalQuantity,
     totalPrice: state.importProduct.totalPrice,
     debt: state.importProduct.debt,
-    note: state.importProduct.note
+    note: state.importProduct.note,
+    user: state.user.info,
   }), {
     setNote, setDebt, importProduct, setDialogStatus, easeImportData
   }

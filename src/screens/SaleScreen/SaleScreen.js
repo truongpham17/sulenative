@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { connect } from 'react-redux';
+import { BluetoothManager } from 'react-native-bluetooth-escpos-printer';
 import { Header } from 'react-native-elements';
 
 import { CancelButton } from './components';
@@ -23,11 +24,12 @@ import {
   loadNewStore,
   setPrinterConnect,
   addProductBill,
-  setCustomer
+  setCustomer,
 } from '../../actions';
 import MenuIcon from '../../components/MenuIcon';
 import { Style, MenuBar, Calculator, StoreHeader } from '../../components';
 import LOAD_NUMBER from '../../utils/System';
+import { SubmitButton } from '../../components/button';
 
 class SaleScreen extends React.Component {
 
@@ -36,14 +38,14 @@ class SaleScreen extends React.Component {
   }
 
   componentDidMount() {
-    const { loadStore } = this.props;
+    const { loadStore, printerURL, setPrinterConnect } = this.props;
 
     setTimeout(() => {
       loadStore();
     }, 100);
   }
 
-  onSubmitItem = (data: {quantity: Number, importPrice: Number, exportPrice: Number, discount: Number}) => {
+  onSubmitItem = (data: { quantity: Number, importPrice: Number, exportPrice: Number, discount: Number }) => {
     const { addProductBill, currentStore, isSell } = this.props;
     addProductBill({
       ...data,
@@ -59,8 +61,9 @@ class SaleScreen extends React.Component {
 
 
     setTimeout(() => {
-      loadStoreProduct({ id, skip: 0, limit: LOAD_NUMBER, isDefaultStore: id === defaultStore.id
-      // , shouldRemoveEmpty: true
+      loadStoreProduct({
+        id, skip: 0, limit: LOAD_NUMBER, isDefaultStore: id === defaultStore.id
+        // , shouldRemoveEmpty: true
       });
     }, 100);
     // loadNewStore();
@@ -89,8 +92,12 @@ class SaleScreen extends React.Component {
   render() {
     const { navigation, currentStore, isSell } = this.props;
     return (
+      /*
+          
+      */
       <View style={{ flex: 1 }}>
         <StatusBar barStyle="light-content" />
+
         <Modal
           isVisible={this.state.selectUserModalVisible}
           animationIn="fadeIn"
@@ -109,18 +116,18 @@ class SaleScreen extends React.Component {
         />
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <MenuBar navigation={navigation} />
-          <KeyboardAvoidingView style={styles.mainContainer} behavior="padding">
+          <View style={styles.mainContainer} >
             <View style={{ flex: 4 }}>
               <StoreHeader />
               <Calculator onSubmitItem={data => this.onSubmitItem(data)} haveImportPrice={currentStore.isDefault && isSell} haveDiscount={isSell} />
             </View>
-            {/* <StoreSelect onStorePress={this.onStoreItemPress} /> */}
             <View style={styles.detailContainer}>
               <Detail navigation={navigation} onShowUser={() => this.setState({ selectUserModalVisible: true })} />
             </View>
-          </KeyboardAvoidingView>
+          </View>
 
         </View>
+        {/* <SubmitButton onPress={() => navigation.navigate('ScanningBarCode')} title="click here" /> */}
       </View>
     );
   }
@@ -133,7 +140,7 @@ const styles = StyleSheet.create({
     backgroundColor: Style.color.background,
     padding: 10
   },
-store: {
+  store: {
     flex: 1,
     backgroundColor: Style.color.white
   },
@@ -172,7 +179,8 @@ export default connect(
     showDialog: state.app.showDialog,
     dialogType: state.app.dialogType,
     defaultStore: state.store.defaultStore,
-    isSell: state.bill.isSell
+    isSell: state.bill.isSell,
+    printerURL: state.user.printerURL
   }),
   {
     logout,
