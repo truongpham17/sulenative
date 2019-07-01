@@ -129,7 +129,7 @@ class ImportScreen extends React.Component<PropsType> {
           <MenuBar navigation={navigation} />
           <View style={styles.mainContainer} behavior="padding">
             <View style={{ flex: 4 }}>
-              <StoreHeader haveExportType={false} removeDefaultStore />
+              <StoreHeader haveExportType={false} removeDefaultStore haveAddNew onAddStore={() => this.showDialog('Tên nguồn hàng', text => this.addStore(text))} />
               <Calculator haveImportPrice onSubmitItem={data => this.onSubmitItem(data)} />
             </View>
             <View style={styles.detailContainer} >

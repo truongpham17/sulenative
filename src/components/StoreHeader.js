@@ -8,7 +8,9 @@ import { Style } from '.';
 
 type PropsType = {
   haveExportType?: boolean,
-  removeDefaultStore?: boolean
+  removeDefaultStore?: boolean,
+  haveAddNew?: boolean,
+  onAddStore?: () => void
 }
 
 
@@ -16,8 +18,20 @@ class StoreHeader extends React.Component<PropsType> {
 
   static defaultProps = {
     haveExportType: true,
-    removeDefaultStore: false
+    removeDefaultStore: false,
+    haveAddNew: false,
+    onAddStore: {}
   }
+
+  renderAddNewButton = () => (
+      <Button
+      title="+ Thêm mới"
+      titleStyle={[Style.buttonText, { color: Style.color.lightPink }]}
+      type={'solid'}
+      buttonStyle={[styles.buttonAddStyle]}
+      onPress={this.props.onAddStore}
+    />
+    )
 
   renderButton = () => {
     const { isSell, setIsSell } = this.props;
@@ -87,6 +101,7 @@ class StoreHeader extends React.Component<PropsType> {
           onChangeText={(value, index) => setCurrentStore(stores[index].id)}
         />
       {this.props.haveExportType && this.renderButton()}
+      {this.props.haveAddNew && this.renderAddNewButton()}
 
     </View>
 
@@ -156,5 +171,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderColor: Style.color.blackBlue,
     borderWidth: 2
+  },
+  buttonAddStyle: {
+    height: 44,
+    borderRadius: 5,
+    paddingLeft: 15,
+    paddingRight: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Style.color.blackBlue
   }
 });

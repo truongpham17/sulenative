@@ -12,10 +12,10 @@ class DetailList extends React.Component {
 
   printBill = () => {
     const { billDetail, navigation } = this.props;
-    // if (!this.props.connect) {
-    //   navigation.navigate('SetupPrinter');
-    //   return;
-    // }
+    if (!this.props.connect) {
+      navigation.navigate('SetupPrinter');
+      return;
+    }
 
     let totalCostWithoutDiscount = 0;
 
