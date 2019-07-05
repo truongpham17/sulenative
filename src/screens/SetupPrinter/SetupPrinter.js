@@ -13,7 +13,7 @@ class SetupPrinter extends React.PureComponent {
     ips: []
   }
   componentDidMount() {
-    const { navigation } = this.props;
+    const { navigation, printerURL } = this.props;
     this.focusListener = navigation.addListener('didFocus', this.scanningDevice);
     const bluetoothManagerEmitter = new NativeEventEmitter(BluetoothManager);
     this.listener = bluetoothManagerEmitter.addListener(BluetoothManager.EVENT_DEVICE_FOUND, (rps) => {
@@ -24,11 +24,14 @@ class SetupPrinter extends React.PureComponent {
         device = JSON.parse(rps.device);
       }
       this.setState(state => ({ ips: [...state.ips, device] }));
+      if (device.address === printerURL) {
+        BluetoothManager.connect(printerURL);
+      }
     });
 
     setTimeout(() => {
       if (this.state.ips.length === 0) {
-        AlertInfo('Có lỗi', 'Vui lòng thoát ra và thử lại!', () => this.props.navigation.pop());
+        this.scanningDevice();
       }
     }, 3000);
   }
@@ -42,13 +45,11 @@ class SetupPrinter extends React.PureComponent {
   onSetupPrinterUrl = url => {
     const { setPrinterDevice } = this.props;
     console.log('try to connect to url: ');
-    BluetoothManager.connect(url).then(() => setPrinterDevice({ url }));
+    BluetoothManager.connect(url).then(() => { setPrinterDevice({ url }); this.props.navigation.navigate('MainNavigation'); });
   };
 
   scanningDevice = async () => {
-    const { printerURL } = this.props;
-
-
+    this.setState({ ips: [] });
     console.log('come here');
     // check whether enable bluetooth
     console.log('check is bluetooth enable');
@@ -58,8 +59,6 @@ class SetupPrinter extends React.PureComponent {
       AlertInfo('Bluetooth chưa được bật', 'Vui lòng bật bluetooth và thử lại');
       return;
     }
-
-    BluetoothManager.connect(printerURL);
     console.log('scanning devices');
     await BluetoothManager.scanDevices();
     console.log('success fully scanning devices');
@@ -70,16 +69,26 @@ class SetupPrinter extends React.PureComponent {
     const { navigation } = this.props;
     return (
       <View style={{ flex: 1, marginTop: 20, alignItems: 'center' }}>
-        <View style={{ width: '100%' }}>
+        <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20 }}>
+          <TouchableOpacity style={{ width: 40, height: 40 }} onPress={() => navigation.navigate('MainNavigation')}>
           <Icon
             name="x"
             type="feather"
             containerStyle={{ position: 'absolute', left: 10, top: 0 }}
-            onPress={() => navigation.pop()}
           />
+          </TouchableOpacity>
+
           <Text style={[Style.blackHeaderTitle, { alignSelf: 'center' }]}>
             Vui lòng chọn thiết bị bluetooth
         </Text>
+
+        <TouchableOpacity style={{ width: 40, height: 40 }} onPress={this.scanningDevice}>
+          <Icon
+            name="refresh-cw"
+            type="feather"
+            containerStyle={{ position: 'absolute', left: 10, top: 0 }}
+          />
+        </TouchableOpacity>
         </View>
         <FlatList
           data={this.state.ips}
@@ -89,7 +98,11 @@ class SetupPrinter extends React.PureComponent {
                 width: 400,
                 height: 48,
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                padding: 10,
+                borderColor: Style.color.blackBlue,
+                borderWidth: 1,
+                marginVertical: 4
               }}
               onPress={() => this.onSetupPrinterUrl(item.address)}
             >

@@ -15,7 +15,8 @@ import { header, menu, goodBye, menu2 } from './PrinterImage';
       discount: number,
       preCost,
       isImport,
-      type: 'import'
+      type: 'import',
+      debt: number
   }
   */
 
@@ -36,7 +37,6 @@ function formatQuantity(quantity) {
 
 const printBill = async data => {
   console.log(data);
-
   const CONFIG_NORMAL = {
     encoding: 'GBK',
     codepage: '0',
@@ -73,19 +73,13 @@ const printBill = async data => {
   await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.RIGHT);
   await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.RIGHT);
   await BluetoothEscposPrinter.printText(`  Thoi gian: ${data.date}\r\n`, {});
-  if (data.customerName || data.customerPhone) {
-    let text = '';
-    if (data.customerName) {
-      if (data.customerPhone) {
-        text = `Khach hang: ${data.customerName}`;
-      } else {
-        text = `Khach hang: ${data.customerName}\r\n`;
-      }
-    }
+  if (data.customerName) {
+   const text = `Khach hang: ${data.customerName}`;
     if (data.customerPhone) {
-      text.concat(`- DT: ${data.customerPhone}\r\n`);
+      text.concat(`- DT: ${data.customerPhone}`);
     }
     await BluetoothEscposPrinter.printText(text, CONFIG_NORMAL);
+    await BluetoothEscposPrinter.printText('\r\n', CONFIG_NORMAL);
   }
 
   await BluetoothEscposPrinter.printText(`Nhan vien: ${data.thungan}\r\n`, {});
@@ -142,22 +136,23 @@ const printBill = async data => {
     }
   }
 
-  if (isHavePayBack) {
-    await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.RIGHT);
-    await BluetoothEscposPrinter.printText(shortDash, {});
-    await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
-    await BluetoothEscposPrinter.printColumn(
-      [16, 6, 10, 16],
-      [
-        BluetoothEscposPrinter.ALIGN.CENTER,
-        BluetoothEscposPrinter.ALIGN.CENTER,
-        BluetoothEscposPrinter.ALIGN.CENTER,
-        BluetoothEscposPrinter.ALIGN.CENTER
-      ],
-      [data.type === 'import' ? 'Nhap hang' : 'Mua hang', '', formatQuantity(totalQuantity), formatPrice(totalCount)],
-      {}
-    );
 
+  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.RIGHT);
+  await BluetoothEscposPrinter.printText(shortDash, {});
+  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
+  await BluetoothEscposPrinter.printColumn(
+    [16, 6, 10, 16],
+    [
+      BluetoothEscposPrinter.ALIGN.CENTER,
+      BluetoothEscposPrinter.ALIGN.CENTER,
+      BluetoothEscposPrinter.ALIGN.CENTER,
+      BluetoothEscposPrinter.ALIGN.CENTER
+    ],
+    [data.type === 'import' ? 'Nhap hang' : 'Mua hang', '', formatQuantity(totalQuantity), formatPrice(totalCount)],
+    {}
+  );
+
+  if (isHavePayBack) {
     // await BluetoothEscposPrinter.printText('\r\n', {});
     // await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.LEFT);
     // await BluetoothEscposPrinter.printText('  Tra hang\r\n\r\n', CONFIG_NORMAL);
@@ -180,7 +175,7 @@ const printBill = async data => {
             BluetoothEscposPrinter.ALIGN.CENTER,
             BluetoothEscposPrinter.ALIGN.CENTER
           ],
-          [`${i + 2 - buyNumberProduct} `, formatPrice(item.price), formatQuantity(-item.quantity), formatPrice(-total)],
+          [`${i + 1 - buyNumberProduct} `, formatPrice(item.price), formatQuantity(-item.quantity), formatPrice(-total)],
           {}
         );
       }
@@ -204,21 +199,21 @@ const printBill = async data => {
   }
 
 
-  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
-  await BluetoothEscposPrinter.printText(longDash, {});
-
-
-  await BluetoothEscposPrinter.printColumn(
-    [21, 1, 6, 16],
-    [
-      BluetoothEscposPrinter.ALIGN.LEFT,
-      BluetoothEscposPrinter.ALIGN.CENTER,
-      BluetoothEscposPrinter.ALIGN.CENTER,
-      BluetoothEscposPrinter.ALIGN.RIGHT
-    ],
-    ['   Tong cong: ', '', '', formatPrice(data.preCost)],
-    {}
-  );
+  if (isHavePayBack || data.discount || data.otherCost || data.debt) {
+    await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
+    await BluetoothEscposPrinter.printText(longDash, {});
+    await BluetoothEscposPrinter.printColumn(
+      [21, 1, 6, 16],
+      [
+        BluetoothEscposPrinter.ALIGN.LEFT,
+        BluetoothEscposPrinter.ALIGN.CENTER,
+        BluetoothEscposPrinter.ALIGN.CENTER,
+        BluetoothEscposPrinter.ALIGN.RIGHT
+      ],
+      ['   Tong cong: ', '', '', formatPrice(data.preCost)],
+      {}
+    );
+  }
 
 
   const discount = data.discount > 0 ? formatPrice(data.discount) : '0 VND';
@@ -266,6 +261,21 @@ const printBill = async data => {
       {}
     );
   }
+
+  if (data.debt) {
+    await BluetoothEscposPrinter.printColumn(
+      specialConfig,
+      [
+        BluetoothEscposPrinter.ALIGN.LEFT,
+        BluetoothEscposPrinter.ALIGN.CENTER,
+        BluetoothEscposPrinter.ALIGN.CENTER,
+        BluetoothEscposPrinter.ALIGN.RIGHT
+      ],
+      ['   Tien no ', '', '', formatPrice(data.debt)],
+      {}
+    );
+  }
+
 
   await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
   await BluetoothEscposPrinter.printText(longDash, {});

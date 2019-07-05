@@ -182,7 +182,7 @@ export function returnProduct(data, callback = {}) {
           payload: result.data
         });
         if (callback.success) {
-          callback.success();
+          callback.success(result.data);
         }
       } else {
         dispatch({

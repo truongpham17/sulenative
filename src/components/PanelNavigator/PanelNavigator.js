@@ -13,6 +13,7 @@ const itemKey = [
   'StatictisScreen',
   'ProfileScreen',
   'PayDebt',
+  'SetupPrinter',
   'Logout'
 ];
 
@@ -99,10 +100,17 @@ class Panel extends React.Component {
           onPress={this.onPress}
           activeItem={activeItemKey}
          />
+          <Item
+          title="Máy in"
+          icon={{ name: 'printer', size: 24, type: 'feather' }}
+          itemKey={itemKey[7]}
+          onPress={this.onPress}
+          activeItem={activeItemKey}
+          />
         <Item
           title="Đăng xuất"
           icon={{ name: 'log-out', size: 24, type: 'feather' }}
-          itemKey={itemKey[7]}
+          itemKey={itemKey[8]}
           onPress={this.onLogout}
           activeItem={activeItemKey}
         />

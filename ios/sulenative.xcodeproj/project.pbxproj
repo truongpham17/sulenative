@@ -14,7 +14,6 @@
 		00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302E41ABCB9EE00DB3ED1 /* libRCTVibration.a */; };
 		00E356F31AD99517003FC87E /* sulenativeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* sulenativeTests.m */; };
 		01763CD122C8F62B003E498A /* libRNCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 01763CC822C8F3B1003E498A /* libRNCamera.a */; };
-		01763CD322C90189003E498A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 01763CD222C90189003E498A /* GoogleService-Info.plist */; };
 		03A78A4CBDA14D2A851618A2 /* libRNGestureHandler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BEF36DD3F46F49D2856E3F05 /* libRNGestureHandler.a */; };
 		0BC5BAEC9C3E460693E4D912 /* libRNBluetoothEscposPrinter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BA4B6D6BF1A4F02B1F35852 /* libRNBluetoothEscposPrinter.a */; };
 		0DCA22322BE94AE8933AFB3D /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EDFA889FDE9C40EE94CFF35C /* Foundation.ttf */; };
@@ -29,6 +28,7 @@
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		1FB145A329834353B3DCCF93 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A4B0050514C949BB9908C2A4 /* MaterialIcons.ttf */; };
+		25C44E8022CA6EEE0078844A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 25C44E7F22CA6EEE0078844A /* GoogleService-Info.plist */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -486,7 +486,6 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* sulenativeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = sulenativeTests.m; sourceTree = "<group>"; };
 		01763C9922C8F0FD003E498A /* RNCamera.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCamera.xcodeproj; path = "../node_modules/react-native-camera/ios/RNCamera.xcodeproj"; sourceTree = "<group>"; };
-		01763CD222C90189003E498A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		05E046A1378D4C1E992AFDBC /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
 		0CCFC12959B24D12B268907D /* libRNSVG.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSVG.a; sourceTree = "<group>"; };
 		0FD7CAD808DB4905B06AC7BA /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
@@ -505,6 +504,7 @@
 		15387A74C5664AFB809D0247 /* libLottie.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libLottie.a; sourceTree = "<group>"; };
 		208373DA8CE0414C86D16FFD /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
 		22CAAD451AF544FB843B58C4 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
+		25C44E7F22CA6EEE0078844A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../Desktop/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		26A60520C4BD8BBFC03E7172 /* Pods-sulenative.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sulenative.release.xcconfig"; path = "Target Support Files/Pods-sulenative/Pods-sulenative.release.xcconfig"; sourceTree = "<group>"; };
 		290F239AE88E43C48B2C704C /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
 		2B0D9B06A1264E93AFAC8821 /* RNBluetoothEscposPrinter.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNBluetoothEscposPrinter.xcodeproj; path = "../node_modules/react-native-bluetooth-escpos-printer/ios/RNBluetoothEscposPrinter.xcodeproj"; sourceTree = "<group>"; };
@@ -707,8 +707,8 @@
 		13B07FAE1A68108700A75B9A /* sulenative */ = {
 			isa = PBXGroup;
 			children = (
+				25C44E7F22CA6EEE0078844A /* GoogleService-Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
-				01763CD222C90189003E498A /* GoogleService-Info.plist */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -766,7 +766,6 @@
 				CC60511FAD038C5F70B410BA /* Pods-sulenative.debug.xcconfig */,
 				26A60520C4BD8BBFC03E7172 /* Pods-sulenative.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -1569,7 +1568,7 @@
 				72134FE6BBA5455A89A0663B /* FontAwesome5_Regular.ttf in Resources */,
 				5ED9ABA5C49E4D4EB7DC1CEE /* FontAwesome5_Solid.ttf in Resources */,
 				0DCA22322BE94AE8933AFB3D /* Foundation.ttf in Resources */,
-				01763CD322C90189003E498A /* GoogleService-Info.plist in Resources */,
+				25C44E8022CA6EEE0078844A /* GoogleService-Info.plist in Resources */,
 				C286A082ABCD4E73BB52F7AE /* Ionicons.ttf in Resources */,
 				7CB8638F04AD45F7B7E635F1 /* MaterialCommunityIcons.ttf in Resources */,
 				1FB145A329834353B3DCCF93 /* MaterialIcons.ttf in Resources */,

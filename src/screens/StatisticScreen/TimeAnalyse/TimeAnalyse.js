@@ -46,7 +46,7 @@ class TimeAnalyse extends React.Component {
   renderTooltip = () => {
     const { index } = this.state;
     if (index < 0) return null;
-    return <Tooltip value={this.props.data[index].total} index={index} />;
+    return <Tooltip value={this.props.data && this.props.data[index] ? this.props.data[index].total : this.props.data.total} index={index} />;
   };
 
   render() {

@@ -28,7 +28,7 @@ class History extends React.Component {
   keyExtractor = item => item.date;
 
   alertPrint = (productList, date) => {
-    Alert("In hoá đơn?", "", "Đóng", "In hoá đơn", () => this.printBill(productList, date))
+    Alert('In hoá đơn?', '', 'Đóng', 'In hoá đơn', () => this.printBill(productList, date));
   }
 
   printBill = (productList, date) => {
@@ -55,7 +55,8 @@ class History extends React.Component {
       otherCost: 0,
       // eslint-disable-next-line no-mixed-operators
       preCost: totalCost,
-      type: 'import'
+      type: 'import',
+      isImport: true
     });
   }
 

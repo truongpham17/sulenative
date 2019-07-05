@@ -28,7 +28,7 @@ class NewCustomer extends React.Component {
 
   onSubmit = () => {
     if (this.state.username.length > 0) {
-      this.props.onSelectCustomer({ ...this.state, isNew: true });
+      this.props.onSelectCustomer({ ...this.state, isNew: true, debt: 0 });
     } else {
       this.setState({
         error: 'Vui lòng nhập tên'

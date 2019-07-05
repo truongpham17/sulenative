@@ -62,11 +62,15 @@ export default (state = INITIAL_STATE, action) => {
         removeAll: false
       };
     case REMOVE_PRODUCT_ITEM:
+      products = state.products;
+      products.splice(action.payload, 1);
+      data = calculateTotalValue(products);
       return {
         ...state,
-        products: [],
+        products: [...products],
         skip: 0,
-        removeAll: true
+        removeAll: true,
+        ...data
       };
     case ADD_PRODUCT_IMPORT:
       products = [...state.products, action.payload];

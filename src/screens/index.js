@@ -9,6 +9,7 @@ import { ProfileScreen } from './ProfileScreen.js';
 import { SetupPrinter } from './SetupPrinter';
 import { PayDebt } from './PayDebt';
 import { ScanningBarCode } from './Camera';
+// import { FramePrice } from './FramePriceScreen';
 
 export {
   HistoryScreen,
@@ -21,5 +22,6 @@ export {
   ProfileScreen,
   SetupPrinter,
   PayDebt,
-  ScanningBarCode
+  ScanningBarCode,
+  // FramePrice
 };

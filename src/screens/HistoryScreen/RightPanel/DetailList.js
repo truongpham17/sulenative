@@ -11,11 +11,7 @@ import { getDatePrinting } from '../../../utils/Date';
 class DetailList extends React.Component {
 
   printBill = () => {
-    const { billDetail, navigation } = this.props;
-    if (!this.props.connect) {
-      navigation.navigate('SetupPrinter');
-      return;
-    }
+    const { billDetail } = this.props;
 
     let totalCostWithoutDiscount = 0;
 

@@ -4,7 +4,7 @@ import { FlatList, StyleSheet, Text, View, TextInput, KeyboardAvoidingView } fro
 import { connect } from 'react-redux';
 import { iOSUIKit } from 'react-native-typography';
 import { formatPrice } from '../../utils/String';
-import { setNote, setDebt, importProduct, setDialogStatus, easeImportData } from '../../actions';
+import { setNote, setDebt, importProduct, setDialogStatus, easeImportData, removeProductItem } from '../../actions';
 import { AlertInfo } from '../../utils/Dialog';
 import { printBill } from '../../utils/Printer';
 import { getDatePrinting } from '../../utils/Date';
@@ -18,13 +18,17 @@ class Detail extends React.Component {
 
 
   onRemove = index => {
-    const { removeProductBill } = this.props;
-    removeProductBill(index);
+    const { removeProductItem } = this.props;
+    removeProductItem(index);
   };
 
   onSubmitImport = () => {
     const { products, note, debt, currentStore, importProduct } = this.props;
-    if (currentStore.id.length === 0 || currentStore.isDefault) {
+    // if (currentStore.isDefault) {
+    //   AlertInfo('Hiện tại, chức năng thêm hàng vào nguồn nhà chưa được hỗ trợ');
+    //   return;
+    // }
+    if (currentStore.id.length === 0) {
       AlertInfo('Vui lòng chọn nhà cung cấp');
       return;
     }
@@ -57,7 +61,7 @@ class Detail extends React.Component {
     let totalCost = 0;
     productList.forEach(item => {
       totalQuantity += parseInt(item.quantity, 10);
-      totalCost += parseInt(item.importPrice, 10);
+      totalCost += parseInt(item.importPrice, 10) * parseInt(item.quantity, 10);
     });
 
     printBill({
@@ -74,7 +78,8 @@ class Detail extends React.Component {
       otherCost: 0,
       // eslint-disable-next-line no-mixed-operators
       preCost: totalCost,
-      type: 'import'
+      type: 'import',
+      isImport: true
     });
   }
 
@@ -187,7 +192,7 @@ export default connect(
     note: state.importProduct.note,
     user: state.user.info,
   }), {
-    setNote, setDebt, importProduct, setDialogStatus, easeImportData
+    setNote, setDebt, importProduct, setDialogStatus, easeImportData, removeProductItem
   }
 
 )(Detail);

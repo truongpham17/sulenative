@@ -73,7 +73,7 @@ class HistoryScreen extends React.Component {
       name: item.id,
       date: getDate(item.createdAt),
       info1: `Tổng: ${formatPrice(item.totalPrice)}`,
-      info2: item.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Mua thiếu',
+      info2: item.isReturned ? 'Trả hàng' : 'Bán hàng',
       id: item.id
     }));
   };

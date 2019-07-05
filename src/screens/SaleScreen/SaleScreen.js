@@ -45,10 +45,17 @@ class SaleScreen extends React.Component {
     }, 100);
   }
 
-  onSubmitItem = (data: { quantity: Number, importPrice: Number, exportPrice: Number, discount: Number }) => {
+  onSubmitItem = (data: { quantity: Number, exportPrice: Number, discount: Number }) => {
     const { addProductBill, currentStore, isSell } = this.props;
+    console.log({
+      ...data,
+      importPrice: data.exportPrice - 20,
+      store: { storeId: currentStore.id, storeName: currentStore.name },
+      isSell
+    });
     addProductBill({
       ...data,
+      importPrice: data.exportPrice - 20,
       store: { storeId: currentStore.id, storeName: currentStore.name },
       isSell
     });
@@ -93,7 +100,7 @@ class SaleScreen extends React.Component {
     const { navigation, currentStore, isSell } = this.props;
     return (
       /*
-          
+
       */
       <View style={{ flex: 1 }}>
         <StatusBar barStyle="light-content" />
@@ -119,15 +126,13 @@ class SaleScreen extends React.Component {
           <View style={styles.mainContainer} >
             <View style={{ flex: 4 }}>
               <StoreHeader />
-              <Calculator onSubmitItem={data => this.onSubmitItem(data)} haveImportPrice={currentStore.isDefault && isSell} haveDiscount={isSell} />
+              <Calculator onSubmitItem={data => this.onSubmitItem(data)} haveImportPrice={false} haveDiscount={isSell} />
             </View>
             <View style={styles.detailContainer}>
               <Detail navigation={navigation} onShowUser={() => this.setState({ selectUserModalVisible: true })} />
             </View>
           </View>
-
         </View>
-        {/* <SubmitButton onPress={() => navigation.navigate('ScanningBarCode')} title="click here" /> */}
       </View>
     );
   }

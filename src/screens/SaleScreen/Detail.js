@@ -16,7 +16,7 @@ import {
 import { formatPrice } from '../../utils/String';
 import { Style, DetailItem } from '../../components';
 
-import { printBill } from '../../utils/Printer';
+import { printBill, testPrinter } from '../../utils/Printer';
 import { AlertInfo } from '../../utils/Dialog';
 import { getDatePrinting } from '../../utils/Date';
 
@@ -58,12 +58,6 @@ class Detail extends React.Component {
     const { bills, totalQuantity, totalPrice, user, totalDiscount, submitBill, customer, navigation } = this.props;
     const { note, debt } = this.state;
 
-    // for testing only, product will use this function
-    if (!this.props.connect) {
-      navigation.navigate('SetupPrinter');
-      return;
-    }
-
     const realDebt = Number.isInteger(parseInt(debt, 10)) ? parseInt(debt, 10) : 0;
     console.log(realDebt);
     console.log(debt);
@@ -92,6 +86,7 @@ class Detail extends React.Component {
       customer,
       debt: Number.isInteger(parseInt(debt, 10)) ? parseInt(debt, 10) : 0
     };
+    console.log(debt);
 
     submitBill(data, {
       success: (billInfo) => {
@@ -112,7 +107,8 @@ class Detail extends React.Component {
           otherCost: 0,
           // eslint-disable-next-line no-mixed-operators
           preCost: totalPrice + totalDiscount,
-          note
+          note,
+          debt: customer.debt + (parseInt(debt, 10) || 0)
         });
       },
       failure: () => this.showStatusDialog('error')
@@ -209,7 +205,6 @@ class Detail extends React.Component {
 
   render() {
     const { bills, customer } = this.props;
-    console.log(customer);
     return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <View style={styles.titleContainerStyle}>{this.renderTitle(title)}</View>

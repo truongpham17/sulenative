@@ -62,7 +62,7 @@ class Calculator extends React.Component<PropsType> {
     const valueLength = valueIndex.length;
     const dotIndex = valueIndex.indexOf('.');
 
-    if (item === 0 && valueLength === 0) {
+    if (item === 0 && valueLength === 0 && type !== 'quantity') {
       return;
     }
     if (!isNaN(item)) {

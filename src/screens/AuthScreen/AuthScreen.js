@@ -26,7 +26,11 @@ class AuthScreen extends React.Component<PropsType> {
     if (!user.active) {
       navigation.navigate('LoginScreen');
     } else {
-      navigation.navigate('MainNavigation');
+      // for product
+      navigation.navigate('SetupPrinter');
+
+      // for testing
+      // navigation.navigate('MainNavigation');
     }
   }
 

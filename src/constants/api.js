@@ -1,4 +1,7 @@
+// for testing
 // export const API_URL = 'http://localhost:5710';
+
+// for product
 export const API_URL = 'https://sulepos-api.herokuapp.com';
 
 export const METHODS = {

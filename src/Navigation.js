@@ -18,7 +18,8 @@ import {
   ProfileScreen,
   SetupPrinter,
   PayDebt,
-  ScanningBarCode
+  ScanningBarCode,
+  // FramePrice
 } from './screens';
 import { PanelNavigator } from './components/PanelNavigator';
 
@@ -30,7 +31,9 @@ const MainNavigation = createDrawerNavigator(
     HistoryScreen,
     ProfileScreen,
     StatictisScreen,
-    PayDebt
+    PayDebt,
+    SetupPrinter,
+    // FramePrice
   },
   {
     contentComponent: PanelNavigator,
@@ -38,19 +41,31 @@ const MainNavigation = createDrawerNavigator(
   }
 );
 
+// for product
 const StackNavigation = createStackNavigator({
   MainNavigation,
-  SetupPrinter,
   ScanningBarCode
 }, {
-    headerMode: 'none'
+    headerMode: 'none',
+
   });
+
+// for testing
+// const StackNavigation = createStackNavigator({
+//   MainNavigation,
+//   ScanningBarCode
+// }, {
+//     headerMode: 'none',
+
+//   });
+
 
 const AppNavigation = createSwitchNavigator(
   {
     AuthScreen,
+    SetupPrinter,
     LoginScreen,
-    StackNavigation
+    StackNavigation,
   },
   {
     initialRouteName: 'AuthScreen'
@@ -68,10 +83,8 @@ class Application extends React.Component {
 
 
   componentDidMount = async () => {
-    const { setPrinterConnect, setDialogStatus } = this.props;
+    const { setPrinterConnect, setDialogStatus, setPrinterDevice } = this.props;
     const bluetoothManagerEmitter = new NativeEventEmitter(BluetoothManager);
-    setPrinterConnect(false);
-
     // add listener
     this.listener.push(bluetoothManagerEmitter.addListener(BluetoothManager.EVENT_DEVICE_ALREADY_PAIRED,
       () => {
@@ -93,10 +106,7 @@ class Application extends React.Component {
       setLoading(false);
       setPrinterDevice({ url: rps.address });
       setDialogStatus({ showDialog: false });
-      NavigationService.navigate('MainNavigation');
-      setTimeout(() => {
-        AlertInfo('Kết nối với máy in thành công!');
-      }, 100);
+      AlertInfo('Kết nối với máy in thành công!', '', () => NavigationService.navigate('MainNavigation'));
     }));
   }
 
@@ -131,6 +141,7 @@ export default connect(
     dialogType: state.app.dialogType,
     loading: state.app.loading,
     printerURL: state.user.printerURL,
+    setPrinterDevice
   }),
   { setDialogStatus, setPrinterConnect }
 )(Application);

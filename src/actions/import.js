@@ -71,9 +71,10 @@ export function loadStoreProductImport(
   };
 }
 
-export function removeProductItem() {
+export function removeProductItem(id) {
   return {
-    type: REMOVE_PRODUCT_ITEM
+    type: REMOVE_PRODUCT_ITEM,
+    payload: id
   };
 }
 

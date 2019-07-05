@@ -1,31 +1,34 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 
 import { Icon } from 'react-native-elements';
 import Style from './Style';
 import { logout } from '../actions';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const itemKey = [
   'SaleScreen',
   'ImportScreen',
+  // 'FramePrice',
   'SupplyScreen',
   'HistoryScreen',
   'StatictisScreen',
   'ProfileScreen',
   'PayDebt',
+  'SetupPrinter',
   'Logout'
 ];
 
 const icons = [
   { name: 'shopping-cart', size: 24, type: 'feather', color: Style.color.white },
   { name: 'download', size: 24, type: 'feather', color: Style.color.white },
+  // { name: 'map', size: 24, type: 'feather', color: Style.color.white },
   { name: 'database', size: 24, type: 'feather', color: Style.color.white },
   { name: 'file-text', size: 24, type: 'feather', color: Style.color.white },
   { name: 'activity', size: 24, type: 'feather', color: Style.color.white },
   { name: 'user', size: 24, type: 'feather', color: Style.color.white },
-  { name: 'credit-card', size: 24, type: 'feather', color: Style.color.white }
+  { name: 'credit-card', size: 24, type: 'feather', color: Style.color.white },
+  { name: 'printer', size: 24, type: 'feather', color: Style.color.white }
   // { name: 'log-out', size: 24, type: 'feather', color: Style.color.white }
 ];
 class MenuBar extends React.PureComponent {

@@ -121,14 +121,15 @@ class DetailInfo extends React.Component<PropsType> {
         text: 'Xác nhận',
         onPress: () =>
           returnProduct(data, {
-            success: () => {
+            success: (billData) => {
+              console.log('bill data: ', billData);
               setTimeout(() => {
                 setDialogStatus({
                   showDialog: true,
                   dialogType: 'success'
                 });
               }, 1000);
-              this.printBill(data.productList);
+              this.printBill(billData._id, data.productList);
             },
             failure: () =>
               setDialogStatus({
@@ -173,7 +174,7 @@ class DetailInfo extends React.Component<PropsType> {
     };
   };
 
-  printBill = (productList) => {
+  printBill = (id, productList) => {
     const { user, currentStore } = this.props;
     console.log(productList);
     let totalQuantity = 0;
@@ -197,7 +198,8 @@ class DetailInfo extends React.Component<PropsType> {
       otherCost: 0,
       // eslint-disable-next-line no-mixed-operators
       preCost: totalCost,
-      type: 'import'
+      type: 'import',
+      id
     });
   }
 

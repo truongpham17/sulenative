@@ -19,6 +19,8 @@ export class Bill {
 
   createdBy: {};
 
+  isReturned: Boolean;
+
   id: string;
 
   paymentStatus: string; // "paid" "debt"
@@ -29,14 +31,13 @@ export class Bill {
     if (data.productList) {
       data.productList.map(data => bill.productList.push(ProductBill.map2(data)));
     }
-
+    bill.isReturned = data.isReturned;
     if (data.customer) {
       bill.customer = data.customer;
     }
     if (data.createdBy) {
       bill.createdBy = data.createdBy;
     }
-
     bill.otherCost = data.otherCost;
     bill.note = data.note;
     bill.totalPrice = data.totalPrice;

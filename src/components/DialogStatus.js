@@ -23,7 +23,7 @@ class DialogStatus extends React.Component {
                 <LottieView source={Style.image.success} autoPlay loop={false} />
               </View>
               <Text
-                style={[{ textAlign: 'center', backgroundColor: 'white' }, Style.greenBigTitle]}
+                style={[{ textAlign: 'center', backgroundColor: 'white', borderWidth: 1, borderColor: iOSColors.green }, Style.greenBigTitle]}
               >
                 Thành công 🤗
               </Text>

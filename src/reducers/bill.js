@@ -102,7 +102,8 @@ export default (state = INITIAL_STATE, action) => {
         bills: [],
         ...data,
         otherCost: '0',
-        currentProductBills: []
+        currentProductBills: [],
+        customer: {}
       };
     case SUBMIT_BILL_SUCCESS:
       data = calculateTotalValue([], 0);
