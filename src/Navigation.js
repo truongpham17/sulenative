@@ -56,7 +56,6 @@ const StackNavigation = createStackNavigator({
 //   ScanningBarCode
 // }, {
 //     headerMode: 'none',
-
 //   });
 
 

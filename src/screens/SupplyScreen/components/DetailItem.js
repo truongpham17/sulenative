@@ -36,11 +36,9 @@ class DetailItem extends React.Component<PropsType> {
     const { productBill, onChangePaybackQuantity } = this.props;
     if (isNaN(value) || value.length === 0) {
       AlertInfo('Vui lòng nhập số lượng hợp lệ!');
+      return;
     }
     const number = parseInt(value, 10);
-    if (value < 0 || value > productBill.product.quantity) {
-      AlertInfo('Vui lòng nhập số lượng hợp lệ!');
-    }
     onChangePaybackQuantity(`${number}`, productBill.product);
   };
 

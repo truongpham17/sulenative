@@ -48,10 +48,10 @@ class DetailInfo extends React.Component<PropsType> {
     if (quantity < 0) {
       return;
     }
-    if (quantity > product.quantity) {
-      AlertIOS.alert(`Sản phẩm này chỉ còn ${product.quantity} cái`);
-      return;
-    }
+    // if (quantity > product.quantity) {
+    //   AlertIOS.alert(`Sản phẩm này chỉ còn ${product.quantity} cái`);
+    //   return;
+    // }
 
     setPaybackQuantity({ quantity, id: product.id });
   };
@@ -104,7 +104,7 @@ class DetailInfo extends React.Component<PropsType> {
   };
 
   onReturnProduct = () => {
-    const { products, returnProduct, setDialogStatus } = this.props;
+    const { products, returnProduct, setDialogStatus, currentStore, loadStoreProductDetail, loadStoreInfo } = this.props;
     const checkHaveReturnProduct = products.find(item => item.paybackQuantity > 0);
     const data = !checkHaveReturnProduct
       ? this.getReturnProductData(products, true)
@@ -122,14 +122,16 @@ class DetailInfo extends React.Component<PropsType> {
         onPress: () =>
           returnProduct(data, {
             success: (billData) => {
-              console.log('bill data: ', billData);
+            console.log('return product success');
               setTimeout(() => {
                 setDialogStatus({
                   showDialog: true,
                   dialogType: 'success'
                 });
               }, 1000);
-              this.printBill(billData._id, data.productList);
+              this.printBill(billData._id, data.productList, data.totalPrice, data.totalQuantity);
+              loadStoreProductDetail({ id: currentStore.id });
+              loadStoreInfo(currentStore.id);
             },
             failure: () =>
               setDialogStatus({
@@ -142,7 +144,6 @@ class DetailInfo extends React.Component<PropsType> {
   };
 
   getReturnProductData(products, isAll) {
-    console.log(products);
     const data = {
       note: '',
       totalPrice: 0,
@@ -174,16 +175,8 @@ class DetailInfo extends React.Component<PropsType> {
     };
   };
 
-  printBill = (id, productList) => {
+  printBill = (id, productList, totalCost, totalQuantity) => {
     const { user, currentStore } = this.props;
-    console.log(productList);
-    let totalQuantity = 0;
-    let totalCost = 0;
-    productList.forEach(item => {
-      totalQuantity += parseInt(item.quantity, 10);
-      totalCost += parseInt(item.importPrice, 10) * parseInt(item.quantity, 10);
-    });
-
     printBill({
       customerName: currentStore.name,
       thungan: user.fullname,
@@ -198,8 +191,12 @@ class DetailInfo extends React.Component<PropsType> {
       otherCost: 0,
       // eslint-disable-next-line no-mixed-operators
       preCost: totalCost,
-      type: 'import',
-      id
+      type: 'return',
+      id,
+      // isImport: true,
+      debt: currentStore.debt,
+      paidMoney: 0,
+      isReturnProduct: true
     });
   }
 

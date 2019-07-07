@@ -56,7 +56,10 @@ class History extends React.Component {
       // eslint-disable-next-line no-mixed-operators
       preCost: totalCost,
       type: 'import',
-      isImport: true
+      isImport: true,
+      debt: currentStore.debt,
+      totalPaid: 0,
+      isPrintHistory: true
     });
   }
 

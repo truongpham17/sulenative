@@ -15,7 +15,7 @@ import { header, menu, goodBye, menu2 } from './PrinterImage';
       discount: number,
       preCost,
       isImport,
-      type: 'import',
+      type: 'import || sell || payback',
       debt: number
   }
   */
@@ -37,6 +37,14 @@ function formatQuantity(quantity) {
 
 const printBill = async data => {
   console.log(data);
+  let leftMoney;
+  if (data.isReturnProduct) {
+    leftMoney = formatPrice(data.debt - data.totalCost);
+  } else {
+    leftMoney = formatPrice(data.totalCost + data.debt - data.paidMoney);
+  }
+  console.log(`no con laij: ${leftMoney}`);
+  console.log(!data.isPrintHistory);
   const CONFIG_NORMAL = {
     encoding: 'GBK',
     codepage: '0',
@@ -135,7 +143,12 @@ const printBill = async data => {
       isHavePayBack = true;
     }
   }
-
+  let label;
+  switch (data.type) {
+    case 'import': label = 'Nhap hang'; break;
+    case 'return': label = 'Tra hang'; break;
+    default: label = 'Mua hang';
+  }
 
   await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.RIGHT);
   await BluetoothEscposPrinter.printText(shortDash, {});
@@ -148,7 +161,7 @@ const printBill = async data => {
       BluetoothEscposPrinter.ALIGN.CENTER,
       BluetoothEscposPrinter.ALIGN.CENTER
     ],
-    [data.type === 'import' ? 'Nhap hang' : 'Mua hang', '', formatQuantity(totalQuantity), formatPrice(totalCount)],
+    [label, '', formatQuantity(totalQuantity), formatPrice(totalCount)],
     {}
   );
 
@@ -198,8 +211,6 @@ const printBill = async data => {
     );
   }
 
-
-  if (isHavePayBack || data.discount || data.otherCost || data.debt) {
     await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
     await BluetoothEscposPrinter.printText(longDash, {});
     await BluetoothEscposPrinter.printColumn(
@@ -210,11 +221,9 @@ const printBill = async data => {
         BluetoothEscposPrinter.ALIGN.CENTER,
         BluetoothEscposPrinter.ALIGN.RIGHT
       ],
-      ['   Tong cong: ', '', '', formatPrice(data.preCost)],
+      ['   Tong tien: ', '', '', formatPrice(data.preCost)],
       {}
     );
-  }
-
 
   const discount = data.discount > 0 ? formatPrice(data.discount) : '0 VND';
   const otherCost = data.otherCost > 0 ? formatPrice(data.otherCost) : '0 VND';
@@ -234,20 +243,6 @@ const printBill = async data => {
     );
   }
 
-  if (parseInt(data.otherCost, 10) > 0) {
-    await BluetoothEscposPrinter.printColumn(
-      specialConfig,
-      [
-        BluetoothEscposPrinter.ALIGN.LEFT,
-        BluetoothEscposPrinter.ALIGN.CENTER,
-        BluetoothEscposPrinter.ALIGN.CENTER,
-        BluetoothEscposPrinter.ALIGN.RIGHT
-      ],
-      ['   Chi phi khac: ', '', '', `+${otherCost}`],
-      {}
-    );
-  }
-
   if (parseInt(data.discount, 10) > 0 || parseInt(data.otherCost, 10) > 0) {
     await BluetoothEscposPrinter.printColumn(
       specialConfig,
@@ -262,7 +257,8 @@ const printBill = async data => {
     );
   }
 
-  if (data.debt) {
+
+  if (data.debt && data.debt > 0) {
     await BluetoothEscposPrinter.printColumn(
       specialConfig,
       [
@@ -271,11 +267,59 @@ const printBill = async data => {
         BluetoothEscposPrinter.ALIGN.CENTER,
         BluetoothEscposPrinter.ALIGN.RIGHT
       ],
-      ['   Tien no ', '', '', formatPrice(data.debt)],
+      ['   No cu ', '', '', formatPrice(data.debt)],
       {}
     );
   }
 
+  if (data.paidMoney && data.paidMoney > 0 && data.debt && data.debt > 0) {
+    await BluetoothEscposPrinter.printColumn(
+      specialConfig,
+      [
+        BluetoothEscposPrinter.ALIGN.LEFT,
+        BluetoothEscposPrinter.ALIGN.CENTER,
+        BluetoothEscposPrinter.ALIGN.CENTER,
+        BluetoothEscposPrinter.ALIGN.RIGHT
+      ],
+      ['   Khach tra ', '', '', formatPrice(data.paidMoney)],
+      {}
+    );
+  }
+
+  if (data.debt && !data.isPrintHistory && data.debt > 0) {
+    let leftMoney;
+    if (data.isReturnProduct) {
+      leftMoney = formatPrice(data.debt - data.totalCost);
+    } else {
+      leftMoney = formatPrice(data.totalCost + data.debt - data.paidMoney);
+    }
+
+    await BluetoothEscposPrinter.printColumn(
+      specialConfig,
+      [
+        BluetoothEscposPrinter.ALIGN.LEFT,
+        BluetoothEscposPrinter.ALIGN.CENTER,
+        BluetoothEscposPrinter.ALIGN.CENTER,
+        BluetoothEscposPrinter.ALIGN.RIGHT
+      ],
+      [data.isImport ? '   Tong no ' : '   Con lai ', '', '', leftMoney],
+      {}
+    );
+  }
+
+  // if (parseInt(data.otherCost, 10) > 0) {
+  //   await BluetoothEscposPrinter.printColumn(
+  //     specialConfig,
+  //     [
+  //       BluetoothEscposPrinter.ALIGN.LEFT,
+  //       BluetoothEscposPrinter.ALIGN.CENTER,
+  //       BluetoothEscposPrinter.ALIGN.CENTER,
+  //       BluetoothEscposPrinter.ALIGN.RIGHT
+  //     ],
+  //     ['   Chi phi khac: ', '', '', `+${otherCost}`],
+  //     {}
+  //   );
+  // }
 
   await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
   await BluetoothEscposPrinter.printText(longDash, {});

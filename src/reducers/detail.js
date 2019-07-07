@@ -110,12 +110,6 @@ export default (state = INITIAL_STATE, action) => {
         loading: false
       };
     }
-    case RETURN_PRODUCT_REQUEST:
-      return { ...state, loading: true };
-    case RETURN_PRODUCT_FAILURE:
-      return { ...state, loading: false };
-    case RETURN_PRODUCT_SUCCESS:
-      return { ...state, loading: false, tempData: action.payload };
 
     case UPDATE_PRICE_SUCCESS:
       return {

@@ -4,7 +4,7 @@ import { FlatList, StyleSheet, Text, View, TextInput, KeyboardAvoidingView } fro
 import { connect } from 'react-redux';
 import { iOSUIKit } from 'react-native-typography';
 import { formatPrice } from '../../utils/String';
-import { setNote, setDebt, importProduct, setDialogStatus, easeImportData, removeProductItem } from '../../actions';
+import { setNote, importProduct, setDialogStatus, easeImportData, removeProductItem } from '../../actions';
 import { AlertInfo } from '../../utils/Dialog';
 import { printBill } from '../../utils/Printer';
 import { getDatePrinting } from '../../utils/Date';
@@ -24,6 +24,7 @@ class Detail extends React.Component {
 
   onSubmitImport = () => {
     const { products, note, debt, currentStore, importProduct } = this.props;
+    console.log(currentStore);
     // if (currentStore.isDefault) {
     //   AlertInfo('Hiện tại, chức năng thêm hàng vào nguồn nhà chưa được hỗ trợ');
     //   return;
@@ -54,7 +55,7 @@ class Detail extends React.Component {
   }
 
   printBill = (productList) => {
-    const { user, currentStore } = this.props;
+    const { user, currentStore, debt } = this.props;
     console.log('print bill success!!');
     console.log(productList);
     let totalQuantity = 0;
@@ -79,7 +80,9 @@ class Detail extends React.Component {
       // eslint-disable-next-line no-mixed-operators
       preCost: totalCost,
       type: 'import',
-      isImport: true
+      isImport: true,
+      debt: currentStore.debt,
+      paidMoney: 0,
     });
   }
 
@@ -129,23 +132,13 @@ class Detail extends React.Component {
 
 
   renderDetail() {
-    const { currentStore, totalQuantity, totalPrice, debt, note, setNote, setDebt } = this.props;
+    const { currentStore, totalQuantity, totalPrice, note, setNote } = this.props;
     return (
       <View style={styles.detailContainer}>
         <Text style={styles.textStyle}>Thông tin</Text>
         {this.renderDetailItem('Tổng số lượng nhập: ', `${totalQuantity} cái`)}
         {this.renderDetailItem('Tổng tiền nhập: ', formatPrice(totalPrice))}
-        {this.renderDetailItem('Tiền nợ nguồn hàng: ', formatPrice(currentStore.debt))}
-        <RowTable flexArray={[0, 1]} itemContainerStyle={{ alignItems: 'flex-end' }} containerStyle={{ flex: 1 }}>
-          <Text style={Style.normalDarkText}>Ghi thêm nợ</Text>
-          <TextInput
-            style={styles.textInputStyle}
-            keyboardType="number-pad"
-            onChangeText={text => setDebt(text)}
-            value={`${debt}`}
-            textAlign="right"
-          />
-        </RowTable>
+        {this.renderDetailItem('Nợ cũ: ', formatPrice(currentStore.debt))}
         <TextInput
           placeholder="Ghi chú"
           style={styles.noteInputStyle}
@@ -192,7 +185,7 @@ export default connect(
     note: state.importProduct.note,
     user: state.user.info,
   }), {
-    setNote, setDebt, importProduct, setDialogStatus, easeImportData, removeProductItem
+    setNote, importProduct, setDialogStatus, easeImportData, removeProductItem
   }
 
 )(Detail);
@@ -286,6 +279,6 @@ const styles = StyleSheet.create({
     borderColor: Style.color.lightBorder,
     padding: 8,
     marginBottom: 10,
-    height: 300
+    height: 280
   },
 });

@@ -47,12 +47,6 @@ class SaleScreen extends React.Component {
 
   onSubmitItem = (data: { quantity: Number, exportPrice: Number, discount: Number }) => {
     const { addProductBill, currentStore, isSell } = this.props;
-    console.log({
-      ...data,
-      importPrice: data.exportPrice - 20,
-      store: { storeId: currentStore.id, storeName: currentStore.name },
-      isSell
-    });
     addProductBill({
       ...data,
       importPrice: data.exportPrice - 20,

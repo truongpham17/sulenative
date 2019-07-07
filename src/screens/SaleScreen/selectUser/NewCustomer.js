@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { connect } from 'react-redux';
 import { Input } from 'react-native-elements';
 import { Style } from '../../../components';
+import { AlertInfo } from '../../../utils/Dialog';
 
 class NewCustomer extends React.Component {
 
@@ -10,6 +11,7 @@ class NewCustomer extends React.Component {
     username: '',
     phone: '',
     address: '',
+    debt: '0',
     error: ''
   }
 
@@ -18,7 +20,8 @@ class NewCustomer extends React.Component {
     this.setState({
       username: customer.username || '',
       phone: customer.phone || '',
-      address: customer.address || ''
+      address: customer.address || '',
+      debt: customer.debt || '0'
     });
   }
 
@@ -27,8 +30,11 @@ class NewCustomer extends React.Component {
   }
 
   onSubmit = () => {
+    if (isNaN(this.state.debt)) {
+      return;
+    }
     if (this.state.username.length > 0) {
-      this.props.onSelectCustomer({ ...this.state, isNew: true, debt: 0 });
+      this.props.onSelectCustomer({ ...this.state, isNew: true, debt: parseInt(this.state.debt, 10) });
     } else {
       this.setState({
         error: 'Vui lòng nhập tên'
@@ -37,7 +43,7 @@ class NewCustomer extends React.Component {
   }
 
   render() {
-    const { username, phone, address } = this.state;
+    const { username, phone, address, debt } = this.state;
     return (
       <View style={{ marginEnd: 20, height: 200, paddingTop: 10 }}>
         <View style={[styles.containerStyle]}>
@@ -76,6 +82,17 @@ class NewCustomer extends React.Component {
           placeholder="Địa chỉ"
           autoCorrect={false}
         />
+           <Input
+          leftIcon={{ name: 'credit-card', size: 21, type: 'feather', color: Style.color.white }}
+          inputStyle={[Style.normalLightText, { marginTop: 5, fontSize: 17 }]}
+          inputContainerStyle={styles.textInputStyle}
+          placeholderTextColor={Style.color.white}
+          leftIconContainerStyle={{ marginRight: 10, marginLeft: 0 }}
+          onChangeText={text => this.onChangeText(text, 'debt')}
+          value={debt}
+          placeholder="Nợ cũ"
+          autoCorrect={false}
+           />
         </View>
          <TouchableOpacity
           onPress={() => this.onSubmit()}

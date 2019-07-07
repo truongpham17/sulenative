@@ -23,6 +23,8 @@ export class Bill {
 
   id: string;
 
+  currentDebt: String;
+
   paymentStatus: string; // "paid" "debt"
 
   static map(data: {}): Bill {
@@ -38,6 +40,8 @@ export class Bill {
     if (data.createdBy) {
       bill.createdBy = data.createdBy;
     }
+
+    bill.currentDebt = data.currentDebt;
     bill.otherCost = data.otherCost;
     bill.note = data.note;
     bill.totalPrice = data.totalPrice;

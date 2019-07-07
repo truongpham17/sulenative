@@ -61,19 +61,17 @@ export default (state = INITIAL_STATE, action) => {
         }),
       };
     case IMPORT_PRODUCT_SUCCESS:
+      console.log('come here');
       const stores = state.stores.map(item => {
-        if (item.id === action.payload.store) {
-          return {
-            ...item,
-            totalImportProduct: item.totalImportProduct + action.payload.quantity,
-            productQuantity: item.productQuantity + action.payload.quantity
-          };
+        if (item.id === action.payload._id) {
+          return Store.map(action.payload);
         }
         return item;
       });
       return {
         ...state,
-        stores
+        stores,
+        currentStore: Store.map(action.payload)
         // loading: false
       };
 

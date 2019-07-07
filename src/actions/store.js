@@ -63,7 +63,6 @@ export function loadStore(callback = {}) {
       dispatch({ type: LOAD_STORE_REQUEST });
       const result = await query({ endpoint: ENDPOINTS.store });
       if (result.status === 200) {
-        console.log(result.data);
         dispatch({ type: LOAD_STORE_SUCCESS, payload: result.data.list });
         if (callback.success) {
           const defaultValue = result.data.list.find(item => item.isDefault);
@@ -151,6 +150,7 @@ export function importProduct(data, callback) {
         if (callback.success) {
           callback.success();
         }
+        console.log('store new load: ', result.data);
         dispatch({ type: IMPORT_PRODUCT_SUCCESS, payload: result.data });
       } else {
         if (callback.failure) {

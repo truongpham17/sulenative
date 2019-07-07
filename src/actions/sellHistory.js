@@ -36,7 +36,6 @@ export function loadListBill(data = { skip: 0, isContinue: false }, callback = {
       const result = await query({
         endpoint: url
       });
-      console.log('bill result: ', result.data);
       if (result.status === 200) {
         if (callback.success) {
           callback.success();

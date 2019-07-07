@@ -35,7 +35,11 @@ class DetailList extends React.Component {
       totalCost: billDetail.totalPrice,
       discount: totalCostWithoutDiscount - billDetail.totalPrice,
       otherCost: 0,
-      preCost: totalCostWithoutDiscount
+      preCost: totalCostWithoutDiscount,
+      debt: billDetail.currentDebt,
+      paidMoney: billDetail.totalPaid
+      //  debt,
+      // paidMoney
     });
   };
 

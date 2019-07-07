@@ -169,6 +169,7 @@ export function resetValue() {
 
 export function returnProduct(data, callback = {}) {
   return async dispatch => {
+    console.log('try to return product!!');
     try {
       dispatch({ type: RETURN_PRODUCT_REQUEST });
       const result = await query({
@@ -182,6 +183,7 @@ export function returnProduct(data, callback = {}) {
           payload: result.data
         });
         if (callback.success) {
+          console.log('return success!!');
           callback.success(result.data);
         }
       } else {
@@ -193,6 +195,7 @@ export function returnProduct(data, callback = {}) {
         }
       }
     } catch (ex) {
+      console.log('error while return product', ex);
       dispatch({
         type: RETURN_PRODUCT_FAILURE
       });

@@ -16,7 +16,7 @@ import {
 import { formatPrice } from '../../utils/String';
 import { Style, DetailItem } from '../../components';
 
-import { printBill, testPrinter } from '../../utils/Printer';
+import { printBill } from '../../utils/Printer';
 import { AlertInfo } from '../../utils/Dialog';
 import { getDatePrinting } from '../../utils/Date';
 
@@ -30,6 +30,7 @@ class Detail extends React.Component {
     customerAddress: '',
     note: '',
     debt: '0',
+    paidMoney: '0'
   };
 
   onRemove = index => {
@@ -55,22 +56,16 @@ class Detail extends React.Component {
 
 
   onSubmitBill = async () => {
-    const { bills, totalQuantity, totalPrice, user, totalDiscount, submitBill, customer, navigation } = this.props;
-    const { note, debt } = this.state;
-
-    const realDebt = Number.isInteger(parseInt(debt, 10)) ? parseInt(debt, 10) : 0;
-    console.log(realDebt);
-    console.log(debt);
-    if (realDebt > 0 && (!customer.username || customer.username.length === 0)) {
-      AlertInfo('Vui lòng nhập khách hàng để ghi nợ');
-      return;
-    }
-
+    const { bills, totalQuantity, totalPrice, user, totalDiscount, submitBill, customer } = this.props;
+    const { note } = this.state;
     if (bills.length === 0) {
       AlertInfo('Vui lòng chọn sản phẩm');
       return;
     }
+    const paidMoney = parseInt(this.state.paidMoney, 10) > 0 ? parseInt(this.state.paidMoney, 10) : totalPrice + customer.debt;
 
+    // debt as current debt
+    const debt = customer.debt ? customer.debt : 0;
 
     const productList = bills.map(item => ({
       quantity: item.quantity,
@@ -84,9 +79,10 @@ class Detail extends React.Component {
     const data = {
       productList,
       customer,
-      debt: Number.isInteger(parseInt(debt, 10)) ? parseInt(debt, 10) : 0
+      paidMoney
     };
-    console.log(debt);
+
+    console.log(data);
 
     submitBill(data, {
       success: (billInfo) => {
@@ -108,7 +104,9 @@ class Detail extends React.Component {
           // eslint-disable-next-line no-mixed-operators
           preCost: totalPrice + totalDiscount,
           note,
-          debt: customer.debt + (parseInt(debt, 10) || 0)
+          debt,
+          paidMoney,
+          type: 'sell'
         });
       },
       failure: () => this.showStatusDialog('error')
@@ -153,30 +151,82 @@ class Detail extends React.Component {
     ));
   }
 
+  renderCustomerDebt = () => {
+    const { customer } = this.props;
+    if (customer && customer.debt > 0) {
+      return (
+        <View style={styles.footerStyle}>
+          <Text style={[styles.textSumStyle, { textAlign: 'left' }]}>Nợ cũ:</Text>
+          <Text style={[styles.textEmpStyle, { textAlign: 'right' }]}>
+            {formatPrice(customer.debt)}
+          </Text>
+        </View>
+      );
+    }
+    return null;
+  }
+
+  renderPaidMoney = () => {
+    const { customer } = this.props;
+    const { paidMoney } = this.state;
+    if (customer.username) {
+      return (
+        <View style={styles.footerStyle}>
+        <Text style={[styles.textSumStyle, { textAlign: 'left' }]}>Khách trả:</Text>
+        <TextInput
+          style={styles.textInputStyle}
+          placeholderTextColor={Style.color.placeholder}
+          value={paidMoney}
+          onChangeText={text => this.onChangeNumber(text, 'paidMoney')}
+          keyboardType="number-pad"
+          placeholder="0"
+          textAlign="right"
+        />
+      </View>
+      );
+    }
+    return null;
+  }
+
+  renderFinalMoney = () => {
+    const { customer, totalPrice } = this.props;
+    if (customer.username) {
+      return (
+        <View style={styles.footerStyle}>
+          <Text style={[styles.textSumStyle, { textAlign: 'left' }]}>Thành tiền:</Text>
+          <Text style={[styles.textEmpStyle, { textAlign: 'right' }]}>
+            {formatPrice(totalPrice + customer.debt)}
+          </Text>
+        </View>
+      );
+    }
+    return null;
+  }
+  renderMoneyLeft = () => {
+    const { customer, totalPrice } = this.props;
+    if (!customer.username) return null;
+    const paidMoney = parseInt(this.state.paidMoney, 10);
+    return (
+      <View style={styles.footerStyle}>
+          <Text style={[styles.textSumStyle, { textAlign: 'left' }]}>Còn lại:</Text>
+          <Text style={[styles.textEmpStyle, { textAlign: 'right' }]}>
+            {formatPrice(totalPrice + customer.debt - paidMoney)}
+          </Text>
+        </View>
+    );
+  }
+
   renderFooter() {
-    const { note, debt } = this.state;
-    const { totalDiscount, totalPrice, totalQuantity } = this.props;
+    const { note } = this.state;
+    const { totalPrice, totalQuantity } = this.props;
     return (
       <View style={styles.footerContainerStyle}>
-
-        <View style={styles.footerStyle}>
-          <Text style={[styles.textSumStyle, { textAlign: 'left' }]}>Ghi nợ:</Text>
-          <TextInput
-            style={styles.textInputStyle}
-            placeholderTextColor={Style.color.placeholder}
-            value={debt}
-            onChangeText={text => this.onChangeNumber(text, 'debt')}
-            keyboardType="number-pad"
-            placeholder="0"
-            textAlign="right"
-          />
-        </View>
-        <View style={styles.footerStyle}>
+        {/* <View style={styles.footerStyle}>
           <Text style={[styles.textSumStyle, { textAlign: 'left' }]}>Giảm giá:</Text>
           <Text style={[styles.textEmpStyle, { textAlign: 'right' }]}>
             {formatPrice(totalDiscount)}
           </Text>
-        </View>
+        </View> */}
         <View style={styles.footerStyle}>
           <Text style={[styles.textSumStyle, { textAlign: 'left' }]}>Tổng cộng:</Text>
           <Text style={styles.textEmpStyle}>{totalQuantity} cái</Text>
@@ -184,6 +234,10 @@ class Detail extends React.Component {
             {formatPrice(totalPrice)}
           </Text>
         </View>
+        {this.renderCustomerDebt()}
+        {this.renderFinalMoney()}
+        {this.renderPaidMoney()}
+        {this.renderMoneyLeft()}
         <View style={styles.footerStyle}>
           <TextInput
             value={note}
@@ -277,7 +331,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10
   },
   footerStyle: {
-    flex: 1,
+    width: '100%',
+    height: 32,
+    // marginVertical: 4,
     flexDirection: 'row',
     alignItems: 'center'
   },
@@ -319,7 +375,7 @@ const styles = StyleSheet.create({
   },
   footerContainerStyle: {
     width: '100%',
-    height: 260,
+    // height: 260,
     padding: 10,
     backgroundColor: Style.color.darkBackground,
     borderBottomLeftRadius: 10,
