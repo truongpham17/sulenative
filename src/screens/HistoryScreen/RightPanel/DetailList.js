@@ -18,6 +18,8 @@ class DetailList extends React.Component {
     billDetail.productList.forEach(item => {
       if (item.soldQuantity > 0) {
         totalCostWithoutDiscount += item.soldQuantity * item.product.exportPrice;
+      } else {
+        totalCostWithoutDiscount -= item.paybackQuantity * item.product.exportPrice;
       }
     });
 
@@ -37,7 +39,8 @@ class DetailList extends React.Component {
       otherCost: 0,
       preCost: totalCostWithoutDiscount,
       debt: billDetail.currentDebt,
-      paidMoney: billDetail.totalPaid
+      paidMoney: billDetail.totalPaid,
+      type: 'sell'
       //  debt,
       // paidMoney
     });
