@@ -9,15 +9,16 @@ class BasicInfo extends React.Component {
   render() {
     const { billDetail, currentBill } = this.props;
     const data = currentBill.customer || {};
-    let text = '';
-    let textStyle = {};
-    if (billDetail.paymentStatus === 'paid') {
-      text = 'Đã thanh toán';
-      textStyle = styles.specificText;
-    } else {
-      text = 'Mua thiếu';
-      textStyle = styles.specificTextError;
-    }
+    const text = 'Đã thanh toán';
+    const textStyle = styles.specificText;
+    // let textStyle = {};
+    // if (billDetail.paymentStatus === 'paid') {
+    //   text = 'Đã thanh toán';
+    //   textStyle = styles.specificText;
+    // } else {
+    //   text = 'Mua thiếu';
+    //   textStyle = styles.specificTextError;
+    // }
     return (
       <View style={styles.containerStyle}>
         <View style={styles.nameContainer}>

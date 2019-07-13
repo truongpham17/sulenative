@@ -31,11 +31,12 @@ class DetailList extends React.Component {
       date: getDatePrinting(billDetail.createAt),
       productList: billDetail.productList.map(item => ({
         quantity: item.soldQuantity > 0 ? item.soldQuantity : -item.paybackQuantity,
-        price: item.product.exportPrice
+        price: item.product.exportPrice - item.discount
       })),
       totalQuantity: billDetail.totalQuantity,
       totalCost: billDetail.totalPrice,
-      discount: totalCostWithoutDiscount - billDetail.totalPrice,
+      // discount: totalCostWithoutDiscount - billDetail.totalPrice,
+      discount: 0,
       otherCost: 0,
       preCost: totalCostWithoutDiscount,
       debt: billDetail.currentDebt,
@@ -70,15 +71,15 @@ class DetailList extends React.Component {
     return (
       <View>
         <View>
-          {billDetail.otherCost > 0 || totalDiscount > 0 ? this.renderItem('Tổng tiền hàng:', formatPrice(total)) : null}
+          {/* {billDetail.otherCost > 0 || totalDiscount > 0 ? this.renderItem('Tổng tiền hàng:', formatPrice(total)) : null}
           {totalDiscount > 0 ? this.renderItem('Giảm giá:', formatPrice(totalDiscount)) : null}
-          {billDetail.otherCost > 0 ? this.renderItem('Phụ phí:', formatPrice(billDetail.otherCost)) : null}
+          {billDetail.otherCost > 0 ? this.renderItem('Phụ phí:', formatPrice(billDetail.otherCost)) : null} */}
           {this.renderItem('Tổng:', formatPrice(billDetail.totalPrice))}
-          {billDetail.totalPaid < billDetail.totalPrice ? this.renderItem('Khách trả:', formatPrice(billDetail.totalPaid)) : null}
+          {/* {billDetail.totalPaid < billDetail.totalPrice ? this.renderItem('Khách trả:', formatPrice(billDetail.totalPaid)) : null}
           {billDetail.totalPrice - billDetail.totalPaid > 0 ? this.renderItem(
             'Khách thiếu',
             formatPrice(billDetail.totalPrice - billDetail.totalPaid)
-          ) : null}
+          ) : null} */}
         </View>
 
       <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, height: 48 }}>

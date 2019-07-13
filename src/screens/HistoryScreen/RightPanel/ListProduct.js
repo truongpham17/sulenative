@@ -23,7 +23,7 @@ class ListProduct extends React.Component {
         <Text
           style={[Style.textEmphasize, { fontWeight: 'bold', width: '40%', textAlign: 'right' }]}
         >
-          {formatPrice(item.product.exportPrice)}
+          {formatPrice(item.product.exportPrice - item.discount)}
         </Text>
       </View>
     );

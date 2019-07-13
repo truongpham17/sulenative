@@ -11,7 +11,8 @@ import {
   setPrinterDevice,
   setPrinterConnect,
   setDialogStatus,
-  importProduct
+  importProduct,
+  setSpecialDiscount
 } from '../../actions';
 import { formatPrice } from '../../utils/String';
 import { Style, DetailItem } from '../../components';
@@ -54,9 +55,18 @@ class Detail extends React.Component {
     }
   };
 
+  onChangeSpecialDiscount = (text) => {
+    const { setSpecialDiscount } = this.props;
+    if (!text || text === '') {
+      setSpecialDiscount(0);
+      return;
+    }
+    setSpecialDiscount(parseInt(text, 10));
+  }
+
 
   onSubmitBill = async () => {
-    const { bills, totalQuantity, totalPrice, user, totalDiscount, submitBill, customer } = this.props;
+    const { bills, totalQuantity, totalPrice, user, totalDiscount, submitBill, customer, specialDiscount } = this.props;
     const { note } = this.state;
     if (bills.length === 0) {
       AlertInfo('Vui lòng chọn sản phẩm');
@@ -72,14 +82,15 @@ class Detail extends React.Component {
       exportPrice: item.exportPrice,
       importPrice: item.importPrice,
       store: item.store,
-      discount: item.discount || 0,
+      discount: item.discount + specialDiscount || 0,
       isReturned: !item.isSell
     }));
 
     const data = {
       productList,
       customer,
-      paidMoney
+      paidMoney,
+      specialDiscount
     };
 
     console.log(data);
@@ -95,11 +106,12 @@ class Detail extends React.Component {
           date: getDatePrinting(),
           productList: bills.map(item => ({
             quantity: item.quantity * (item.isSell ? 1 : -1),
-            price: item.exportPrice
+            price: item.exportPrice - item.discount - specialDiscount
           })),
           totalQuantity,
           totalCost: totalPrice,
-          discount: totalDiscount,
+          // discount: totalDiscount, not use discount anymore
+          discount: 0,
           otherCost: 0,
           // eslint-disable-next-line no-mixed-operators
           preCost: totalPrice + totalDiscount,
@@ -140,6 +152,7 @@ class Detail extends React.Component {
       textStyle={iOSUIKit.body}
       onRemove={this.onRemove}
       index={index}
+      specialDiscount={this.props.specialDiscount}
     />
   );
 
@@ -218,15 +231,14 @@ class Detail extends React.Component {
 
   renderFooter() {
     const { note } = this.state;
-    const { totalPrice, totalQuantity } = this.props;
+    const { totalPrice, totalQuantity, specialDiscount } = this.props;
     return (
       <View style={styles.footerContainerStyle}>
-        {/* <View style={styles.footerStyle}>
-          <Text style={[styles.textSumStyle, { textAlign: 'left' }]}>Giảm giá:</Text>
-          <Text style={[styles.textEmpStyle, { textAlign: 'right' }]}>
-            {formatPrice(totalDiscount)}
-          </Text>
-        </View> */}
+        <View style={styles.footerStyle}>
+          <Text style={[styles.textSumStyle, { textAlign: 'left' }]}>Giảm lai:</Text>
+          <TextInput style={[styles.textEmpStyle, { textAlign: 'right', backgroundColor: Style.color.background, paddingVertical: 4, paddingEnd: 4, borderRadius: 4 }]} value={`${specialDiscount}`} onChangeText={this.onChangeSpecialDiscount} />
+        </View>
+
         <View style={styles.footerStyle}>
           <Text style={[styles.textSumStyle, { textAlign: 'left' }]}>Tổng cộng:</Text>
           <Text style={styles.textEmpStyle}>{totalQuantity} cái</Text>
@@ -296,7 +308,8 @@ export default connect(
     connect: state.user.printerConnect,
     productNeedToSave: state.bill.productNeedToSave,
     defaultStore: state.store.defaultStore,
-    customer: state.bill.customer
+    customer: state.bill.customer,
+    specialDiscount: state.bill.specialDiscount
   }),
   {
     removeProductBill,
@@ -304,7 +317,8 @@ export default connect(
     setPrinterDevice,
     setPrinterConnect,
     setDialogStatus,
-    importProduct
+    importProduct,
+    setSpecialDiscount
   }
 )(Detail);
 

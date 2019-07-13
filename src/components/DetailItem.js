@@ -21,8 +21,11 @@ class DetailItem extends React.PureComponent<PropsType> {
 
   }
   renderTextItem() {
-    const { data, haveSource, haveImportPrice } = this.props; // object: {store: {storeId, storeName}, quantity, exportPrice, isSell, discount};
-    const sum = haveImportPrice ? data.importPrice * data.quantity : (data.exportPrice - (data.discount || 0)) * data.quantity;
+    const { data, haveSource, haveImportPrice, specialDiscount } = this.props; // object: {store: {storeId, storeName}, quantity, exportPrice, isSell, discount};
+    const discount = data.discount + specialDiscount;
+    console.log(`current discount is ${discount}`);
+    console.log(data);
+    const sum = haveImportPrice ? data.importPrice * data.quantity : (data.exportPrice - (discount || 0)) * data.quantity;
     return (
       <View style={[styles.containerStyle, data.isSell ? styles.returnStyle : {}]}>
         {haveSource && (
@@ -39,7 +42,7 @@ class DetailItem extends React.PureComponent<PropsType> {
         {haveImportPrice && <Text style={styles.textStyle}>{formatPrice(data.importPrice)}</Text>}
         <Text style={[styles.textStyle]}>
           {formatPrice(data.exportPrice)}
-          {data.discount > 0 && haveSource && <Text style={Style.noteText}>{' '}(-{data.discount})</Text> }
+          {discount > 0 && <Text style={Style.noteText}>{' '}(-{discount})</Text> }
         </Text>
         <Text style={[styles.textStyle]}>{formatPrice(sum)}</Text>
       </View>

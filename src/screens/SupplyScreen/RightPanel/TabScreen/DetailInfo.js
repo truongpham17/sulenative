@@ -309,9 +309,10 @@ class DetailInfo extends React.Component<PropsType> {
 
   renderDetail() {
     const { currentStore } = this.props;
+    console.log(currentStore);
     const data = this.getInfos();
     return (
-      <View style={styles.detailContainerStyle}>
+      <View style={styles.detailContainerStyle}>+
         <Text style={styles.textStyle}>Thông tin</Text>
         {this.renderDetailItem('Tên nguồn hàng: ', currentStore.name)}
         {this.renderDetailItem('Đã nhập: ', `${data.totalQuantity} cái`)}

@@ -106,11 +106,13 @@ class ImportScreen extends React.Component<PropsType> {
 
   addStore = text => {
     const { addStore } = this.props;
+    this.showDialog('Nợ cũ', debt =>
     addStore({
       name: text,
       totalImportProduct: 0,
-      productQuantity: 0
-    });
+      productQuantity: 0,
+      debt: parseInt(debt, 10) || 0
+    }));
   };
 
   render() {

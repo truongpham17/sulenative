@@ -30,6 +30,8 @@ export const LOAD_NEW_STORE = 'load-new-store';
 
 export const SET_CUSTOMER = 'set-customer';
 
+export const SET_SPECIAL_DISCOUNT = 'set-special-discount';
+
 export function setIsSell(data) {
   return {
     type: SET_IS_SELL,
@@ -48,7 +50,7 @@ export function setCurrentProductBills(data) {
 export function addProductBill(data: {store: {storeId: string, storeName: string}, quantity: Number, exportPrice: Number, isSell: Boolean, importPrice: Number, discount: Number}) {
   return {
     type: ADD_PRODUCT_BILL,
-    payload: data
+    payload: { ...data, discount: data.discount ? data.discount : 0 }
   };
 }
 
@@ -107,6 +109,13 @@ export function setDiscount(data: { index: Number, value: Number }) {
   return {
     type: SET_DISCOUNT,
     payload: data
+  };
+}
+
+export function setSpecialDiscount(value) {
+  return {
+    type: SET_SPECIAL_DISCOUNT,
+    payload: value
   };
 }
 

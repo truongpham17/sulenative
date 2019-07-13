@@ -221,7 +221,7 @@ const printBill = async data => {
         BluetoothEscposPrinter.ALIGN.CENTER,
         BluetoothEscposPrinter.ALIGN.RIGHT
       ],
-      ['   Tong tien: ', '', '', formatPrice(data.preCost)],
+      ['   Tong tien: ', '', '', formatPrice(data.totalCost)],
       {}
     );
 
@@ -229,33 +229,33 @@ const printBill = async data => {
   const otherCost = data.otherCost > 0 ? formatPrice(data.otherCost) : '0 VND';
 
 
-  if (parseInt(data.discount, 10) > 0) {
-    await BluetoothEscposPrinter.printColumn(
-      specialConfig,
-      [
-        BluetoothEscposPrinter.ALIGN.LEFT,
-        BluetoothEscposPrinter.ALIGN.CENTER,
-        BluetoothEscposPrinter.ALIGN.CENTER,
-        BluetoothEscposPrinter.ALIGN.RIGHT
-      ],
-      ['   Giam gia: ', '', '', `-${discount}`],
-      {}
-    );
-  }
+  // if (parseInt(data.discount, 10) > 0) {
+  //   await BluetoothEscposPrinter.printColumn(
+  //     specialConfig,
+  //     [
+  //       BluetoothEscposPrinter.ALIGN.LEFT,
+  //       BluetoothEscposPrinter.ALIGN.CENTER,
+  //       BluetoothEscposPrinter.ALIGN.CENTER,
+  //       BluetoothEscposPrinter.ALIGN.RIGHT
+  //     ],
+  //     ['   Giam gia: ', '', '', `-${discount}`],
+  //     {}
+  //   );
+  // }
 
-  if (parseInt(data.discount, 10) > 0 || parseInt(data.otherCost, 10) > 0) {
-    await BluetoothEscposPrinter.printColumn(
-      specialConfig,
-      [
-        BluetoothEscposPrinter.ALIGN.LEFT,
-        BluetoothEscposPrinter.ALIGN.CENTER,
-        BluetoothEscposPrinter.ALIGN.CENTER,
-        BluetoothEscposPrinter.ALIGN.RIGHT
-      ],
-      ['   Tong thanh tien ', '', '', formatPrice(data.totalCost)],
-      {}
-    );
-  }
+  // if (parseInt(data.discount, 10) > 0 || parseInt(data.otherCost, 10) > 0) {
+  //   await BluetoothEscposPrinter.printColumn(
+  //     specialConfig,
+  //     [
+  //       BluetoothEscposPrinter.ALIGN.LEFT,
+  //       BluetoothEscposPrinter.ALIGN.CENTER,
+  //       BluetoothEscposPrinter.ALIGN.CENTER,
+  //       BluetoothEscposPrinter.ALIGN.RIGHT
+  //     ],
+  //     ['   Tong thanh tien ', '', '', formatPrice(data.totalCost)],
+  //     {}
+  //   );
+  // }
 
 
   if (data.debt && data.debt > 0) {

@@ -3,7 +3,7 @@
 
 // for product
 export const API_URL = 'https://sulepos-api.herokuapp.com';
-
+//
 export const METHODS = {
   get: 'GET',
   post: 'POST',

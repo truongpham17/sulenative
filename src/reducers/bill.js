@@ -11,7 +11,8 @@ import {
   SET_OTHER_COST,
   ADD_BILL_PRODUCT,
   ADD_PRODUCT_BILL,
-  SET_CUSTOMER
+  SET_CUSTOMER,
+  SET_SPECIAL_DISCOUNT
 } from '../actions';
 import LOAD_NUMBER from '../utils/System';
 
@@ -25,26 +26,25 @@ const INITIAL_STATE = {
   totalDiscount: 0,
   otherCost: '0',
   bills: [],
-  customer: {}
+  customer: {},
+  specialDiscount: 0,
 };
 
-function calculateTotalValue(bills) {
+function calculateTotalValue(bills, specialDiscount) {
   let totalPrice = 0;
   let totalQuantity = 0;
-  let totalDiscount = 0;
+  // let totalDiscount = 0;
   bills.forEach(item => {
     const isSell = item.isSell ? 1 : -1;
-    if (item.discount) {
-      totalDiscount += (item.discount || 0) * item.quantity; // remember to parse to int before add to reducer
-    }
-    totalPrice += item.quantity * item.exportPrice * isSell;
+    const discount = item.discount + specialDiscount;
+    totalPrice += item.quantity * (item.exportPrice - discount) * isSell;
     totalQuantity += item.isSell ? item.quantity : 0;
   });
   return {
-    totalPrice: totalPrice - totalDiscount,
+    totalPrice,
     // minus discount
     totalQuantity,
-    totalDiscount
+    // totalDiscount
   };
 }
 
@@ -62,7 +62,7 @@ export default (state = INITIAL_STATE, action) => {
       };
     case ADD_PRODUCT_BILL:
       bills = [...state.bills, action.payload];
-      data = calculateTotalValue(bills);
+      data = calculateTotalValue(bills, state.specialDiscount);
       return {
         ...state,
         bills,
@@ -72,7 +72,7 @@ export default (state = INITIAL_STATE, action) => {
     case REMOVE_PRODUCT_BILL:
       bills = state.bills;
       bills.splice(action.payload, 1);
-      data = calculateTotalValue(bills);
+      data = calculateTotalValue(bills, state.specialDiscount);
       return {
         ...state,
        bills: [...bills],
@@ -103,7 +103,8 @@ export default (state = INITIAL_STATE, action) => {
         ...data,
         otherCost: '0',
         currentProductBills: [],
-        customer: {}
+        customer: {},
+        specialDiscount: 0
       };
     case SUBMIT_BILL_SUCCESS:
       data = calculateTotalValue([], 0);
@@ -172,7 +173,7 @@ export default (state = INITIAL_STATE, action) => {
       case ADD_BILL_PRODUCT:
           productBills = [action.payload, ...state.productBills];
           currentProductBills = [action.payload, ...state.currentProductBills];
-          data = calculateTotalValue(productBills, state.otherCost);
+          data = calculateTotalValue(productBills, state.specialDiscount);
 
       return {
         ...state,
@@ -192,6 +193,18 @@ export default (state = INITIAL_STATE, action) => {
       };
     case SET_CUSTOMER:
       return { ...state, customer: action.payload };
+    case SET_SPECIAL_DISCOUNT:
+      data = calculateTotalValue(state.bills, action.payload);
+    return {
+      ...state,
+      specialDiscount: action.payload,
+      ...data
+      // bills: state.bills.map((item) => ({
+      //   ...item, discount: item.discount + action.payload
+      // }))
+    };
+
+
     default:
       return state;
   }
