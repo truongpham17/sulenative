@@ -69,6 +69,8 @@ const printBill = async data => {
   await BluetoothEscposPrinter.printText('DT: 0905.182225 - 0909.841215\r\n', CONFIG_NORMAL);
   await BluetoothEscposPrinter.printText('CHK: D.T.KIM LIEN - NH.Agribank: 6360205343197\r\n', CONFIG_NORMAL);
   await BluetoothEscposPrinter.printText('CHK: D.T.KIM LIEN - NH.Sacombank: 060041625891\r\n', CONFIG_NORMAL);
+  await BluetoothEscposPrinter.printText('Zalo: 0899786456\r\n', CONFIG_NORMAL);
+
 
   await BluetoothEscposPrinter.printText(longDash, {});
 
