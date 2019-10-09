@@ -2,7 +2,8 @@
 // export const API_URL = 'http://localhost:5710';
 
 // for product
-export const API_URL = 'https://sulepos-api.herokuapp.com';
+// export const API_URL = 'https://sulepos-api.herokuapp.com';
+export const API_URL = 'https://sulepos.herokuapp.com';
 //
 export const METHODS = {
   get: 'GET',
