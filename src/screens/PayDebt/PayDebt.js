@@ -60,8 +60,8 @@ class PayDebt extends React.Component {
 
 
   renderItem = ({ item }) => (<View style={styles.itemStyle}>
-      <View>
-       {item.data.map(value => <Text style={[Style.normalDarkText, { height: 32 }]}>{value}</Text>)}
+      <View style={{ flex: 1 }}>
+       {item.data.map(value => <Text style={[Style.normalDarkText, { marginVertical: 4, flex: 1 }]}>{value}</Text>)}
       </View>
       <SubmitButton title="Trả nợ" buttonStyle={{ width: 180 }} onPress={() => this.onPayDebt(item)} />
     </View>)
@@ -98,6 +98,7 @@ class PayDebt extends React.Component {
 
   render() {
     const { debtStore, debtCustomer, navigation } = this.props;
+    console.log('deb customer is here : ', debtCustomer);
     return (
       <View style={{ flex: 1 }}>
         <StatusBar barStyle="light-content" />
@@ -113,7 +114,7 @@ class PayDebt extends React.Component {
             {this.renderFragment(
               debtCustomer.map(
                 item =>
-                ({ id: item.id, type: 'customer', debt: item.debt, data: [`Tên: ${item.username}`, `SDT: ${item.phone}`, `Nợ: ${formatPrice(item.debt)}`] }))
+                ({ id: item.id, type: 'customer', debt: item.debt, data: [`Tên: ${item.username}`, `SDT: ${item.phone}`, `DC: ${item.address}`, `Nợ: ${formatPrice(item.debt)}`] }))
                 , 'Khách hàng', 'Tên khách hàng', 'customer', () => this.onSearchCustomer())}
             {this.renderFragment(
               debtStore.map(
